@@ -1,7 +1,11 @@
+
 package com.example.meetingmasterclient;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.GridView;
@@ -23,7 +27,7 @@ public class AddUserstoMeeting extends AppCompatActivity {
         //TODO: option2 addusers is part of create a meeting activity
 
 
-        List list = new ArrayList<>(); //used for testing functionality of list
+        final List list = new ArrayList<>(); //used for testing functionality of list
 
         for (int i = 0; i < 20; i++) {
 
@@ -34,22 +38,40 @@ public class AddUserstoMeeting extends AppCompatActivity {
 
         //Scrollable listview of invited people
 
-        ListView listViewInvitedPeople = (ListView) findViewById(R.id.list_view_invited_people);
+        final ListView listViewInvitedPeople = (ListView) findViewById(R.id.list_view_invited_people);
 
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(AddUserstoMeeting.this, android.R.layout.simple_list_item_multiple_choice, list);
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(AddUserstoMeeting.this, android.R.layout.simple_list_item_multiple_choice, list);
 
+        //make listview checkable so that people can be removed from the list
+        //people are removed from the list once a checkbox is checked
         boolean [] checkedItems;
         listViewInvitedPeople.setItemChecked(1, true);
-        for (int i = 0; i < adapter.getCount(); i++) {
-            listViewInvitedPeople.setItemChecked(i, true);
-        }
+
 
         listViewInvitedPeople.setAdapter(adapter);
 
-        //TODO: make listview checkable so that people can be removed from the list
+        listViewInvitedPeople.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+               list.remove(position);
+               listViewInvitedPeople.setItemChecked(position, false);
+               adapter.notifyDataSetChanged();
+            }
+        });
+
 
     }
+    private void checkIfBoxChecked(Adapter adapter, ListView listViewInvitedPeople, List list){
+        for (int i = 0; i < adapter.getCount(); i++) {
+            boolean check_stat = listViewInvitedPeople.isItemChecked(i);
+            if (check_stat == true) {
+                list.remove(0);
+                adapter.notify();
+            }
+        }
+    }//check if box checked
+
 }
 
 //TODO: exit the activity and return to Create a meeting page
