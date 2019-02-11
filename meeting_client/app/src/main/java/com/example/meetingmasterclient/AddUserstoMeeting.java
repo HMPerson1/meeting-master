@@ -3,6 +3,8 @@ package com.example.meetingmasterclient;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.GridView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -35,11 +37,15 @@ public class AddUserstoMeeting extends AppCompatActivity {
         ListView listViewInvitedPeople = (ListView) findViewById(R.id.list_view_invited_people);
 
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(AddUserstoMeeting.this, android.R.layout.simple_list_item_1, list);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(AddUserstoMeeting.this, android.R.layout.simple_list_item_multiple_choice, list);
 
+        boolean [] checkedItems;
+        listViewInvitedPeople.setItemChecked(1, true);
+        for (int i = 0; i < adapter.getCount(); i++) {
+            listViewInvitedPeople.setItemChecked(i, true);
+        }
 
         listViewInvitedPeople.setAdapter(adapter);
-
 
         //TODO: make listview checkable so that people can be removed from the list
 
