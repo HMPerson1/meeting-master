@@ -2,4 +2,5 @@
     <string name="app_name">MeetingMasterClient</string>
     <string name="title_activity_password_reset">PasswordReset</string>
     <string name="title_activity_event_note_addition">EventNoteAddition</string>
+    <string name="title_activity_profile_edition">ProfileEdition</string>
 </resources>
