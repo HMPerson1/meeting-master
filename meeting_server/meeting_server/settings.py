@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'phonenumber_field'
+    'rest_auth',
+    'phonenumber_field',
+    'rest_framework_swagger',
 ]
 
 REST_FRAMEWORK = {
