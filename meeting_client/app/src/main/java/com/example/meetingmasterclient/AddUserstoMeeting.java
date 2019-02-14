@@ -28,10 +28,8 @@ public class AddUserstoMeeting extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_usersto_meeting);
 
-//TODO: get information on invited people from database
-
-        //TODO: option2 addusers is part of create a meeting activity
-
+    //TODO: get information(list) of invited people from database
+        
 
         final List list = new ArrayList<>(); //used for testing functionality of list
 
@@ -101,10 +99,16 @@ public class AddUserstoMeeting extends AppCompatActivity {
                     Toast.makeText(AddUserstoMeeting.this, "Invalid Email", Toast.LENGTH_SHORT).show();
 
                 }
+
+                //check if user is in database
+                //if user not in database indicate to user that the email is invalid
+                //if user is in database, add user to the list of invited people
+
             }
         });
 
-
+        //TODO: Before user returns to create a meeting page, store the list of users in the database
+        //TODO: exit the activity and return to Create a meeting page
     }
 
 
@@ -115,7 +119,7 @@ public class AddUserstoMeeting extends AppCompatActivity {
 }
 
 
-//TODO: exit the activity and return to Create a meeting page
 
-//TODO: Store data in database once user exits the activity
+
+
 
