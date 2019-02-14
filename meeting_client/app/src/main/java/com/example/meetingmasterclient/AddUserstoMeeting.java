@@ -5,6 +5,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
@@ -16,6 +17,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -54,12 +56,33 @@ public class AddUserstoMeeting extends AppCompatActivity {
 
 
         listViewInvitedPeople.setAdapter(adapter);
+        /*
         listViewInvitedPeople.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                list.remove(position);
                listViewInvitedPeople.setItemChecked(position, false);
                adapter.notifyDataSetChanged();
+            }
+        });
+        */
+        //if User clicks the remove button, remove all checked items in listview
+        Button remove_button = (Button)findViewById(R.id.removebutton);
+
+        remove_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                for (int i = listViewInvitedPeople.getAdapter().getCount(); i >=0 ; i--){ //loop in reverse order so that arraylist indexes are not shifted upon removal
+                    if (listViewInvitedPeople.isItemChecked(i)){ //check if item in listview position i is checked
+                        listViewInvitedPeople.setItemChecked(i,false);
+                        list.remove(i);
+                    }
+
+                }
+
+                adapter.notifyDataSetChanged();
+
             }
         });
 
