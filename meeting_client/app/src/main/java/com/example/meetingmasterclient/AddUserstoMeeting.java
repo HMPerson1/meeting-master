@@ -72,7 +72,7 @@ public class AddUserstoMeeting extends AppCompatActivity {
                 String Email = String.valueOf(Email_Input.getText()); //get Email from input
                 Log.d("Email", Email);
                 //Check if Email in the Correct Components
-                if (!(Email.contains("@")||Email.contains("."))){
+               if (!(Email.contains("@")||Email.contains("."))){
                     //edit hint in textbox to indicate to user that they entered an invalid email
                     Log.d("insideif", "if");
                     Toast.makeText(AddUserstoMeeting.this, "Invalid Email", Toast.LENGTH_SHORT).show();
