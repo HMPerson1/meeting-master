@@ -95,7 +95,10 @@ public class Registration extends AppCompatActivity {
     private boolean validateEmail(){
         String email = textInputEmailAddress.getEditText().getText().toString();
         if (email.isEmpty()){
-            textInputEmailAddress.setError("Username cannot be empty");
+            textInputEmailAddress.setError("Email cannot be empty");
+            return false;
+        } else if (!email.contains("@") || !email.contains(".")) {
+            textInputEmailAddress.setError("Not a valid email address");
             return false;
         } else {
             textInputEmailAddress.setError(null);

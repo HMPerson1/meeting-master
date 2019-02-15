@@ -9,6 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name=".Login"
+            android:label="@string/app_name"></activity>
         <activity android:name=".AddUserstoMeeting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,7 +22,7 @@
         <activity
             android:name=".EventNoteAddition"
             android:label="Event Note"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".PasswordReset"
             android:label="Password Reset"
@@ -32,8 +35,7 @@
         </activity>
         <activity
             android:name=".Registration"
-            android:label="@string/title_activity_registration"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:label="@string/title_activity_registration" />
     </application>
 
 </manifest>
