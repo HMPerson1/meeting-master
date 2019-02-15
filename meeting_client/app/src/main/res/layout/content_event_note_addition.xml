@@ -43,7 +43,8 @@
             android:id="@+id/note"
             android:layout_width="match_parent"
             android:layout_height="350dp"
-            android:hint="Enter your note here" />
+            android:hint="Enter your note here"
+            android:inputType="textMultiLine"/>
     </android.support.design.widget.TextInputLayout>
 
 </android.support.constraint.ConstraintLayout>
