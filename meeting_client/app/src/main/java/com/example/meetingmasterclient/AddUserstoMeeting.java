@@ -26,7 +26,7 @@ public class AddUserstoMeeting extends AppCompatActivity {
 
         //TODO: option2 addusers is part of create a meeting activity
 
-
+/*
         final List list = new ArrayList<>(); //used for testing functionality of list
 
         for (int i = 0; i < 20; i++) {
@@ -70,7 +70,7 @@ public class AddUserstoMeeting extends AppCompatActivity {
                 adapter.notify();
             }
         }
-    }//check if box checked
+    */}//check if box checked
 
 }
 
