@@ -8,7 +8,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import java.io.DataOutputStream;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -30,11 +38,29 @@ public class EventNoteAddition extends AppCompatActivity {
                 TextInputEditText noteField = (TextInputEditText)findViewById(R.id.note);
                 String note = noteField.getText().toString();
 
-                if (!note.isEmpty()) {
-                    // TODO: Create and send HTTP request to server to add the note
-
-                }
+                sendNote(note);
             }
         });
+    }
+
+    private void sendNote(String note) {
+        // TODO: Format HTTP request and program response and failure
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                // do action
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // do action
+            }
+        });
+
+        queue.add(stringRequest);
     }
 }
