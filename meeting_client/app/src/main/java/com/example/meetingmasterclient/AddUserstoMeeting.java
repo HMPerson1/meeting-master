@@ -1,6 +1,8 @@
 
 package com.example.meetingmasterclient;
 
+import android.app.ActionBar;
+import android.content.Intent;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -108,10 +110,25 @@ public class AddUserstoMeeting extends AppCompatActivity {
         });
 
         //TODO: Before user returns to create a meeting page, store the list of users in the database
-        //TODO: exit the activity and return to Create a meeting page
+        //exit the activity and return to Create a meeting page when the admin presses the save changes button
+        configureSaveButton();
+
+
+
+
+
     }
 
+    private void configureSaveButton(){
+        Button save_button = (Button)findViewById(R.id.save_button);
+        save_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();//return to create a meeting
 
+            }
+        });
+    }
 
 
 
