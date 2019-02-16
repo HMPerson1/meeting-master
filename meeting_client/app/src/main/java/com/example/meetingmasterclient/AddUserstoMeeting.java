@@ -99,7 +99,7 @@ public class AddUserstoMeeting extends AppCompatActivity {
                     Toast.makeText(AddUserstoMeeting.this, "Invalid Email", Toast.LENGTH_SHORT).show();
 
                 }
-
+                //TODO
                 //check if user is in database
                 //if user not in database indicate to user that the email is invalid
                 //if user is in database, add user to the list of invited people
