@@ -5,4 +5,5 @@
     <string name="title_activity_profile_edition">ProfileEdition</string>
     <string name="title_activity_user_search">UserSearch</string>
     <string name="title_activity_event_edition">EventEdition</string>
+    <string name="title_activity_event_list_view">EventListView</string>
 </resources>
