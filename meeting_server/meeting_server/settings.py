@@ -43,13 +43,26 @@ INSTALLED_APPS = [
     'rest_auth',
     'phonenumber_field',
     'rest_framework_swagger',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
 ]
+
+SITE_ID = 1
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
     )
 }
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'meetings.serializers.UserProfileSerializer',
+}
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'meetings.serializers.RegisterSerializer',
+}
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 PHONENUMBER_DB_FORMAT = "E164"
 

@@ -15,11 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-
 from rest_framework_swagger.views import get_swagger_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', get_swagger_view()),
+    path('register/', include('rest_auth.registration.urls')),
     path('rest-auth/', include('rest_auth.urls')),
 ]
