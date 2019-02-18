@@ -47,6 +47,9 @@ public class EventViewAdapter extends BaseAdapter {
         TextView date = (TextView)infl.findViewById(R.id.event_date);
         date.setText(eventInfo[position][2]);
 
+        TextView place = (TextView)infl.findViewById(R.id.event_place);
+        place.setText(eventInfo[position][3]);
+
         return infl;
     }
 }

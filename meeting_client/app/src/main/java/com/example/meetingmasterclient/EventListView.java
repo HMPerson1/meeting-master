@@ -48,7 +48,7 @@ public class EventListView extends AppCompatActivity {
     // TODO: Program methods to send an HTTP request to the server and parse the response
 
     public void setEventsToday(ListView eventData) {
-        String[][] test = {{"a1", "a1", "a1"}, {"a2", "a2", "a2"}, {"a3", "a3", "a3"}};
+        String[][] test = {{"a1", "a1", "a1", "a1"}, {"a2", "a2", "a2", "a2"}, {"a3", "a3", "a3", "a3"}};
         EventViewAdapter eva = new EventViewAdapter(getApplicationContext(), test);
         eventData.setAdapter(eva);
     }

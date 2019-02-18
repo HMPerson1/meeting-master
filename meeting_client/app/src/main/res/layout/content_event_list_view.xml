@@ -41,6 +41,15 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="Date" />
+
+        <TextView
+            android:id="@+id/place_label"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Location" />
     </LinearLayout>
 
     <ListView
