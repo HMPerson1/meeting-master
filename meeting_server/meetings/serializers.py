@@ -1,5 +1,6 @@
 from typing import Type, Union
 
+import django.contrib.auth.models as auth_models
 import rest_auth.registration.serializers as auth_reg_serializers
 import rest_auth.serializers as auth_serializers
 from rest_auth.serializers import UserDetailsSerializer
@@ -17,14 +18,16 @@ class ModelField(serializers.ModelField):
 
 # https://django-rest-auth.readthedocs.io/en/latest/faq.html
 class UserProfileSerializer(UserDetailsSerializer):
-    name = serializers.CharField(source='userprofile.name')
-    profile_picture = serializers.ImageField(source='userprofile.profile_picture')
+    name = serializers.CharField(source='userprofile.name', required=False)
+    profile_picture = serializers.ImageField(source='userprofile.profile_picture', required=False)
     phone_number = ModelField(model_field=UserProfile._meta.get_field('phone_number'),
                               validators=UserProfile._meta.get_field('phone_number').validators,
-                              source='userprofile.phone_number')
+                              source='userprofile.phone_number', required=False)
 
-    class Meta(UserDetailsSerializer.Meta):
+    class Meta:
+        model = auth_models.User
         fields = ('pk', 'username', 'email', 'name', 'phone_number', 'profile_picture')
+        read_only_fields = ('pk',)
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('userprofile', {})
