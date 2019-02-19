@@ -16,4 +16,15 @@
     <string name="cancel_button">Cancel</string>
     <string name="title_activity_login">Login</string>
     <string name="register">New User?</string>
+    <string name="title_activity_create_event">CreateEvent</string>
+
+    <!-- event/location strings-->
+    <string name="street_address">Street Address</string>
+    <string name="city">City</string>
+    <string name="state">State</string>
+    <string name="room_no">Room Number</string>
+    <string name="room_no_opt">Room Number (Optional)</string>
+    <string name="location">Location</string>
+    <string name="invitees">Invitees</string>
+    <string name="invite_button">Invite</string>
 </resources>
