@@ -1,4 +1,7 @@
-import rest_auth.registration.serializers as auth_serializers
+from typing import Type, Union
+
+import rest_auth.registration.serializers as auth_reg_serializers
+import rest_auth.serializers as auth_serializers
 from rest_auth.serializers import UserDetailsSerializer
 from rest_framework import serializers
 from rest_framework.fields import empty, get_attribute
@@ -35,21 +38,21 @@ class UserProfileSerializer(UserDetailsSerializer):
 
 
 class RegisterSerializer(serializers.Serializer):
-    username = auth_serializers.RegisterSerializer().fields['username']
-    email = auth_serializers.RegisterSerializer().fields['email']
-    password1 = auth_serializers.RegisterSerializer().fields['password1']
-    password2 = auth_serializers.RegisterSerializer().fields['password2']
+    username = auth_reg_serializers.RegisterSerializer().fields['username']
+    email = auth_reg_serializers.RegisterSerializer().fields['email']
+    password1 = auth_reg_serializers.RegisterSerializer().fields['password1']
+    password2 = auth_reg_serializers.RegisterSerializer().fields['password2']
     name = serializers.CharField(required=False)
     phone_number = serializers.ModelField(model_field=UserProfile._meta.get_field('phone_number'),
                                           validators=UserProfile._meta.get_field('phone_number').validators,
                                           required=False)
     profile_picture = serializers.ImageField(required=False)
 
-    def __init__(self, instance=None, data=empty, **kwargs):
+    def __init__(self, instance=None, data: Union[Type[empty], dict] = empty, **kwargs):
         super(RegisterSerializer, self).__init__(instance=instance, data=data, **kwargs)
         auth_data = subset_dict(data, {'username', 'email', 'password1', 'password2'}) if data is not empty else empty
-        self._auth_serializer = auth_serializers.RegisterSerializer(instance=instance, data=auth_data,
-                                                                    **kwargs)
+        self._auth_serializer = auth_reg_serializers.RegisterSerializer(instance=instance, data=auth_data,
+                                                                        **kwargs)
 
     def validate_username(self, *args, **kwargs):
         return self._auth_serializer.validate_username(*args, **kwargs)
@@ -79,6 +82,11 @@ class RegisterSerializer(serializers.Serializer):
     def data(self):
         # kinda hack-y
         return self._auth_serializer.data
+
+
+class PasswordResetSerializer(auth_serializers.PasswordResetSerializer):
+    def get_email_options(self):
+        return {'email_template_name': 'password_reset_email.html'}
 
 
 def subset_dict(bigdict, keys):

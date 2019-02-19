@@ -26,6 +26,8 @@ SECRET_KEY = 'w!77$bdpbl%myk8)-z2*%9%s@afc=i836(!ne-%4%_ixr04ew2'
 DEBUG = True
 
 ALLOWED_HOSTS = []
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'email_outbox')
 
 
 # Application definition
@@ -58,6 +60,7 @@ REST_FRAMEWORK = {
 }
 REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'meetings.serializers.UserProfileSerializer',
+    'PASSWORD_RESET_SERIALIZER': 'meetings.serializers.PasswordResetSerializer'
 }
 REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'meetings.serializers.RegisterSerializer',
