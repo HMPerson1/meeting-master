@@ -82,6 +82,7 @@ class RegisterSerializer(serializers.Serializer):
         user_profile = UserProfile.objects.create(**profile_validated_data)
         return user_profile.django_user
 
+    @property
     def data(self):
         # kinda hack-y
         return self._auth_serializer.data

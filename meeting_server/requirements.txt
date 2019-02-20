@@ -1,0 +1,8 @@
+Django
+djangorestframework
+django-rest-swagger
+django-phonenumber-field
+phonenumberslite
+django-rest-auth
+django-allauth
+Pillow
