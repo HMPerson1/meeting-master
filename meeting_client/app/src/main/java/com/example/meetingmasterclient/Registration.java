@@ -43,7 +43,7 @@ public class Registration extends AppCompatActivity {
         textInputPassword = findViewById(R.id.text_input_password);
         textInputConfirmPassword = findViewById(R.id.text_input_confirm_password);
 
-        Button registerButton = (Button)findViewById(R.id.register_button);
+        Button registerButton = findViewById(R.id.register_button);
     }
 
     //check for form completion
