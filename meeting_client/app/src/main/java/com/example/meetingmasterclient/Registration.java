@@ -48,9 +48,7 @@ public class Registration extends AppCompatActivity {
 
     //check for form completion
 
-    private boolean passwordsMatch() {
-        String password = textInputPassword.getEditText().getText().toString();
-        String passwordC = textInputConfirmPassword.getEditText().getText().toString();
+    private boolean passwordsMatch(String password, String passwordC) {
         if (!password.equals(passwordC)){
             textInputPassword.setError("Passwords must match");
             textInputConfirmPassword.setError("Passwords must match");
@@ -60,6 +58,28 @@ public class Registration extends AppCompatActivity {
             textInputConfirmPassword.setError(null);
             return true;
         }
+    }
+
+    private boolean validatePassword(){
+        String password = textInputPassword.getEditText().getText().toString();
+        String passwordC = textInputConfirmPassword.getEditText().getText().toString();
+        if (password.length() < 6){
+            textInputPassword.setError("Password must be at least 6 characters");
+        }
+        if (password.isEmpty() && passwordC.isEmpty()) {
+            textInputPassword.setError("Password cannot be empty");
+            textInputConfirmPassword.setError("Password cannot be empty");
+            return false;
+        } else if (password.isEmpty() && !passwordC.isEmpty()) {    //TODO fix this when more awake
+            textInputPassword.setError("Password cannot be empty");
+            return false;
+        } else if (!password.isEmpty() && passwordC.isEmpty()){
+            textInputConfirmPassword.setError("Password cannot be empty");
+            return false;
+        } else {
+            textInputPassword.setError(null);
+        }
+        return passwordsMatch(password, passwordC);
     }
 
     private boolean validateUsername(){
@@ -109,12 +129,26 @@ public class Registration extends AppCompatActivity {
         }
     }
 
+    private boolean validatePhoneNumber(){
+        String phone = textInputPhoneNumber.getEditText().getText().toString();
+        if (phone.isEmpty()){
+            textInputPhoneNumber.setError("Phone number cannot be empty");
+            return false;
+        } else {
+            textInputPhoneNumber.setError(null);
+            return true;
+        }
+    }
+
     public void confirmInput(View v){
-        if (!passwordsMatch() || !validateEmail() || !validateFirstName() || !validateLastName()
-                || !validateUsername()){
+        if (!validatePassword() | !validateEmail() | !validateFirstName() | !validateLastName()
+                | !validateUsername() | validatePhoneNumber()){
             return;
         }
+    }
 
+    public void submitRegistration(View v){
+        confirmInput(v);
         //TODO parse information to be sent to server for registration
     }
 }
