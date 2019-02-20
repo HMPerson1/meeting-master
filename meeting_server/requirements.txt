@@ -1,0 +1,6 @@
+Pillow
+Django
+drf-writable-nested
+django-phonenumbers-field
+django-phonenumbers
+djangorestframework
