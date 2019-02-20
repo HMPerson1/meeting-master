@@ -79,4 +79,9 @@ public class CreateEvent extends AppCompatActivity {
         }
     }
 
+    public void submitInvitation(View v){
+        String email = textInputEmail.getEditText().getText().toString();
+        //TODO look up user by email, send invite to server, and display user on this page
+    }
+
 }
