@@ -10,16 +10,12 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
-import java.io.DataOutputStream;
-import java.io.StringReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import org.json.JSONObject;
 
 public class EventNoteAddition extends AppCompatActivity {
 
@@ -40,30 +36,28 @@ public class EventNoteAddition extends AppCompatActivity {
             public void onClick(View view) {
                 TextInputEditText noteField = (TextInputEditText)findViewById(R.id.note);
                 String note = noteField.getText().toString();
-
                 sendNote(note);
             }
         });
     }
 
     private void sendNote(String note) {
-        // TODO: Format HTTP request and program response and failure
+        JSONObject noteParam = new JSONObject();
+        // TODO: Add note to JSON
 
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "";
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+        // TODO: Add URL
+        JsonObjectRequest noteRequest = new JsonObjectRequest(Request.Method.POST, "", noteParam, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(String response) {
-                // do action
+            public void onResponse(JSONObject response) {
+                Toast.makeText(getApplicationContext(), "Note added successfully", Toast.LENGTH_SHORT).show();
+                ((TextInputEditText)findViewById(R.id.note)).setText("");
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                // do action
+                Toast.makeText(getApplicationContext(), "An error has occurred", Toast.LENGTH_SHORT).show();
             }
         });
-
-        queue.add(stringRequest);
     }
 }

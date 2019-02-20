@@ -6,6 +6,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
 
 public class EventListView extends AppCompatActivity {
 
@@ -47,17 +57,52 @@ public class EventListView extends AppCompatActivity {
 
     // TODO: Program methods to send an HTTP request to the server and parse the response
 
-    public void setEventsToday(ListView eventData) {
-        String[][] test = {{"a1", "a1", "a1", "a1"}, {"a2", "a2", "a2", "a2"}, {"a3", "a3", "a3", "a3"}};
+    private void setEventsToday(ListView eventData) {
+        /*String[][] test = {{"a1", "a1", "a1", "a1"}, {"a2", "a2", "a2", "a2"}, {"a3", "a3", "a3", "a3"}};
         EventViewAdapter eva = new EventViewAdapter(getApplicationContext(), test);
-        eventData.setAdapter(eva);
+        eventData.setAdapter(eva);*/
+
+        JSONObject params = new JSONObject();
+        // TODO: Add parameters to JSON
+
+
+        // TODO: Insert URL in the method
+        sendSearchRequest("", params);
     }
 
-    public void setEventsThisWeek(ListView eventData) {
+    private void setEventsThisWeek(ListView eventData) {
+        JSONObject params = new JSONObject();
+        // TODO: Add parameters to JSON
 
+
+        // TODO: Insert URL in the method
+        sendSearchRequest("", params);
     }
 
-    public void setEventsThisMonth(ListView eventData) {
+    private void setEventsThisMonth(ListView eventData) {
+        JSONObject params = new JSONObject();
+        // TODO: Add parameters to JSON
+
+
+        // TODO: Insert URL in the method
+        sendSearchRequest("", params);
+    }
+
+    private void sendSearchRequest(String url, JSONObject params) {
+        JsonObjectRequest eventRequest = new JsonObjectRequest(Request.Method.GET, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                // TODO: Parse JSON response and display information on ListView
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(), "An error has occurred", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // TODO: Define request queue and add request to the queue
 
     }
 }

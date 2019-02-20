@@ -24,15 +24,18 @@
         <activity
             android:name=".EventEdition"
             android:label="Event Edition"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
         <activity
             android:name=".UserSearch"
             android:label="User Search"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
         <activity
             android:name=".ProfileEdition"
             android:label="My Profile"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
         <activity android:name=".AddUserstoMeeting" />
         <activity
             android:name=".EventNoteAddition"
@@ -42,7 +45,8 @@
         <activity
             android:name=".PasswordReset"
             android:label="Password Reset"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>
