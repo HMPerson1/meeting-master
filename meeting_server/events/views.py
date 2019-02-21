@@ -6,7 +6,7 @@ from .models import Event
 from . import serializers
 
 
-class EventDetailView(ModelViewSet):
+class EventDetailView(drf_generics.RetrieveAPIView):
 
     serializer_class = serializers.EventModelSerializer
     lookup_field = 'uuid'

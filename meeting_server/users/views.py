@@ -6,7 +6,7 @@ from .models import User
 from . import serializers
 
 
-class UserDetailView(ModelViewSet):
+class UserDetailView(drf_generics.RetrieveAPIView):
 
     serializer_class = serializers.UserModelSerializer
     lookup_field = 'uuid'
