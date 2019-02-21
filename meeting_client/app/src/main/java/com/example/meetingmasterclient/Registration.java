@@ -9,6 +9,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 public class Registration extends AppCompatActivity {
     private TextInputLayout textInputFirstName;
     private TextInputLayout textInputLastName;
@@ -70,7 +76,7 @@ public class Registration extends AppCompatActivity {
             textInputPassword.setError("Password cannot be empty");
             textInputConfirmPassword.setError("Password cannot be empty");
             return false;
-        } else if (password.isEmpty() && !passwordC.isEmpty()) {    //TODO fix this when more awake
+        } else if (password.isEmpty() && !passwordC.isEmpty()) {
             textInputPassword.setError("Password cannot be empty");
             return false;
         } else if (!password.isEmpty() && passwordC.isEmpty()){
@@ -140,16 +146,47 @@ public class Registration extends AppCompatActivity {
         }
     }
 
-    public void confirmInput(View v){
-        //todo fix
-        if (!validatePassword() | !validateEmail() | !validateFirstName() | !validateLastName()
-                | !validateUsername() | validatePhoneNumber()){
-            return;
-        }
+    public boolean confirmInput(View v){
+        return (!validatePassword() | !validateEmail() | !validateFirstName() | !validateLastName()
+                | !validateUsername() | validatePhoneNumber());
     }
 
-    public void submitRegistration(View v){
-        confirmInput(v);
-        //TODO parse information to be sent to server for registration
+    public String formJSON(){
+        //parse information to be sent to server for registration
+        String username = textInputUsername.getEditText().getText().toString();
+        String email = textInputEmailAddress.getEditText().getText().toString();
+        String password1 = textInputPassword.getEditText().getText().toString();
+        String password2 = textInputConfirmPassword.getEditText().getText().toString();
+        String first_name = textInputFirstName.getEditText().getText().toString();
+        String last_name = textInputLastName.getEditText().getText().toString();
+        String phone_number = textInputPhoneNumber.getEditText().getText().toString();
+
+        JSONObject json = new JSONObject();
+        try {
+            json.put("username", username);
+            json.put("email", email);
+            json.put("password1", password1);
+            json.put("password2", password2);
+            json.put("first_name", first_name);
+            json.put("last_name", last_name);
+            json.put("phone_number", phone_number);
+            //TODO implement picture in future sprint
+        } catch (JSONException j){
+            j.printStackTrace();
+        }
+
+        return json.toString();
+    }
+
+    public void sendRegistrationRequest(View v){
+        if (!confirmInput(v)) return;
+
+        String json = formJSON();
+        HttpURLConnection http;
+        try {
+            URL url;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

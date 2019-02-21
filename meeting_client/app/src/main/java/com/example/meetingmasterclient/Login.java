@@ -79,15 +79,12 @@ public class Login extends AppCompatActivity {
         }
     }
 
-    public void confirmInput(View v){
-        //todo fix
-        if (!validateEmail() || !validatePassword()){
-            return;
-        }
+    public boolean confirmInput(View v){
+        return (!validateEmail() || !validatePassword());
     }
 
     public void submitLoginRequest(View v){
-        confirmInput(v);
+        if (!confirmInput(v)) return;
 
         //TODO parse information to be sent to server for login
     }
