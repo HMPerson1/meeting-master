@@ -92,6 +92,7 @@ public class EventListView extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getApplicationContext(), "An error has occurred in the network", Toast.LENGTH_SHORT).show();
+                eventQueue.stop();
             }
         });
 
