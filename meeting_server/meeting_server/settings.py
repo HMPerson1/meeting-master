@@ -34,6 +34,7 @@ EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'email_outbox')
 
 INSTALLED_APPS = [
     'meetings.apps.MeetingsConfig',
+    'events.apps.EventsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
