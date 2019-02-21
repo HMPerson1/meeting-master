@@ -112,11 +112,6 @@ public class AddUserstoMeeting extends AppCompatActivity {
         //TODO: Before user returns to create a meeting page, store the list of users in the database
         //exit the activity and return to Create a meeting page when the admin presses the save changes button
         configureSaveButton();
-
-
-
-
-*/
     }
 
     private void configureSaveButton(){
@@ -128,7 +123,6 @@ public class AddUserstoMeeting extends AppCompatActivity {
 
             }
         });
-        */
     }
 
 
