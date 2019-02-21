@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-public class CreateEvent extends AppCompatActivity {
+public class EventCreation extends AppCompatActivity {
     private TextInputLayout textInputStreetAddr;
     private TextInputLayout textInputCity;
     private TextInputLayout textInputState;
