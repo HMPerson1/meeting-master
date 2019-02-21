@@ -16,8 +16,6 @@ public class PasswordReset extends AppCompatActivity {
         setContentView(R.layout.activity_password_reset);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
     }
 
 }

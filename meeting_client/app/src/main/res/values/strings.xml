@@ -1,9 +1,34 @@
 <resources>
-    <string name="app_name">MeetingMasterClient</string>
+    <string name="app_name">Meeting Master</string>
     <string name="title_activity_password_reset">PasswordReset</string>
     <string name="title_activity_event_note_addition">EventNoteAddition</string>
     <string name="title_activity_profile_edition">ProfileEdition</string>
     <string name="title_activity_user_search">UserSearch</string>
     <string name="title_activity_event_edition">EventEdition</string>
     <string name="title_activity_event_list_view">EventListView</string>
+    <string name="title_activity_registration">Registration</string>
+
+    <!--registration/login strings-->
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="user_name">Username</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="submit_button">Submit</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="title_activity_login">Login</string>
+    <string name="register">New User?</string>
+    <string name="title_activity_create_event">CreateEvent</string>
+
+    <!-- event/location strings-->
+    <string name="street_address">Street Address</string>
+    <string name="city">City</string>
+    <string name="state">State</string>
+    <string name="room_no">Room Number</string>
+    <string name="room_no_opt">Room Number (Optional)</string>
+    <string name="location">Location</string>
+    <string name="invitees">Invitees</string>
+    <string name="invite_button">Invite</string>
 </resources>

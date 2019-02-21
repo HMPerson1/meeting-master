@@ -23,7 +23,7 @@ public class EventNoteAddition extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_note_addition);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        /**Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         addNote();
@@ -38,7 +38,7 @@ public class EventNoteAddition extends AppCompatActivity {
                 String note = noteField.getText().toString();
                 sendNote(note);
             }
-        });
+        });**/
     }
 
     private void sendNote(String note) {
