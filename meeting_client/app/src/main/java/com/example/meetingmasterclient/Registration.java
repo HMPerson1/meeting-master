@@ -141,6 +141,7 @@ public class Registration extends AppCompatActivity {
     }
 
     public void confirmInput(View v){
+        //todo fix
         if (!validatePassword() | !validateEmail() | !validateFirstName() | !validateLastName()
                 | !validateUsername() | validatePhoneNumber()){
             return;

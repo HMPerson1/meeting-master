@@ -37,8 +37,16 @@ public class Login extends AppCompatActivity {
         textInputPassword = findViewById(R.id.text_input_password);
 
         //register button
-        Button btn = (Button)findViewById(R.id.register_button);
-        btn.setOnClickListener(new View.OnClickListener(){
+        Button regbtn = (Button)findViewById(R.id.register_button);
+        regbtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                startActivity(new Intent(Login.this, Registration.class));
+            }
+        });
+
+        Button fpbtn = (Button)findViewById(R.id.forget_password_button);
+        fpbtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 startActivity(new Intent(Login.this, Registration.class));
@@ -72,9 +80,14 @@ public class Login extends AppCompatActivity {
     }
 
     public void confirmInput(View v){
+        //todo fix
         if (!validateEmail() || !validatePassword()){
             return;
         }
+    }
+
+    public void submitLoginRequest(View v){
+        confirmInput(v);
 
         //TODO parse information to be sent to server for login
     }
