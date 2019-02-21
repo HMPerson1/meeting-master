@@ -9,8 +9,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpResponse;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
+
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 
 public class Login extends AppCompatActivity {
     private TextInputLayout textInputEmail;
@@ -80,15 +96,67 @@ public class Login extends AppCompatActivity {
     }
 
     public void confirmInput(View v){
-        //todo fix
+        //check that both fields are filled
         if (!validateEmail() || !validatePassword()){
             return;
         }
+
+
+
+        submitLoginRequest(v);
+
+
+
+
+
     }
 
     public void submitLoginRequest(View v){
         confirmInput(v);
 
         //TODO parse information to be sent to server for login
+
+        //check with server to see whether password and email match
+        String url = "";
+        URL object;
+
+
+        JSONObject json = new JSONObject();
+        try {
+            json.put("username", textInputEmail.getEditText().getText().toString());
+            json.put("password", textInputPassword.getEditText().getText().toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        //Send put request to server
+        try {
+            object = new URL(url);
+            HttpURLConnection con = (HttpURLConnection) object.openConnection();
+            con.setDoOutput(true);
+            con.setRequestMethod("PUT");
+
+            //get response from server about whether the password is valid
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                    (Request.Method.PUT, url, json, new Response.Listener<JSONObject>() {
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            //login successful, switch activity to homepage
+                            Toast.makeText(Login.this,response.toString() , Toast.LENGTH_LONG).show();
+                        }
+                    }, new Response.ErrorListener() {
+
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(Login.this,"Invalid Username or Password" , Toast.LENGTH_LONG).show();
+
+                        }
+                    });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }
