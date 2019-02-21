@@ -11,4 +11,4 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UserProfileSerializer
     permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (SearchFilter,)
-    search_fields = ('username', 'email', 'userprofile__phone_number', 'userprofile__name')
+    search_fields = ('username', 'first_name', 'last_name', 'email', 'userprofile__phone_number')
