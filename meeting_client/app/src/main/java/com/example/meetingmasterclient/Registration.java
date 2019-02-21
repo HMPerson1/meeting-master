@@ -70,6 +70,10 @@ public class Registration extends AppCompatActivity {
         if (password.length() < 6){
             textInputPassword.setError("Password must be at least 6 characters");
         }
+        if (password.contains(" ")){
+            textInputPassword.setError("Password cannot contain spaces");
+            return false;
+        }
         if (password.isEmpty() && passwordC.isEmpty()) {
             textInputPassword.setError("Password cannot be empty");
             textInputConfirmPassword.setError("Password cannot be empty");
@@ -87,7 +91,7 @@ public class Registration extends AppCompatActivity {
     }
 
     private boolean validateUsername(){
-        String username = textInputUsername.getEditText().getText().toString();
+        String username = textInputUsername.getEditText().getText().toString().trim();
         if (username.isEmpty()){
             textInputUsername.setError("Username cannot be empty");
             return false;
@@ -98,7 +102,7 @@ public class Registration extends AppCompatActivity {
     }
 
     private boolean validateFirstName(){
-        String firstName = textInputFirstName.getEditText().getText().toString();
+        String firstName = textInputFirstName.getEditText().getText().toString().trim();
         if (firstName.isEmpty()){
             textInputFirstName.setError("First name cannot be empty");
             return false;
@@ -109,7 +113,7 @@ public class Registration extends AppCompatActivity {
     }
 
     private boolean validateLastName(){
-        String lastName = textInputLastName.getEditText().getText().toString();
+        String lastName = textInputLastName.getEditText().getText().toString().trim();
         if (lastName.isEmpty()){
             textInputLastName.setError("Last name cannot be empty");
             return false;
@@ -120,7 +124,7 @@ public class Registration extends AppCompatActivity {
     }
 
     private boolean validateEmail(){
-        String email = textInputEmailAddress.getEditText().getText().toString();
+        String email = textInputEmailAddress.getEditText().getText().toString().trim();
         if (email.isEmpty()){
             textInputEmailAddress.setError("Email cannot be empty");
             return false;
@@ -134,7 +138,7 @@ public class Registration extends AppCompatActivity {
     }
 
     private boolean validatePhoneNumber(){
-        String phone = textInputPhoneNumber.getEditText().getText().toString();
+        String phone = textInputPhoneNumber.getEditText().getText().toString().trim();
         if (phone.isEmpty()){
             textInputPhoneNumber.setError("Phone number cannot be empty");
             return false;
@@ -151,13 +155,13 @@ public class Registration extends AppCompatActivity {
 
     public String formJSON(){
         //parse information to be sent to server for registration
-        String username = textInputUsername.getEditText().getText().toString();
-        String email = textInputEmailAddress.getEditText().getText().toString();
-        String password1 = textInputPassword.getEditText().getText().toString();
-        String password2 = textInputConfirmPassword.getEditText().getText().toString();
-        String first_name = textInputFirstName.getEditText().getText().toString();
-        String last_name = textInputLastName.getEditText().getText().toString();
-        String phone_number = textInputPhoneNumber.getEditText().getText().toString();
+        String username = textInputUsername.getEditText().getText().toString().trim();
+        String email = textInputEmailAddress.getEditText().getText().toString().trim();
+        String password1 = textInputPassword.getEditText().getText().toString().trim();
+        String password2 = textInputConfirmPassword.getEditText().getText().toString().trim();
+        String first_name = textInputFirstName.getEditText().getText().toString().trim();
+        String last_name = textInputLastName.getEditText().getText().toString().trim();
+        String phone_number = textInputPhoneNumber.getEditText().getText().toString().trim();
 
         JSONObject json = new JSONObject();
         try {
