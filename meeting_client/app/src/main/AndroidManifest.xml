@@ -13,7 +13,7 @@
         android:theme="@style/AppTheme">
 
         <activity android:name=".Create_a_Meeting"
-            android:label="Create a Meeting">
+            android:label="Create a Meeting"></activity>
 
         <activity
             android:name=".EventListView"
@@ -49,8 +49,6 @@
             android:label="Event Note"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
-        <activity android:name=".AddUserstoMeeting">
-        </activity>
         <activity
             android:name=".EventEdition"
             android:label="Event Edition"
@@ -67,11 +65,7 @@
             android:label="My Profile"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <activity android:name=".AddUserstoMeeting" />
-        <activity
-            android:name=".EventNoteAddition"
-            android:label="Event Note"
-            android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".PasswordReset"
             android:label="Password Reset"
@@ -84,10 +78,11 @@
             </intent-filter>
         </activity>
 
-        </activity>
+
         <activity
             android:name=".Registration"
             android:label="@string/title_activity_registration" />
+
 
     </application>
 
