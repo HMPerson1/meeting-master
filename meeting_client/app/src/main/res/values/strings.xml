@@ -31,4 +31,7 @@
     <string name="location">Location</string>
     <string name="invitees">Invitees</string>
     <string name="invite_button">Invite</string>
+    <string name="title_activity_invitation_list">Invitations</string>
+    <string name="invite_accept">Accept</string>
+    <string name="decline">Decline</string>
 </resources>
