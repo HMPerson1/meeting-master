@@ -164,17 +164,18 @@ public class Registration extends AppCompatActivity {
         JSONObject json = new JSONObject();
         try {
             json.put("username", username);
+            json.put("first_name", first_name);
+            json.put("last_name", last_name);
             json.put("email", email);
             json.put("password1", password1);
             json.put("password2", password2);
-            json.put("first_name", first_name);
-            json.put("last_name", last_name);
             json.put("phone_number", phone_number);
             //TODO implement picture in future sprint
         } catch (JSONException j){
             j.printStackTrace();
         }
 
+        System.out.println(json.toString());
         return json.toString();
     }
 
