@@ -24,7 +24,7 @@ import java.util.List;
 
 
 public class AddUserstoMeeting extends AppCompatActivity {
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +65,7 @@ public class AddUserstoMeeting extends AppCompatActivity {
                adapter.notifyDataSetChanged();
             }
         });
-        */
+        
         //if User clicks the remove button, remove all checked items in listview
         Button remove_button = (Button)findViewById(R.id.removebutton);
 
@@ -129,7 +129,6 @@ public class AddUserstoMeeting extends AppCompatActivity {
             }
         });
     }
-
 
 
 
