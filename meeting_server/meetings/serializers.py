@@ -18,7 +18,6 @@ class ModelField(serializers.ModelField):
 
 # https://django-rest-auth.readthedocs.io/en/latest/faq.html
 class UserProfileSerializer(UserDetailsSerializer):
-    name = serializers.CharField(source='userprofile.name', required=False)
     profile_picture = serializers.ImageField(source='userprofile.profile_picture', required=False)
     phone_number = ModelField(model_field=UserProfile._meta.get_field('phone_number'),
                               validators=UserProfile._meta.get_field('phone_number').validators,
@@ -26,7 +25,7 @@ class UserProfileSerializer(UserDetailsSerializer):
 
     class Meta:
         model = auth_models.User
-        fields = ('pk', 'username', 'email', 'name', 'phone_number', 'profile_picture')
+        fields = ('pk', 'username', 'first_name', 'last_name', 'email', 'phone_number', 'profile_picture')
         read_only_fields = ('pk',)
 
     def update(self, instance, validated_data):
@@ -42,10 +41,11 @@ class UserProfileSerializer(UserDetailsSerializer):
 
 class RegisterSerializer(serializers.Serializer):
     username = auth_reg_serializers.RegisterSerializer().fields['username']
+    first_name = serializers.CharField(allow_blank=True, max_length=30, required=False)
+    last_name = serializers.CharField(allow_blank=True, max_length=150, required=False)
     email = auth_reg_serializers.RegisterSerializer().fields['email']
     password1 = auth_reg_serializers.RegisterSerializer().fields['password1']
     password2 = auth_reg_serializers.RegisterSerializer().fields['password2']
-    name = serializers.CharField(required=False)
     phone_number = serializers.ModelField(model_field=UserProfile._meta.get_field('phone_number'),
                                           validators=UserProfile._meta.get_field('phone_number').validators,
                                           required=False)
@@ -76,8 +76,11 @@ class RegisterSerializer(serializers.Serializer):
 
     def save(self, request):
         django_user = self._auth_serializer.save(request)
+        for attr, value in subset_dict(self.validated_data, {'first_name', 'last_name'}).items():
+            setattr(django_user, attr, value)
+        django_user.save()
 
-        profile_validated_data = subset_dict(self.validated_data, {'name', 'phone_number', 'profile_picture'})
+        profile_validated_data = subset_dict(self.validated_data, {'phone_number', 'profile_picture'})
         profile_validated_data['django_user'] = django_user
         user_profile = UserProfile.objects.create(**profile_validated_data)
         return user_profile.django_user
