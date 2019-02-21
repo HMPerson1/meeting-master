@@ -15,9 +15,12 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
+            android:name=".InvitationListActivity"
+            android:label="@string/title_activity_invitation_list"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".Create_a_Meeting"
             android:label="Create a Meeting" />
-
         <activity
             android:name=".EventListView"
             android:label="My Events"
@@ -29,14 +32,12 @@
         <activity
             android:name=".Login"
             android:label="@string/app_name">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".AddUserstoMeeting"
             android:label="Add User to Meeting" />
@@ -44,12 +45,10 @@
             android:name=".EventNoteAddition"
             android:label="Event Note"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".EventEdition"
             android:label="Event Edition"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".UserSearch"
             android:label="User Search"
@@ -62,11 +61,9 @@
             android:name=".PasswordReset"
             android:label="Password Reset"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".Registration"
             android:label="@string/title_activity_registration" />
-
     </application>
 
 </manifest>
