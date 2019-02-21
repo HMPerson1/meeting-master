@@ -28,7 +28,8 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="From" />
+            android:text="From"
+            android:focusable="true"/>
 
         <TextView
             android:id="@+id/name_label"
