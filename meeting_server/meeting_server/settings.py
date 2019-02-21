@@ -26,6 +26,8 @@ SECRET_KEY = 'w!77$bdpbl%myk8)-z2*%9%s@afc=i836(!ne-%4%_ixr04ew2'
 DEBUG = True
 
 ALLOWED_HOSTS = []
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'email_outbox')
 
 
 # Application definition
@@ -40,14 +42,30 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'phonenumber_field'
+    'rest_auth',
+    'phonenumber_field',
+    'rest_framework_swagger',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
 ]
+
+SITE_ID = 1
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
     )
 }
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'meetings.serializers.UserProfileSerializer',
+    'PASSWORD_RESET_SERIALIZER': 'meetings.serializers.PasswordResetSerializer'
+}
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'meetings.serializers.RegisterSerializer',
+}
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 PHONENUMBER_DB_FORMAT = "E164"
 

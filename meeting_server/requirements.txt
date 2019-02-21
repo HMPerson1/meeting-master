@@ -1,6 +1,8 @@
-Pillow
 Django
-drf-writable-nested
-django-phonenumbers-field
-django-phonenumbers
 djangorestframework
+django-rest-swagger
+django-phonenumber-field
+phonenumberslite
+django-rest-auth
+django-allauth
+Pillow
