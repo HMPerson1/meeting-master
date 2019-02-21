@@ -95,24 +95,13 @@ public class Login extends AppCompatActivity {
         }
     }
 
-    public void confirmInput(View v){
-        //check that both fields are filled
-        if (!validateEmail() || !validatePassword()){
-            return;
-        }
 
-
-
-        submitLoginRequest(v);
-
-
-
-
-
+    public boolean confirmInput(View v){
+        return (!validateEmail() || !validatePassword());
     }
 
     public void submitLoginRequest(View v){
-        confirmInput(v);
+        if (!confirmInput(v)) return;
 
         //TODO parse information to be sent to server for login
 
