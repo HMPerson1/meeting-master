@@ -8,6 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class EventCreation extends AppCompatActivity {
     private TextInputLayout textInputStreetAddr;
     private TextInputLayout textInputCity;
@@ -73,15 +76,40 @@ public class EventCreation extends AppCompatActivity {
         }
     }
 
-    public void confirmInput(View v) {
-        if (!validateStreetAddr() || !validateCity() || !validateStreetAddr()) {
-            return;
+    public boolean confirmInput(View v) {
+        return (!validateStreetAddr() || !validateCity() || !validateStreetAddr());
+    }
+
+    public String formJSON(){
+        //parse information to be sent to server for registration
+        String addr = textInputStreetAddr.getEditText().getText().toString();
+        String city = textInputCity.getEditText().getText().toString();
+        String state = textInputState.getEditText().getText().toString();
+        String roomNo = textInputRoomNo.getEditText().getText().toString();
+        String email = textInputEmail.getEditText().getText().toString();
+        //TODO get emails as an array for multiple invitees
+
+        JSONObject json = new JSONObject();
+        try{
+            json.put("addr", addr);
+            json.put("city", city);
+            json.put("state", state);
+            if (!roomNo.isEmpty()){
+                json.put("roomNo", roomNo);
+            }
+            json.put("email", email);
+        } catch (JSONException j){
+            j.printStackTrace();
         }
+
+        System.out.println(json.toString());
+        return json.toString();
     }
 
     public void submitInvitation(View v){
-        String email = textInputEmail.getEditText().getText().toString();
+        if(!confirmInput(v)) return;
         //TODO look up user by email, send invite to server, and display user on this page
+        String json = formJSON();
     }
 
 }

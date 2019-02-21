@@ -20,7 +20,14 @@ public class ProfileEdition extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_edition);
 
-        //TODO display already existing user details here
+        //initialize user fields
+        textInputFirstName = findViewById(R.id.textInputLayout2); //TODO change id name
+        textInputLastName = findViewById(R.id.last_name_layout);
+        textInputUsername = findViewById(R.id.username_layout);
+        textInputEmailAddress = findViewById(R.id.email_layout);
+        textInputPhoneNumber = findViewById(R.id.phone_layout);
     }
+
+
 
 }
