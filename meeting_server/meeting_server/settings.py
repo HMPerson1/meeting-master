@@ -56,6 +56,7 @@ SITE_ID = 1
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     )
 }
@@ -70,6 +71,21 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 PHONENUMBER_DB_FORMAT = "E164"
 
+# see https://github.com/marcgibbons/django-rest-swagger/issues/762#issuecomment-423750585
+SWAGGER_SETTINGS = {
+    'SECURITY': [
+        {
+            'api_key' : []
+        }
+    ],
+    'SECURITY_DEFINITIONS': {
+        "api_key" : {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+        },
+    },
+}
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
