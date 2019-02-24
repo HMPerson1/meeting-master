@@ -2,6 +2,7 @@ package com.example.meetingmasterclient;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
@@ -17,15 +18,21 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpResponse;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.meetingmasterclient.server.MeetingService;
+import com.example.meetingmasterclient.server.Server;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import retrofit2.Call;
+import retrofit2.Callback;
 
 
 public class Login extends AppCompatActivity {
@@ -117,6 +124,29 @@ public class Login extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+
+        Server.getService().login(new MeetingService.LoginData(textInputEmail.getEditText().getText().toString(), textInputPassword.getEditText().getText().toString())).enqueue(new Callback<MeetingService.AuthToken>() {
+            @Override
+            public void onResponse(@NonNull Call<MeetingService.AuthToken> call, @NonNull retrofit2.Response<MeetingService.AuthToken> response) {
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+                    Server.authenticate(response.body().key);
+                } else {
+                    try {
+                        assert response.errorBody() != null;
+                        System.out.println("response.error = " + response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<MeetingService.AuthToken> call, @NonNull Throwable t) {
+                t.printStackTrace();
+            }
+        });
 
         //Send put request to server
         try {

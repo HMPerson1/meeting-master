@@ -1,6 +1,7 @@
 package com.example.meetingmasterclient;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
@@ -9,11 +10,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.meetingmasterclient.server.MeetingService;
+import com.example.meetingmasterclient.server.Server;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Registration extends AppCompatActivity {
     private TextInputLayout textInputFirstName;
@@ -162,6 +170,24 @@ public class Registration extends AppCompatActivity {
         String first_name = textInputFirstName.getEditText().getText().toString().trim();
         String last_name = textInputLastName.getEditText().getText().toString().trim();
         String phone_number = textInputPhoneNumber.getEditText().getText().toString().trim();
+
+        Call<MeetingService.AuthToken> c = Server.getService().register(new MeetingService.RegistrationData(username,first_name,last_name,email,password1,password2,phone_number));
+        c.enqueue(new Callback<MeetingService.AuthToken>() {
+            @Override
+            public void onResponse(@NonNull Call<MeetingService.AuthToken> call, @NonNull Response<MeetingService.AuthToken> response) {
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+                    Server.authenticate(response.body().key);
+                } else {
+                    Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, System.out::println, System.out::println);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<MeetingService.AuthToken> call, @NonNull Throwable t) {
+                t.printStackTrace();
+            }
+        });
 
         JSONObject json = new JSONObject();
         try {
