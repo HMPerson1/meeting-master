@@ -48,11 +48,7 @@
             android:name=".AddUserstoMeeting"
             android:label="Add User to Meeting">
         </activity>
-        <activity
-            android:name=".EventNoteAddition"
-            android:label="Event Note"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+
         <activity
             android:name=".EventEdition"
             android:label="Event Edition"
@@ -65,11 +61,6 @@
         <activity
             android:name=".ProfileEdition"
             android:label="My Profile"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-        <activity
-            android:name=".EventNoteAddition"
-            android:label="Event Note"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
