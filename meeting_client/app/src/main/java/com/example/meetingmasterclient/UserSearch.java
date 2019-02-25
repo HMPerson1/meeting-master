@@ -1,7 +1,6 @@
 package com.example.meetingmasterclient;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
@@ -19,8 +18,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class UserSearch extends AppCompatActivity {
 
@@ -34,28 +31,24 @@ public class UserSearch extends AppCompatActivity {
         Button button = findViewById(R.id.search_users);
         TextInputLayout textInput = findViewById(R.id.textInputLayout);
         button.setOnClickListener(v -> {
-            Server.getService().users(textInput.getEditText().getText().toString())
-                    .enqueue(new Callback<List<MeetingService.UserProfile>>() {
-                        @Override
-                        public void onResponse(@NonNull Call<List<MeetingService.UserProfile>> call, @NonNull Response<List<MeetingService.UserProfile>> response) {
-                            if (response.isSuccessful()) {
-                                assert response.body() != null;
-                                System.out.println("response = " + response.body().stream().map(Objects::toString).collect(Collectors.joining(", ")));
-                            } else {
-                                try {
-                                    System.out.println("response.error = " + response.errorBody().string());
-                                } catch (IOException e) {
-                                    e.printStackTrace();
+                    Call<List<MeetingService.UserProfile>> c = Server.getService().users(textInput.getEditText().getText().toString());
+                    c.enqueue(Server.mkCallback(
+                            (call, response) -> {
+                                if (response.isSuccessful()) {
+                                    assert response.body() != null;
+                                    System.out.println("response = " + response.body().stream().map(Objects::toString).collect(Collectors.joining(", ")));
+                                } else {
+                                    try {
+                                        System.out.println("response.error = " + response.errorBody().string());
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@NonNull Call<List<MeetingService.UserProfile>> call, @NonNull Throwable t) {
-                            t.printStackTrace();
-                        }
-                    });
-        });
+                            },
+                            (call, t) -> t.printStackTrace()
+                    ));
+                }
+        );
 
     }
 

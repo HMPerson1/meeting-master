@@ -2,7 +2,6 @@ package com.example.meetingmasterclient;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
@@ -32,7 +31,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 
 
 public class Login extends AppCompatActivity {
@@ -126,27 +124,25 @@ public class Login extends AppCompatActivity {
         }
 
 
-        Server.getService().login(new MeetingService.LoginData(textInputEmail.getEditText().getText().toString(), textInputPassword.getEditText().getText().toString())).enqueue(new Callback<MeetingService.AuthToken>() {
-            @Override
-            public void onResponse(@NonNull Call<MeetingService.AuthToken> call, @NonNull retrofit2.Response<MeetingService.AuthToken> response) {
-                if (response.isSuccessful()) {
-                    assert response.body() != null;
-                    Server.authenticate(response.body().key);
-                } else {
-                    try {
-                        assert response.errorBody() != null;
-                        System.out.println("response.error = " + response.errorBody().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        String username = textInputEmail.getEditText().getText().toString();
+        String password = textInputPassword.getEditText().getText().toString();
+        Call<MeetingService.AuthToken> c = Server.getService().login(new MeetingService.LoginData(username, password));
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        assert response.body() != null;
+                        Server.authenticate(response.body().key);
+                    } else {
+                        try {
+                            assert response.errorBody() != null;
+                            System.out.println("response.error = " + response.errorBody().string());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<MeetingService.AuthToken> call, @NonNull Throwable t) {
-                t.printStackTrace();
-            }
-        });
+                },
+                (call, t) -> t.printStackTrace()
+        ));
 
         //Send put request to server
         try {

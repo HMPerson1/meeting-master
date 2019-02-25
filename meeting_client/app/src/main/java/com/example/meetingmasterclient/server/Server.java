@@ -6,10 +6,13 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
 import okhttp3.OkHttpClient;
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -76,6 +79,20 @@ public class Server {
             }
         }
         otherError.accept(response.code());
+    }
+
+    public static <T> Callback<T> mkCallback(@NonNull BiConsumer<Call<T>, Response<T>> onResponse, @NonNull BiConsumer<Call<T>, Throwable> onFailure) {
+        return new Callback<T>() {
+            @Override
+            public void onResponse(@NonNull Call<T> call, @NonNull Response<T> response) {
+                onResponse.accept(call, response);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<T> call, @NonNull Throwable t) {
+                onFailure.accept(call, t);
+            }
+        };
     }
 
 }
