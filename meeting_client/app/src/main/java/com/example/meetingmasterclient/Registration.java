@@ -9,11 +9,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.meetingmasterclient.server.MeetingService;
+import com.example.meetingmasterclient.server.Server;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import retrofit2.Call;
 
 public class Registration extends AppCompatActivity {
     private TextInputLayout textInputFirstName;
@@ -162,6 +167,19 @@ public class Registration extends AppCompatActivity {
         String first_name = textInputFirstName.getEditText().getText().toString().trim();
         String last_name = textInputLastName.getEditText().getText().toString().trim();
         String phone_number = textInputPhoneNumber.getEditText().getText().toString().trim();
+
+        Call<MeetingService.AuthToken> c = Server.getService().register(new MeetingService.RegistrationData(username,first_name,last_name,email,password1,password2,phone_number));
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        assert response.body() != null;
+                        Server.authenticate(response.body().key);
+                    } else {
+                        Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, System.out::println, System.out::println);
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
 
         JSONObject json = new JSONObject();
         try {

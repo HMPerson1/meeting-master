@@ -17,15 +17,20 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpResponse;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.meetingmasterclient.server.MeetingService;
+import com.example.meetingmasterclient.server.Server;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import retrofit2.Call;
 
 
 public class Login extends AppCompatActivity {
@@ -117,6 +122,27 @@ public class Login extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+
+        String username = textInputEmail.getEditText().getText().toString();
+        String password = textInputPassword.getEditText().getText().toString();
+        Call<MeetingService.AuthToken> c = Server.getService().login(new MeetingService.LoginData(username, password));
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        assert response.body() != null;
+                        Server.authenticate(response.body().key);
+                    } else {
+                        try {
+                            assert response.errorBody() != null;
+                            System.out.println("response.error = " + response.errorBody().string());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
 
         //Send put request to server
         try {
