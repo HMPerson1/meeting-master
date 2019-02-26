@@ -15,23 +15,26 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.conf.urls import url
 from rest_framework import routers
 from rest_framework_swagger.views import get_swagger_view
 
-from meetings.views import UserViewSet
+import api.events.urls
+import api.invitations.urls
 
-import events.urls
-import users.urls
+from .users.views import UserViewSet
 
 router = routers.DefaultRouter()
-router.register('users', UserViewSet, 'user')
+router.register('users', UserViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', get_swagger_view()),
-    path('^events', include(events.urls)),
-    path('^users', include(users.urls)),
     path('register/', include('rest_auth.registration.urls')),
     path('rest-auth/', include('rest_auth.urls')),
-    path('', include(router.urls))
+
+    url(r'event/', include(api.events.urls)),
+    url(r'invitations/', include(api.invitations.urls)),
+    url(r'^', include(router.urls)),
 ]
+
