@@ -33,7 +33,7 @@ public class AddUserstoMeeting extends AppCompatActivity {
     //TODO: get information(list) of invited people from database
         
 
-        final List list = new ArrayList<>(); //used for testing functionality of list
+        final List<String> list = new ArrayList<>(); //used for testing functionality of list
 
         for (int i = 0; i < 20; i++) {
 
@@ -47,7 +47,7 @@ public class AddUserstoMeeting extends AppCompatActivity {
         final ListView listViewInvitedPeople = (ListView) findViewById(R.id.list_view_invited_people);
 
 
-        final ArrayAdapter<String> adapter = new ArrayAdapter<>(AddUserstoMeeting.this, android.R.layout.simple_list_item_multiple_choice, list);
+        final ArrayAdapter adapter = new ArrayAdapter<>(AddUserstoMeeting.this, android.R.layout.simple_list_item_multiple_choice, list);
 
         //make listview checkable so that people can be removed from the list
 
@@ -105,11 +105,6 @@ public class AddUserstoMeeting extends AppCompatActivity {
         //TODO: Before user returns to create a meeting page, store the list of users in the database
         //exit the activity and return to Create a meeting page when the admin presses the save changes button
         configureSaveButton();
-
-
-
-
-
     }
 
     private void configureSaveButton(){
