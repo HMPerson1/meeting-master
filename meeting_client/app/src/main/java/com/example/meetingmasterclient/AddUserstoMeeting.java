@@ -50,21 +50,14 @@ public class AddUserstoMeeting extends AppCompatActivity {
         final ArrayAdapter<String> adapter = new ArrayAdapter<>(AddUserstoMeeting.this, android.R.layout.simple_list_item_multiple_choice, list);
 
         //make listview checkable so that people can be removed from the list
-        //people are removed from the list once a checkbox is checked
+
         final boolean [] checkedItems;
-        listViewInvitedPeople.setItemChecked(1, true);
+       // listViewInvitedPeople.setItemChecked(1, true);
 
 
         listViewInvitedPeople.setAdapter(adapter);
 
-        listViewInvitedPeople.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-               list.remove(position);
-               listViewInvitedPeople.setItemChecked(position, false);
-               adapter.notifyDataSetChanged();
-            }
-        });
+
         
         //if User clicks the remove button, remove all checked items in listview
         Button remove_button = (Button)findViewById(R.id.removebutton);
