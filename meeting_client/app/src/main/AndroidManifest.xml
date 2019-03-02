@@ -5,7 +5,6 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- DIABLE CLEARTEXT TRAFFIC LATER -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -15,9 +14,14 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity
+            android:name=".EventCreation"
+            android:label="@string/title_activity_event_creation_new"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".DebugLauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -26,34 +30,25 @@
             android:label="@string/title_activity_invitation_list"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Create_a_Meeting"
-            android:label="Create a Meeting" />
-        <activity
             android:name=".EventListView"
             android:label="My Events"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".EventCreation"
-            android:label="@string/title_activity_create_event"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-        <activity android:name=".Login"
+            android:name=".Login"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".AddUserstoMeeting"
-            android:label="Add User to Meeting">
-        </activity>
-
+            android:label="Add User to Meeting"></activity>
         <activity
             android:name=".EventEdition"
             android:label="Event Edition"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".UserSearch"
             android:label="User Search"
@@ -61,19 +56,14 @@
         <activity
             android:name=".ProfileEdition"
             android:label="My Profile"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".PasswordReset"
             android:label="Password Reset"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".Registration"
-            android:label="@string/title_activity_registration">
-        </activity>
-
-
+            android:label="@string/title_activity_registration"></activity>
     </application>
 
 </manifest>

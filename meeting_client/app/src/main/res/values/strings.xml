@@ -22,6 +22,14 @@
     <string name="title_activity_create_event">CreateEvent</string>
 
     <!-- event/location strings-->
+    <string name="event_details">Event Details</string>
+    <string name="location_details">Location Details</string>
+    <string name="add_file">Add File</string>
+
+    <string name="event_name">Event Name</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="notes_opt">Event Notes (Optional)</string>
     <string name="street_address">Street Address</string>
     <string name="city">City</string>
     <string name="state">State</string>
@@ -29,8 +37,10 @@
     <string name="room_no_opt">Room Number (Optional)</string>
     <string name="location">Location</string>
     <string name="invitees">Invitees</string>
-    <string name="invite_button">Invite</string>
+    <string name="invite_button">Invite Users</string>
     <string name="title_activity_invitation_list">Invitations</string>
     <string name="invite_accept">Accept</string>
     <string name="decline">Decline</string>
+    <string name="title_activity_event_creation_new">EventCreationNew</string>
+    <string name="create_event_button">Create Event</string>
 </resources>
