@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from rest_framework import viewsets, permissions
 from rest_framework.filters import SearchFilter
 
-from .serializers import UserProfileSerializer
+from users.serializers import UserProfileSerializer
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):

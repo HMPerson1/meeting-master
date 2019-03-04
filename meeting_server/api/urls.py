@@ -19,13 +19,15 @@ from django.conf.urls import url
 from rest_framework import routers
 from rest_framework_swagger.views import get_swagger_view
 
-import api.events.urls
-import api.invitations.urls
+import events.urls
+import invitations.urls
 
-from .users.views import UserViewSet
+from users.views import UserViewSet
+from events.views import EventViewSet
 
 router = routers.DefaultRouter()
 router.register('users', UserViewSet)
+router.register('events', EventViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,8 +35,8 @@ urlpatterns = [
     path('register/', include('rest_auth.registration.urls')),
     path('rest-auth/', include('rest_auth.urls')),
 
-    url(r'event/', include(api.events.urls)),
-    url(r'invitations/', include(api.invitations.urls)),
+    url(r'event/', include(events.urls)),
+    # url(r'invitations/', include(invitations.urls)),
     url(r'^', include(router.urls)),
 ]
 

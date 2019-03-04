@@ -1,37 +1,28 @@
 from drf_writable_nested import WritableNestedModelSerializer
 from .models import Event
 from rest_framework import serializers
+from invitations.serializers import InvitationModelSerializer
 
 
-class EventCreateSerializer(serializers.Serializer):
-    # event_uuid = serializers.UUIDField(read_only=True)
-    event_name = serializers.CharField(required=True, allow_null=False, max_length=256)
-    event_date = serializers.DateField(allow_null=False, required=True, format='%d-%m-%Y')
-    # event_duration = serializers.DurationField(read_only=True)
-    file_upload = serializers.FileField(required=False)
-    notes = serializers.CharField(required=False, max_length=2048)
-
-    def create(self, validated_data):
-        event = super(EventCreateSerializer, self).create(validated_data)
-        event.save()
-        return event
-
-
-class EventModelSerializer(WritableNestedModelSerializer):
+class EventModelSerializer(serializers.ModelSerializer):
+    # admin_id = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
+    # Todo: Put it back once the invitations are done
+    invitations = InvitationModelSerializer(many=True, read_only=True)
 
     # Todo: Write out fields and whatnot
     class Meta:
         model = Event
         fields = [
             "uuid",
-            "name",
+            "event_name",
             "date",
             "duration",
-            "attachment",
-            "notes"
+            "file_attachment",
+            "notes",
+            "invitations"
         ]
-
-    def create(self, validated_data):
-        event = super(EventModelSerializer, self).create(validated_data)
-        event.persist()
-        return event
+    #
+    # def create(self, validated_data):
+    #     event = super(EventModelSerializer, self).create(validated_data)
+    #     event.persist()
+    #     return event
