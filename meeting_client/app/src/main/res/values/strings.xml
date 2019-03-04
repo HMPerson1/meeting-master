@@ -34,4 +34,6 @@
     <string name="title_activity_invitation_list">Invitations</string>
     <string name="invite_accept">Accept</string>
     <string name="decline">Decline</string>
+    <string name="msg_token_fmt">InstanceID Token: %s</string>
+    <string name="log_fcm_token">Log FCM Token</string>
 </resources>
