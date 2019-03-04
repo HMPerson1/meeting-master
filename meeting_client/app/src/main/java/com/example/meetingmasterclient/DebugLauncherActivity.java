@@ -1,8 +1,11 @@
 package com.example.meetingmasterclient;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -54,6 +57,7 @@ public class DebugLauncherActivity extends AppCompatActivity {
         });
 
         ensureGoogleApiAvailability();
+        ensureNotificationChannels();
     }
 
     @Override
@@ -70,6 +74,36 @@ public class DebugLauncherActivity extends AppCompatActivity {
             }
         });
     }
+
+    // TODO: copy to real main activity
+    private void ensureNotificationChannels() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+
+            // invites
+            if (notificationManager.getNotificationChannel(Constants.CHANNEL_INVITE_ID) != null) {
+                NotificationChannel inviteChannel = new NotificationChannel(
+                        Constants.CHANNEL_INVITE_ID,
+                        getString(R.string.channel_invite_name),
+                        NotificationManager.IMPORTANCE_DEFAULT);
+                inviteChannel.setDescription(getString(R.string.channel_invite_description));
+                notificationManager.createNotificationChannel(inviteChannel);
+            }
+
+            // edits
+            if (notificationManager.getNotificationChannel(Constants.CHANNEL_EDIT_ID) != null){
+                NotificationChannel editChannel = new NotificationChannel(
+                        Constants.CHANNEL_EDIT_ID,
+                        getString(R.string.channel_edit_name),
+                        NotificationManager.IMPORTANCE_DEFAULT);
+                editChannel.setDescription(getString(R.string.channel_edit_description));
+                notificationManager.createNotificationChannel(editChannel);
+            }
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

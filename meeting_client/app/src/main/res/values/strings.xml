@@ -36,4 +36,12 @@
     <string name="decline">Decline</string>
     <string name="msg_token_fmt">InstanceID Token: %s</string>
     <string name="log_fcm_token">Log FCM Token</string>
+    <string name="channel_invite_name">Invitations</string>
+    <string name="channel_invite_description">When you are invited to an event</string>
+    <string name="channel_edit_name">Edits</string>
+    <string name="channel_edit_description">When another user edits an event</string>
+    <string name="notification_invite_title">Event Invitation</string>
+    <string name="notification_invite_body">You have been invited to attend %s</string>
+    <string name="notification_edit_title">Event Edited</string>
+    <string name="notification_edit_body">%s has been edited</string>
 </resources>
