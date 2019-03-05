@@ -1,11 +1,17 @@
 <resources>
     <string name="app_name">Meeting Master</string>
+
+    <!--activity titles-->
     <string name="title_activity_password_reset">PasswordReset</string>
     <string name="title_activity_profile_edition">ProfileEdition</string>
     <string name="title_activity_user_search">UserSearch</string>
     <string name="title_activity_event_edition">EventEdition</string>
     <string name="title_activity_event_list_view">EventListView</string>
     <string name="title_activity_registration">Registration</string>
+    <string name="title_activity_create_event">CreateEvent</string>
+    <string name="title_activity_login">Login</string>
+    <string name="title_activity_invitation_list">Invitations</string>
+    <string name="title_activity_event_creation">EventCreation</string>
 
     <!--registration/login strings-->
     <string name="first_name">First Name</string>
@@ -18,9 +24,7 @@
     <string name="phone_number">Phone Number</string>
     <string name="submit_button">Submit</string>
     <string name="cancel_button">Cancel</string>
-    <string name="title_activity_login">Login</string>
     <string name="register">New User?</string>
-    <string name="title_activity_create_event">CreateEvent</string>
     <string name="profile_pic">Profile Picture</string>
     <string name="confirm">Confirm</string>
     <string name="upload">Upload</string>
@@ -42,9 +46,9 @@
     <string name="location">Location</string>
     <string name="invitees">Invitees</string>
     <string name="invite_button">Invite Users</string>
-    <string name="title_activity_invitation_list">Invitations</string>
+
     <string name="invite_accept">Accept</string>
     <string name="decline">Decline</string>
-    <string name="title_activity_event_creation_new">EventCreationNew</string>
+
     <string name="create_event_button">Create Event</string>
 </resources>

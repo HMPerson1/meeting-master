@@ -36,7 +36,7 @@
         </activity>
         <activity
             android:name=".EventCreation"
-            android:label="@string/title_activity_event_creation_new"
+            android:label="@string/title_activity_event_creation"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".AddUserstoMeeting"
@@ -66,5 +66,4 @@
             android:label="Password Reset"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
-
 </manifest>
