@@ -1,23 +1,15 @@
-# Create your views here.
 from rest_framework.response import Response
 from rest_framework import status
-
+from rest_framework.generics import CreateAPIView
 from django.http import Http404
 from .serializers import InvitationModelSerializer
 from rest_framework.views import APIView
+from rest_framework import permissions
 
 
-class InvitationListView(APIView):
-    # queryset = Invitation.objects.all()
-    # serializer_class = InvitationModelSerializer
-
-    def post(self, request, format=None):
-
-        serializer = InvitationModelSerializer(data=request.DATA)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# Creates a new Invitation
+class InvitationCreationView(CreateAPIView):
+    serializer_class = InvitationModelSerializer
 
 
 # Get the list of event ids for which you have been invited
@@ -47,11 +39,12 @@ class InvitationEventView(APIView):
 
     def get(self, request, event_id, format=None):
         invitation_list = self.get_inv_by_event(event_id)
-        # Todo: Try list serializer?
         serializer = InvitationModelSerializer(invitation_list)
         return Response(serializer.data)
 
+
 class InvitationDetailView(APIView):
+    permission_classes = (permissions.AllowAny,)
 
     def get_object(self, user_id, event_id):
         try:
@@ -60,22 +53,23 @@ class InvitationDetailView(APIView):
             raise Http404
 
     # GET - /invitation/{user_id}/{event_id}
-    def get(self, request, pk, format=None):
-        event = self.get_object(pk)
-        serializer = EventModelSerializer(event)
+    def get(self, request, event_id, user_id, format=None):
+        event = self.get_object(event_id=event_id, user_id=user_id)
+        serializer = InvitationModelSerializer(event)
         return Response(serializer.data)
 
-    # PUT - /event/{pk}
-    def put(self, request, pk, format=None):
-        event = self.get_object(pk)
-        serializer = EventModelSerializer(event, data=request.DATA)
+    # PUT - invitation/{event_id}/{user_id}
+    # This should really only be used to modify status
+    def put(self, request, event_id, user_id, format=None):
+        event = self.get_object(event_id, user_id)
+        serializer = InvitationModelSerializer(event, data=request.DATA)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # DELETE - /event/{pk}
-    def delete(self, request, pk, format=None):
-        event = self.get_object(pk)
+    # DELETE - invitation/{event_id}/{user_id}
+    def delete(self, request, event_id, user_id, format=None):
+        event = self.get_object(user_id, event_id)
         event.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

@@ -13,6 +13,6 @@ inv_status = {
 
 class Invitation(models.Model):
     # Django handles id, username, first_name, last_name, password, email
-    user_profile = models.ForeignKey(UserProfile, related_name='user_id', to_field='pk', on_delete=models.CASCADE)
-    event_id = models.ForeignKey(Event, related_name='event_id', to_field='pk', on_delete=None)
+    user_id = models.ForeignKey(UserProfile, related_name='user_id', on_delete=models.CASCADE)
+    event_id = models.ForeignKey(Event, related_name='event_id', on_delete=None)
     status = models.PositiveIntegerField(default=inv_status["PENDING"], null=False, blank=False)
