@@ -1,5 +1,6 @@
 package com.example.meetingmasterclient;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -16,12 +17,20 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.meetingmasterclient.server.MeetingService;
+import com.example.meetingmasterclient.server.Server;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+
+import retrofit2.Call;
+
 public class EventListView extends AppCompatActivity {
+    int uid;
+
     ListView eventData;
 
     @Override
@@ -32,7 +41,21 @@ public class EventListView extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         eventData = findViewById(R.id.event_data);
-        sendSearchRequest("");
+
+        Call<MeetingService.UserProfile> c = Server.getService().getCurrentUser();
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (!response.isSuccessful()) {
+                        Toast.makeText(getApplicationContext(), "An error has occurred", Toast.LENGTH_SHORT);
+                        return;
+                    }
+
+                    uid = response.body().pk;
+
+                    sendSearchRequest(0);
+                },
+                (call, t) -> t.printStackTrace()
+        ));
     }
 
     @Override
@@ -45,24 +68,29 @@ public class EventListView extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         ListView eventData = findViewById(R.id.event_data);
 
-        // TODO: Input the appropriate URL into each call
         switch (item.getItemId()) {
             case R.id.this_week:
-                sendSearchRequest("");
+                sendSearchRequest(1);
                 break;
             case R.id.this_month:
-                sendSearchRequest("");
+                sendSearchRequest(2);
                 break;
             default:
-                sendSearchRequest("");
+                sendSearchRequest(0);
                 break;
         }
 
         return true;
     }
 
-    RequestQueue eventQueue;
+    // TODO: Code request for event filtering
+    public void sendSearchRequest(int period) {
+        // period = 0 ==> today
+        // period = 1 ==> this week
+        // period = 2 ==> this month
+    }
 
+    /*
     private void sendSearchRequest(String url) {
         eventQueue = Volley.newRequestQueue(this);
 
@@ -97,5 +125,5 @@ public class EventListView extends AppCompatActivity {
         });
 
         eventQueue.add(eventRequest);
-    }
+    }*/
 }
