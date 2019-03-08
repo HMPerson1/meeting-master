@@ -17,7 +17,8 @@
         <activity
             android:name=".ProfileDetails"
             android:label="@string/title_activity_profile_details"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
         <activity android:name=".DebugLauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
