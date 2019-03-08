@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from users.models import UserProfile
-from events.models import Event
+from api.users.models import UserProfile
+from api.events.models import Event
 # from api.users.serializers import UserDetailsSerializer
 
 

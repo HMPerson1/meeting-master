@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.timezone import now
-from users.models import UserProfile
+from api.users.models import UserProfile
 
 import uuid
 import datetime

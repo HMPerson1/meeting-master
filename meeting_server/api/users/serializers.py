@@ -7,7 +7,7 @@ from rest_auth.serializers import UserDetailsSerializer
 from rest_framework import serializers
 from rest_framework.fields import empty, get_attribute
 
-from users.models import UserProfile
+from .models import UserProfile
 
 
 # i have no idea what i'm doing but it seems to work
