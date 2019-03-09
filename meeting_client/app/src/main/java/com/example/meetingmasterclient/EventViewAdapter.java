@@ -7,8 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
+// TODO: Set up adapter to store entire event object
 public class EventViewAdapter extends BaseAdapter {
     Context context;
     String[][] eventInfo;

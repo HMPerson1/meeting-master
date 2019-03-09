@@ -14,11 +14,6 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity
-            android:name=".ProfileDetails"
-            android:label="@string/title_activity_profile_details"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
         <activity android:name=".DebugLauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -68,6 +63,10 @@
         <activity
             android:name=".PasswordReset"
             android:label="Password Reset"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ProfileDetails"
+            android:label="@string/title_activity_profile_details"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
