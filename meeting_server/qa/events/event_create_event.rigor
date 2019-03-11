@@ -1,0 +1,22 @@
+name: Test creating a new Event
+
+steps:
+  - description: POST new event
+    request:
+      path: /events
+      method: POST
+      data:
+#      Todo: Input data to POST an event after endpoint is fixed
+#        event_id: 1
+#        user_id: 1
+#        status: 0
+#    extract:
+#      event_id: '{response.event_id}'
+#      user_id: '{response.user_id}'
+#    validate:
+#      - expect: 1
+#        actual: '{response.event_id}'
+#      - expect: 1
+#        actual: '{response.user_id}'
+#      - expect: 0
+#        actual: '{response.status}'

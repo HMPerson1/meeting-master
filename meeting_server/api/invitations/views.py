@@ -59,6 +59,7 @@ class InvitationDetailView(APIView):
         return Response(serializer.data)
 
     # PUT - invitation/{event_id}/{user_id}
+    # TODO: FIX THIS - Missing body - Look at POST
     # This should really only be used to modify status
     def put(self, request, event_id, user_id, format=None):
         event = self.get_object(event_id, user_id)
