@@ -18,20 +18,22 @@ from django.urls import include, path
 from rest_framework import routers
 from rest_framework_swagger.views import get_swagger_view
 
-from meetings.views import UserViewSet
+import api.invitations.urls
 
-import events.urls
-import users.urls
+from api.users.views import UserViewSet
+from api.events.views import EventViewSet
 
 router = routers.DefaultRouter()
 router.register('users', UserViewSet, 'user')
+router.register('events', EventViewSet, 'event')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', get_swagger_view()),
-    path('^events', include(events.urls)),
-    path('^users', include(users.urls)),
     path('register/', include('rest_auth.registration.urls')),
     path('rest-auth/', include('rest_auth.urls')),
-    path('', include(router.urls))
+    # path(r'events/', include(events.urls)),
+    path(r'invitations/', include(api.invitations.urls)),
+    path('', include(router.urls)),
 ]
+
