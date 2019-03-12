@@ -20,20 +20,21 @@ from rest_framework_swagger.views import get_swagger_view
 
 import invitations.urls
 import locations.urls
+import events.urls
 from rest_framework.schemas import get_schema_view
 from users.views import UserViewSet
-from events.views import EventViewSet
+# from events.views import EventViewSet
 
 router = routers.DefaultRouter()
 router.register('users', UserViewSet, 'user')
-router.register('events', EventViewSet, 'event')
+# router.register('events', EventViewSet, 'event')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', get_swagger_view()),
     path('register/', include('rest_auth.registration.urls')),
     path('rest-auth/', include('rest_auth.urls')),
-    # path(r'events/', include(events.urls)),
+    path(r'events/', include(events.urls)),
     path(r'locations/', include(locations.urls)),
     path(r'invitations/', include(invitations.urls)),
     path('', include(router.urls)),

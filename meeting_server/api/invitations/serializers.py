@@ -20,3 +20,11 @@ class InvitationModelSerializer(serializers.ModelSerializer):
         eid = validated_data.pop['event_id']
         invite = Invitation.objects.create(user_id=uid, event_id=eid, status=0)
         return invite
+
+
+class InvitationListEventSerializer(serializers.ModelSerializer):
+    user_id = serializers.PrimaryKeyRelatedField(many=False, queryset=UserProfile.objects.all())
+
+    class Meta:
+        model = Invitation
+        fields = ('user_id', 'status')

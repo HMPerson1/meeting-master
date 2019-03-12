@@ -6,15 +6,19 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.views import APIView
 from rest_framework import generics as drf_generics
 from .models import Event
-from .serializers import EventModelSerializer
+from .serializers import EventModelSerializer, EventCreateSerializer
 from http import HTTPStatus
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework.filterset import FilterSet
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
-class EventView(drf_generics.ListCreateAPIView):
+class EventCreateView(drf_generics.CreateAPIView):
+    serializer_class = EventCreateSerializer
+    parser_classes = (MultiPartParser, FormParser)
 
-    queryparams = None
+    def post(self, request, *args, **kwargs):
+        return super(EventCreateView, self).post(self, *args, **kwargs)
 
 
 
@@ -41,10 +45,10 @@ class EventView(drf_generics.ListCreateAPIView):
 
 
 # Todo: DON'T USE VIEWSETS - change this out at some point for a more standard approach
-class EventViewSet(ModelViewSet):
-
-    queryset = Event.objects.all()
-    serializer_class = EventModelSerializer
+# class EventViewSet(ModelViewSet):
+#
+#     queryset = Event.objects.all()
+#     serializer_class = EventModelSerializer
     # permission_classes = (permissions.IsAuthenticated,)
     # filter_backends = (SearchFilter,)
     # search_fields = ()

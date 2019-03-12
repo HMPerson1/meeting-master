@@ -39,6 +39,13 @@ class UserProfileSerializer(UserDetailsSerializer):
         return instance
 
 
+class SuperUserSerializer(UserDetailsSerializer):
+    class Meta:
+        model = auth_models.User
+        fields = ('pk', 'username')
+        read_only_fields = ('pk',)
+
+
 class RegisterSerializer(serializers.Serializer):
     username = auth_reg_serializers.RegisterSerializer().fields['username']
     first_name = serializers.CharField(allow_blank=True, max_length=30, required=False)
