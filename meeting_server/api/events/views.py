@@ -42,7 +42,6 @@ class EventListView(drf_generics.ListAPIView):
 
 
 class EventDetailView(APIView):
-
     parser_classes = (MultiPartParser, FormParser, FileUploadParser)
 
     def get_object(self, pk):
