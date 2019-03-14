@@ -1,6 +1,8 @@
+from django.http import Http404
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView, ListAPIView
 from django.http import HttpResponseNotAllowed
 from .serializers import LocationModelSerializer, LocationListQuerySerializer
@@ -52,3 +54,29 @@ class LocationCreateView(CreateAPIView):
             result = LocationModelSerializer(instance=instance)
             return Response(result.data)
 
+
+class LocationDetailView(APIView):
+
+    def get_object(self, pk):
+        try:
+            return Response.objects.get(pk=pk)
+        except status.HTTP_404_NOT_FOUND:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        location = self.get_object(pk=pk)
+        serializer = LocationModelSerializer(location)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        location = self.get_object(pk=pk)
+        serializer = LocationModelSerializer(location, data=request.DATA)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        location = self.get_object(pk=pk)
+        location.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
