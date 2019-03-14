@@ -1,10 +1,14 @@
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView
 from django.http import Http404
-from .serializers import InvitationModelSerializer
+from .serializers import InvitationModelSerializer, InvitationStatusUpdateSerializer
 from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import permissions
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg.inspectors import ChoiceFieldInspector
 
 
 # Creates a new Invitation
@@ -58,19 +62,25 @@ class InvitationDetailView(APIView):
         serializer = InvitationModelSerializer(event)
         return Response(serializer.data)
 
-    # PUT - invitation/{event_id}/{user_id}
-    # TODO: FIX THIS - Missing body - Look at POST
-    # This should really only be used to modify status
-    def put(self, request, event_id, user_id, format=None):
-        event = self.get_object(event_id, user_id)
-        serializer = InvitationModelSerializer(event, data=request.DATA)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
     # DELETE - invitation/{event_id}/{user_id}
     def delete(self, request, event_id, user_id, format=None):
         event = self.get_object(user_id, event_id)
         event.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class InvitationStatusChangeView(APIView):
+    # parser_classes = (MultiPartParser, FormParser)
+
+    @swagger_auto_schema(
+        query_serializer=InvitationStatusUpdateSerializer,
+        responses={201: openapi.Response('Invitation status successfuly updated', InvitationModelSerializer)},
+    )
+    def put(self, request, event_id, user_id, format=None):
+        event = self.get_object(event_id, user_id)
+        serializer = InvitationStatusUpdateSerializer(event, data=request.DATA)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

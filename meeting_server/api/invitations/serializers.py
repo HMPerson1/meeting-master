@@ -28,3 +28,13 @@ class InvitationListEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Invitation
         fields = ('user_id', 'status')
+
+
+class InvitationStatusUpdateSerializer(serializers.ModelSerializer):
+    user_id = serializers.PrimaryKeyRelatedField(many=False, queryset=UserProfile.objects.all())
+    event_id = serializers.PrimaryKeyRelatedField(many=False, queryset=Event.objects.all())
+    status = serializers.ChoiceField(required=True, choices=[(1, "PENDING"), (2, "ACCEPTED"), (3, "DECLINED")])
+
+    class Meta:
+        model = Invitation
+        fields = ('user_id', 'event_id', 'status')
