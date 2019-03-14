@@ -72,5 +72,9 @@
             android:name=".PasswordReset"
             android:label="Password Reset"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".PasswordReset2"
+            android:label="Password Reset2"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 </manifest>
