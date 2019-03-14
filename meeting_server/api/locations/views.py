@@ -1,27 +1,22 @@
-import coreapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.response import Response
-from rest_framework.schemas import AutoSchema
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, ListAPIView
 from django.http import HttpResponseNotAllowed
-from .serializers import LocationModelSerializer
+from .serializers import LocationModelSerializer, LocationListQuerySerializer
 from .models import Location
 
 
 class LocationListView(ListAPIView):
     serializer_class = LocationModelSerializer
-    queryset = Location.objects.all()
 
-    schema = AutoSchema(
-        manual_fields=[
-            coreapi.Field("state", required=False, location='query',
-                          description='Optional parameter to view locations by state'),
-            coreapi.Field("city", required=False, location='query',
-                          description='Optional parameter to view locations by city'),
-            coreapi.Field("street_address", required=False, location='query',
-                          description='Optional parameter to view locations by street address')
-        ]
+    @swagger_auto_schema(
+        query_serializer=LocationListQuerySerializer,
+        responses={200: LocationModelSerializer(many=True)}
     )
+    def get(self, *args, **kwargs):
+        resp = super().get(*args, **kwargs)
+        return resp
 
     def get_queryset(self):
         queryset = Location.objects.all()
@@ -56,3 +51,4 @@ class LocationCreateView(CreateAPIView):
             instance = self.perform_create(serializer=serializer)
             result = LocationModelSerializer(instance=instance)
             return Response(result.data)
+

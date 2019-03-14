@@ -1,86 +1,42 @@
-from django.http import Http404
+import coreapi
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.filters import OrderingFilter
 from rest_framework.views import APIView
 from rest_framework import generics as drf_generics
 from .models import Event
-from .serializers import EventModelSerializer, EventCreateSerializer
-from http import HTTPStatus
+from .serializers import EventModelSerializer, EventCreateSerializer, EventListQuerySerializer
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework.filterset import FilterSet
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
+from rest_framework.schemas import AutoSchema
+from drf_yasg.utils import swagger_auto_schema
 
 
 class EventCreateView(drf_generics.CreateAPIView):
     serializer_class = EventCreateSerializer
-    parser_classes = (MultiPartParser, FormParser)
-
-    def post(self, request, *args, **kwargs):
-        return super(EventCreateView, self).post(self, *args, **kwargs)
+    parser_classes = (MultiPartParser, FormParser, FileUploadParser)
 
 
+class EventListView(drf_generics.ListAPIView):
+    serializer_class = EventModelSerializer
+    queryset = Event.objects.all()
 
+    @swagger_auto_schema(
+        query_serializer=EventListQuerySerializer,
+        responses={200: EventModelSerializer(many=True)}
+    )
+    def get(self, *args, **kwargs):
+        resp = super().get(*args, **kwargs)
+        return resp
 
+    def get_queryset(self):
+        queryset = Event.objects.all()
+        event_date = self.request.query_params.get('event_date', None)
+        event_name = self.request.query_params.get('event_name', None)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Todo: DON'T USE VIEWSETS - change this out at some point for a more standard approach
-# class EventViewSet(ModelViewSet):
-#
-#     queryset = Event.objects.all()
-#     serializer_class = EventModelSerializer
-    # permission_classes = (permissions.IsAuthenticated,)
-    # filter_backends = (SearchFilter,)
-    # search_fields = ()
-
-# class EventModelView(drf_generics.ListCreateAPIView):
-
-
-# class EventDetailView(APIView):
-#     # Helper method
-#     def get_object(self, pk):
-#         try:
-#             return Event.objects.get(pk=pk)
-#         except HTTPStatus.NOT_FOUND:
-#             raise Http404
-#
-#     # GET - /event/{pk}
-#     def get(self, request, pk, format=None):
-#         event = self.get_object(pk)
-#         serializer = EventModelSerializer(event)
-#         return Response(serializer.data)
-#
-#     # PUT - /event/{pk}
-#     def put(self, request, pk, format=None):
-#         event = self.get_object(pk)
-#         serializer = EventModelSerializer(event, data=request.DATA)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#
-#     # DELETE - /event/{pk}
-#     def delete(self, request, pk, format=None):
-#         event = self.get_object(pk)
-#         event.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
+        if event_name is not None:
+            queryset.filter(event_name=event_name)
+        if event_date is not None:
+            queryset.filter(event_date=event_date)
+        return queryset
