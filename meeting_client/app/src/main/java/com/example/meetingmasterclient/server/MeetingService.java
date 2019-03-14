@@ -143,6 +143,33 @@ public interface MeetingService {
                     ", profile_picture='" + profile_picture + '\'' +
                     '}';
         }
+        public int getPk() {
+            return pk;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public String getFirst_name() {
+            return first_name;
+        }
+
+        public String getLast_name() {
+            return last_name;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public String getPhone_number() {
+            return phone_number;
+        }
+
+        public String getProfile_picture() {
+            return profile_picture;
+        }
     }
 
     class UserProfileError {

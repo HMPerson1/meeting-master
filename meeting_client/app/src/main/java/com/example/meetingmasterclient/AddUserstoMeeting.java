@@ -18,9 +18,16 @@ import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.meetingmasterclient.server.MeetingService;
+import com.example.meetingmasterclient.server.Server;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class AddUserstoMeeting extends AppCompatActivity {
@@ -98,6 +105,36 @@ public class AddUserstoMeeting extends AppCompatActivity {
                 //check if user is in database
                 //if user not in database indicate to user that the email is invalid
                 //if user is in database, add user to the list of invited people
+
+
+
+                Call<List<MeetingService.UserProfile>> call = Server.getService().users(Email_Input.getText().toString());
+                call.enqueue(new Callback<List<MeetingService.UserProfile>>() {
+                    @Override
+                    public void onResponse(Call<List<MeetingService.UserProfile>> call, Response<List<MeetingService.UserProfile>> response) {
+                        if(!response.isSuccessful()){ //404 error?
+                            Toast.makeText(AddUserstoMeeting.this, "Oops, Something is wrong: "+response.code() , Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        Toast.makeText(AddUserstoMeeting.this,"response" , Toast.LENGTH_LONG).show();
+                        Toast.makeText(AddUserstoMeeting.this,response.toString() , Toast.LENGTH_LONG).show();
+
+                        //add user to list if successful
+                        List<MeetingService.UserProfile> userProfs =response.body();//store response
+                        for (MeetingService.UserProfile userProf : userProfs){
+                            list.add(userProf.username);
+                            adapter.notifyDataSetChanged();
+                        }//end for
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<MeetingService.UserProfile>> call, Throwable t) {//error from server
+
+                        Toast.makeText(AddUserstoMeeting.this,t.getMessage() , Toast.LENGTH_LONG).show();
+
+                    }
+                });
 
             }
         });
