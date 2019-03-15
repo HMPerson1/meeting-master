@@ -17,12 +17,14 @@ public class EventCreation extends AppCompatActivity {
     private TextInputLayout textInputState;
     private TextInputLayout textInputRoomNo;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_creation);
 
         configureAddUserButton();
+        configureAttendeeListButton();
 
         textInputEventName = findViewById(R.id.text_input_event_name);
         textInputDate = findViewById(R.id.text_input_date);
@@ -32,6 +34,10 @@ public class EventCreation extends AppCompatActivity {
         textInputCity = findViewById(R.id.text_input_city);
         textInputState = findViewById(R.id.text_input_state);
         textInputRoomNo = findViewById(R.id.text_input_room_no);
+
+
+
+
     }
 
     /* input validation */
@@ -94,6 +100,18 @@ public class EventCreation extends AppCompatActivity {
             }
         });
     }
+    private void configureAttendeeListButton() {
+        Button attendeeListButton = findViewById(R.id.attendees_list_button);
+
+        attendeeListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //switch to attendeeList where you can edit permissions
+                startActivity(new Intent(EventCreation.this,Attendee_List.class));
+
+            }
+        });
+    }//configureAttendee
 
     public boolean confirmInput(View v) {
         return (!validateEventName() | !validateStreetAddr() | !validateCity() | !validateStreetAddr()
