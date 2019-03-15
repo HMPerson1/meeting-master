@@ -283,5 +283,10 @@ public interface MeetingService {
         public String event_date;
         public String duration;
         public String notes;
+
     }//EventsData
+
+    class LocationData{
+
+    }//LocationData
 }
