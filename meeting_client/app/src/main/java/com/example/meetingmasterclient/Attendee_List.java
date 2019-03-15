@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
@@ -34,7 +35,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+
 public class Attendee_List extends AppCompatActivity {
+
+    private static final String TAG = "DebugLauncherActivity";
     private AttendeeAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,18 +72,9 @@ public class Attendee_List extends AppCompatActivity {
 
 
 
-
-
-
-
-
-
-
-
-
         //TODO: Before user returns to create a meeting page, store the list of users in the database
         //exit the activity and return to Create a meeting page when the admin presses the save changes button
-       // configureSaveButton();
+        configureSaveButton();
     }
 
     private void configureSaveButton(){
@@ -87,16 +82,23 @@ public class Attendee_List extends AppCompatActivity {
         save_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                List<Boolean> EditingPermit=adapter.getEditingPermit();
                 finish();//return to create a meeting
 
             }
         });
     }
 
+
+
     private class AttendeeAdapter extends RecyclerView.Adapter<AttendeeAdapter.ViewHolder> {
 
         @Nullable
         private List<MeetingService.UserProfile> dataSet;
+        private List<Boolean> editingPermit=new ArrayList<Boolean>();
+        public List<Boolean> getEditingPermit() {
+            return editingPermit;
+        }
 
         @NonNull
         @Override
@@ -109,6 +111,7 @@ public class Attendee_List extends AppCompatActivity {
         public void onBindViewHolder(@NonNull AttendeeAdapter.ViewHolder holder, int position) {
                 String name =dataSet.get(position).getFirst_name()+" "+ dataSet.get(position).getLast_name();
                 holder.personName.setText(name);
+                holder.index=position;
 
 
         }
@@ -124,19 +127,32 @@ public class Attendee_List extends AppCompatActivity {
         }
 
         private class ViewHolder extends RecyclerView.ViewHolder {
+            int index=-1;
             TextView personName;
 
             ViewHolder(@NonNull View view) {
                 super(view);
                  personName= view.findViewById(R.id.text);
 
-                Switch permissions = view.findViewById(R.id.switch1);
+                ToggleButton permissions = view.findViewById(R.id.switch1);
+                editingPermit.add(false);
+                permissions.setOnClickListener(new View.OnClickListener() {
 
+                    @Override
+                    public void onClick(View view) {
+                        if(permissions.getText()==permissions.getTextOn()) {
 
-
+                            editingPermit.set(index,true);
+                        }else {
+                            editingPermit.set(index,false);
+                        }
+                    }
+                });
 
 
             }
         }
-    }
+
+
+    }//AttendeeAdapter
 }
