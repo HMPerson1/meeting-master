@@ -8,6 +8,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Query;
@@ -66,6 +67,8 @@ public interface MeetingService {
     @GET("/users/")
     Call<List<UserProfile>> users(@Query("search") String search);
 
+    @PATCH("/events/{id}/")
+    Call<Void> users(@Body EventsData data);
 
 
     /* ******************** *
@@ -263,5 +266,12 @@ public interface MeetingService {
                     ", non_field_errors=" + Arrays.toString(non_field_errors) +
                     '}';
         }
-    }
+    }//Confirm Password Reset Error
+
+    class EventsData{
+        public String event_name;
+        public String event_date;
+        public String duration;
+        public String notes;
+    }//EventsData
 }
