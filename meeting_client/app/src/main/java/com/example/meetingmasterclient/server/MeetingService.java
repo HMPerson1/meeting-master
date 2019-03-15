@@ -134,8 +134,18 @@ public interface MeetingService {
         public String phone_number;
         public String profile_picture;
 
+
+        public void setFirst_name(String first_name) {
+            this.first_name = first_name;
+        }
+
+        public void setLast_name(String last_name) {
+            this.last_name = last_name;
+        }
+
         @Override
         @NonNull
+
         public String toString() {
             return "UserProfile{" +
                     "pk=" + pk +

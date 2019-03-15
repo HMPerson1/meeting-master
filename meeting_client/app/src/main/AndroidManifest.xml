@@ -14,21 +14,15 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-
-
-
-
+        <activity android:name=".Attendee_List"></activity>
         <activity android:name=".DebugLauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".EventDetails">
-
-        </activity>
-
+        <activity android:name=".EventDetails"></activity>
         <activity
             android:name=".Registration"
             android:label="@string/title_activity_registration" />
@@ -44,7 +38,7 @@
         <activity
             android:name=".EventCreation"
             android:label="@string/title_activity_event_creation"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".AddUserstoMeeting"
             android:label="Add User to Meeting" />
@@ -77,4 +71,5 @@
             android:label="Password Reset2"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
+
 </manifest>

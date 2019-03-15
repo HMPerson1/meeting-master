@@ -102,7 +102,7 @@ public class EventCreation extends AppCompatActivity {
 
     public void submitInvitation(View v){
         if(!confirmInput(v)) return;
-        String json;// = formJSON();
+
     }
 
 }
