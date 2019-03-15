@@ -97,7 +97,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/street_address"
-                android:inputType="textPostalAddress"/>
+                android:inputType="textPostalAddress" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -144,6 +144,13 @@
                 android:hint="@string/room_no_opt"
                 android:inputType="text"/>
         </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/attendees_list_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Attendees List"
+            />
 
         <Button
             android:id="@+id/add_users_button"
