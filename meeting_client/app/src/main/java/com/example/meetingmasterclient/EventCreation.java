@@ -2,20 +2,21 @@ package com.example.meetingmasterclient;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
 public class EventCreation extends AppCompatActivity {
-    private TextInputLayout textInputEventName;
-    private TextInputLayout textInputDate;
-    private TextInputLayout textInputTime;
-    private TextInputLayout textInputNotes;
-    private TextInputLayout textInputStreetAddr;
-    private TextInputLayout textInputCity;
-    private TextInputLayout textInputState;
-    private TextInputLayout textInputRoomNo;
+    private TextInputEditText textInputEventName;
+    private TextInputEditText textInputDate;
+    private TextInputEditText textInputTime;
+    private TextInputEditText textInputNotes;
+    private TextInputEditText textInputStreetAddr;
+    private TextInputEditText textInputCity;
+    private TextInputEditText textInputState;
+    private TextInputEditText textInputRoomNo;
 
 
     @Override
@@ -43,7 +44,7 @@ public class EventCreation extends AppCompatActivity {
     /* input validation */
 
     private boolean validateEventName(){
-        String eventName = textInputEventName.getEditText().getText().toString();
+        String eventName = textInputEventName.getText().toString();
         if (eventName.isEmpty()){
             textInputEventName.setError("Event name cannot be empty");
             return false;
@@ -58,7 +59,7 @@ public class EventCreation extends AppCompatActivity {
     //TODO validate time
 
     private boolean validateStreetAddr(){
-        String streetAddr = textInputStreetAddr.getEditText().getText().toString();
+        String streetAddr = textInputStreetAddr.getText().toString();
         if (streetAddr.isEmpty()){
             textInputStreetAddr.setError("Street address cannot be empty");
             return false;
@@ -69,7 +70,7 @@ public class EventCreation extends AppCompatActivity {
     }
 
     private boolean validateCity(){
-        String city = textInputCity.getEditText().getText().toString();
+        String city = textInputCity.getText().toString();
         if (city.isEmpty()){
             textInputCity.setError("City cannot be empty");
             return false;
@@ -80,7 +81,7 @@ public class EventCreation extends AppCompatActivity {
     }
 
     private boolean validateState(){
-        String state = textInputState.getEditText().getText().toString();
+        String state = textInputState.getText().toString();
         if (state.isEmpty()){
             textInputState.setError("State cannot be empty");
             return false;
