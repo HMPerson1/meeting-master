@@ -10,3 +10,4 @@ class UserProfile(models.Model):
     django_user = models.OneToOneField(auth_models.User, on_delete=models.CASCADE)
     phone_number = PhoneNumberField()  # E.164 phone number
     profile_picture = models.ImageField(upload_to='profile_pictures/')
+    firebase_reg_token = models.CharField(max_length=256)
