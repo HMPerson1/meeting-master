@@ -103,5 +103,11 @@ class PasswordResetSerializer(auth_serializers.PasswordResetSerializer):
         return {'email_template_name': 'password_reset_email.html'}
 
 
+class FirebaseRegTokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('firebase_reg_token',)
+
+
 def subset_dict(bigdict, keys):
     return {k: bigdict[k] for k in bigdict.keys() & keys}
