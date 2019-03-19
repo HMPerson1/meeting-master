@@ -33,8 +33,9 @@ EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'email_outbox')
 # Application definition
 
 INSTALLED_APPS = [
-    'meetings.apps.MeetingsConfig',
+    'users.apps.UsersConfig',
     'events.apps.EventsConfig',
+    'invitations.apps.InvitationsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -61,11 +62,11 @@ REST_FRAMEWORK = {
     )
 }
 REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER': 'meetings.serializers.UserProfileSerializer',
-    'PASSWORD_RESET_SERIALIZER': 'meetings.serializers.PasswordResetSerializer'
+    'USER_DETAILS_SERIALIZER': 'users.serializers.UserProfileSerializer',
+    'PASSWORD_RESET_SERIALIZER': 'users.serializers.PasswordResetSerializer'
 }
 REST_AUTH_REGISTER_SERIALIZERS = {
-    'REGISTER_SERIALIZER': 'meetings.serializers.RegisterSerializer',
+    'REGISTER_SERIALIZER': 'users.serializers.RegisterSerializer',
 }
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
@@ -96,7 +97,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'meeting_server.urls'
+ROOT_URLCONF = 'api.urls'
 
 TEMPLATES = [
     {
@@ -115,7 +116,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'meeting_server.wsgi.application'
+WSGI_APPLICATION = 'api.wsgi.application'
 
 
 # Database
