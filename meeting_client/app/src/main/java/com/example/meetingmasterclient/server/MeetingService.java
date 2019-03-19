@@ -236,4 +236,28 @@ public interface MeetingService {
                     '}';
         }
     }
+
+    class EventData {
+        public int id;
+        public int event_admin;
+        public String event_name;
+        public String event_date;
+        public String event_time;
+        public String event_duration;
+        public String file_attachment;
+        public String notes;
+        public int event_location;
+
+        public EventData(int id, int event_admin, String event_name, String event_date, String event_time, String event_duration, String file_attachment, String notes, int event_location) {
+            this.id = id;
+            this.event_admin = event_admin;
+            this.event_name = event_name;
+            this.event_date = event_date;
+            this.event_time = event_time;
+            this.event_duration = event_duration;
+            this.file_attachment = file_attachment;
+            this.notes = notes;
+            this.event_location = event_location;
+        }
+    }
 }

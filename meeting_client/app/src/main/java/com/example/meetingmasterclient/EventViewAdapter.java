@@ -9,12 +9,14 @@ import android.widget.TextView;
 
 import com.example.meetingmasterclient.server.MeetingService;
 
+import java.util.List;
+
 // TODO: Set up adapter to store entire event object
 public class EventViewAdapter extends BaseAdapter {
     Context context;
-    List<MeetingService.EventsData> eventInfo;
+    List<MeetingService.EventData> eventInfo;
 
-    public EventViewAdapter(Context context, List<MeetingService.EventsData> eventInfo) {
+    public EventViewAdapter(Context context, List<MeetingService.EventData> eventInfo) {
         this.context = context;
         this.eventInfo = eventInfo;
     }
