@@ -27,10 +27,11 @@ public class ProfileDetails extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // TODO: Set up intent and format search parameters based on it
-        /*Intent intent = getIntent();
-        intent.getIntExtra();*/
+        getUserById(getIntent().getIntExtra("id", -1));
 
+
+
+        /*
         Call<List<MeetingService.UserProfile>> c = Server.getService().users("");
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
@@ -49,6 +50,25 @@ public class ProfileDetails extends AppCompatActivity {
                     ((TextView)findViewById(R.id.profile_details_email)).setText(profile.email);
                     ((TextView)findViewById(R.id.profile_details_phone)).setText(profile.phone_number);
 
+                },
+                (call, t) -> t.printStackTrace()
+        ));*/
+    }
+
+    private void getUserById(int id) {
+        if (id == -1) {
+            Toast.makeText(getApplicationContext(), "An error has occurred", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Call<MeetingService.UserProfile> c = Server.getService().getUser("/users/" + id + "/");
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        // TODO: set TextField values to retrieved profile
+                    } else {
+                        Server.parseUnsuccessful(response, MeetingService.UserProfileError.class, System.out::println, System.out::println);
+                    }
                 },
                 (call, t) -> t.printStackTrace()
         ));

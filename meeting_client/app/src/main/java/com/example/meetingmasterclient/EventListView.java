@@ -5,10 +5,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
+
+import java.util.LinkedList;
+import java.util.List;
+
 import retrofit2.Call;
 
 public class EventListView extends AppCompatActivity {
@@ -74,6 +79,45 @@ public class EventListView extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    private void getInvitationByUser(int user_id) {
+        Call<List<MeetingService.InvitationData>> c = Server.getService().getInvitations("/invitations/" + user_id + "/");
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        getEventByInvitation(response.body());
+                    } else {
+                        // TODO: Parse error
+                        //Server.parseUnsuccessful(response, MeetingService.InvitationDataError.class(), System.out::println, System.out::println);
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
+    }
+
+    private void getEventByInvitation(List<MeetingService.InvitationData> invitations) {
+        List<MeetingService.EventData> events = new LinkedList<MeetingService.EventData>();
+
+        for (MeetingService.InvitationData inv : invitations) {
+            Call<MeetingService.EventData> c = Server.getService().getEvent("/events/" + inv.event_id + "/");
+            c.enqueue(Server.mkCallback(
+                    (call, response) -> {
+                        if (response.isSuccessful()) {
+                            events.add(response.body());
+                        } else {
+                            // TODO: Parse error
+                            //Server.parseUnsuccessful(response, MeetingService.EventDetailsError.class(), System.out::println, System.out::println);
+                        }
+                    },
+                    (call, t) -> t.printStackTrace()
+            ));
+        }
+
+        while (events.size() == 0) {}
+
+        eventData.setAdapter(new EventViewAdapter(getApplicationContext(), events));
+        eventData.setVisibility(View.VISIBLE);
     }
 
     // TODO: Code request for event filtering

@@ -14,6 +14,7 @@ import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Query;
+import retrofit2.http.Url;
 
 public interface MeetingService {
     /**
@@ -21,6 +22,21 @@ public interface MeetingService {
      */
     @POST("/register/")
     Call<AuthToken> register(@Body RegistrationData data);
+
+    /*
+    @Multipart
+    @POST("/register/")
+    Call<AuthToken> register(
+        @Part("username") RequestBody username,
+        @Part("first_name") RequestBody first_name,
+        @Part("last_name") RequestBody last_name,
+        @Part("email") RequestBody email,
+        @Part("password1") RequestBody password1,
+        @Part("password2") RequestBody password2,
+        @Part("phone_number") RequestBody phone_number,
+        @Part MultipartBody.Part profile_picture
+    );
+    */
 
     /**
      * may fail with "Unable to log in with provided credentials."
@@ -50,6 +66,19 @@ public interface MeetingService {
     @PUT("/rest-auth/user/")
     Call<UserProfile> putCurrentUser(@Body UserProfile data);
 
+    /*
+    @Multipart
+    @PUT("/rest-auth/user/")
+    Call<UserProfile> putCurrentUser(
+        @Part("username") RequestBody username,
+        @Part("first_name") RequestBody first_name,
+        @Part("last_name") RequestBody last_name,
+        @Part("email") RequestBody email,
+        @Part("phone_number") RequestBody phone_number,
+        @Part MultipartBody.Part profile_picture
+    );
+    */
+
     /**
      * may fail with {@link ResetPasswordError}
      */
@@ -69,10 +98,30 @@ public interface MeetingService {
     @GET("/users/")
     Call<List<UserProfile>> users(@Query("search") String search);
 
+    @GET
+    Call<UserProfile> getUser(@Url String url);
 
     @PATCH("/events/{id}/")
     Call<Void> users(@Body EventData data);
 
+    /*
+    @Multipart
+    @POST("/events/")
+    Call<EventDetails> createEvent(
+        @Part("event_name") RequestBody event_name,
+        @Part("event_date") RequestBody event_date,
+        @Part("event_time") RequestBody event_time,
+        @Part("event_duration") RequestBody event_duration,
+        @Part("notes") RequestBody notes,
+        @Part MultipartBody.Part file
+    );
+    */
+
+    @GET
+    Call<List<InvitationData>> getInvitations(@Url String url);
+
+    @GET
+    Call<EventData> getEvent(@Url String url);
 
     /* ******************** *
      * Dumb data containers *
@@ -310,4 +359,15 @@ public interface MeetingService {
         }
     }
 
+    class InvitationData {
+        public int user_id;
+        public int event_id;
+        public int status;
+
+        public InvitationData(int user_id, int event_id, int status) {
+            this.user_id = user_id;
+            this.event_id = event_id;
+            this.status = status;
+        }
+    }
 }
