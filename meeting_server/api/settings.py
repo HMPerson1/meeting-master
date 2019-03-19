@@ -33,23 +33,25 @@ EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'email_outbox')
 # Application definition
 
 INSTALLED_APPS = [
-    'meetings.apps.MeetingsConfig',
-    'events.apps.EventsConfig',
+    'api.users.apps.UsersConfig',
+    'api.events.apps.EventsConfig',
+    'api.invitations.apps.InvitationsConfig',
+    'api.locations.apps.LocationsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sessions',
+    'django.contrib.sites',
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
+    'rest_auth.registration',
     'phonenumber_field',
-    'rest_framework_swagger',
-    'django.contrib.sites',
     'allauth',
     'allauth.account',
-    'rest_auth.registration',
+    'drf_yasg'
 ]
 
 SITE_ID = 1
@@ -60,11 +62,11 @@ REST_FRAMEWORK = {
     )
 }
 REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER': 'meetings.serializers.UserProfileSerializer',
-    'PASSWORD_RESET_SERIALIZER': 'meetings.serializers.PasswordResetSerializer'
+    'USER_DETAILS_SERIALIZER': 'api.users.serializers.UserProfileSerializer',
+    'PASSWORD_RESET_SERIALIZER': 'api.users.serializers.PasswordResetSerializer'
 }
 REST_AUTH_REGISTER_SERIALIZERS = {
-    'REGISTER_SERIALIZER': 'meetings.serializers.RegisterSerializer',
+    'REGISTER_SERIALIZER': 'api.users.serializers.RegisterSerializer',
 }
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
@@ -80,7 +82,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'meeting_server.urls'
+ROOT_URLCONF = 'api.urls'
 
 TEMPLATES = [
     {
@@ -99,7 +101,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'meeting_server.wsgi.application'
+WSGI_APPLICATION = 'api.wsgi.application'
 
 
 # Database
@@ -150,3 +152,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")

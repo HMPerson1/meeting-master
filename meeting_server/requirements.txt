@@ -6,3 +6,4 @@ phonenumberslite
 django-rest-auth
 django-allauth
 Pillow
+rigor
