@@ -2,6 +2,7 @@ from rest_framework import serializers
 from api.users.models import UserProfile
 from api.events.models import Event
 # from api.users.serializers import UserDetailsSerializer
+import api.fcm as fcm
 
 
 from .models import Invitation
@@ -19,6 +20,7 @@ class InvitationModelSerializer(serializers.ModelSerializer):
         uid = validated_data.pop['user_id']
         eid = validated_data.pop['event_id']
         invite = Invitation.objects.create(user_id=uid, event_id=eid, status=0)
+        fcm.notify_invite(invite.user_id, invite.event_id)
         return invite
 
 

@@ -25,6 +25,8 @@ from api.invitations import urls as invitations_urls
 from api.locations import urls as locations_urls
 from api.events import urls as events_urls
 
+from api.users.views import SetFirebaseRegToken
+
 router = routers.DefaultRouter()
 router.register('users', UserViewSet, 'user')
 # router.register('events', EventViewSet, 'event')
@@ -50,6 +52,7 @@ urlpatterns = [
     url(r'^events/', include(events_urls)),
     url(r'^locations/', include(locations_urls)),
     url(r'^invitations/', include(invitations_urls)),
-    path(r'^/$', include(router.urls))
+    path(r'^/$', include(router.urls)),
+    url('^firebase_reg_token/$', SetFirebaseRegToken.as_view()),
 ]
 
