@@ -36,28 +36,28 @@ INSTALLED_APPS = [
     'api.users.apps.UsersConfig',
     'api.events.apps.EventsConfig',
     'api.invitations.apps.InvitationsConfig',
+    'api.locations.apps.LocationsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sessions',
+    'django.contrib.sites',
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
+    'rest_auth.registration',
     'phonenumber_field',
-    'rest_framework_swagger',
-    'django.contrib.sites',
     'allauth',
     'allauth.account',
-    'rest_auth.registration',
+    'drf_yasg'
 ]
 
 SITE_ID = 1
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     )
 }
@@ -72,21 +72,6 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 PHONENUMBER_DB_FORMAT = "E164"
 
-# see https://github.com/marcgibbons/django-rest-swagger/issues/762#issuecomment-423750585
-SWAGGER_SETTINGS = {
-    'SECURITY': [
-        {
-            'api_key' : []
-        }
-    ],
-    'SECURITY_DEFINITIONS': {
-        "api_key" : {
-            'type': 'apiKey',
-            'name': 'Authorization',
-            'in': 'header',
-        },
-    },
-}
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -167,3 +152,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")

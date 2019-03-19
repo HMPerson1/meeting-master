@@ -7,7 +7,7 @@ from rest_auth.serializers import UserDetailsSerializer
 from rest_framework import serializers
 from rest_framework.fields import empty, get_attribute
 
-from .models import UserProfile
+from api.users.models import UserProfile
 
 
 # i have no idea what i'm doing but it seems to work
@@ -37,6 +37,13 @@ class UserProfileSerializer(UserDetailsSerializer):
                 setattr(profile, attr, value)
             profile.save()
         return instance
+
+
+class SuperUserSerializer(UserDetailsSerializer):
+    class Meta:
+        model = auth_models.User
+        fields = ('pk', 'username')
+        read_only_fields = ('pk',)
 
 
 class RegisterSerializer(serializers.Serializer):
@@ -94,6 +101,12 @@ class RegisterSerializer(serializers.Serializer):
 class PasswordResetSerializer(auth_serializers.PasswordResetSerializer):
     def get_email_options(self):
         return {'email_template_name': 'password_reset_email.html'}
+
+
+class FirebaseRegTokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('firebase_reg_token',)
 
 
 def subset_dict(bigdict, keys):
