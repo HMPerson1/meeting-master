@@ -102,7 +102,7 @@ public class Login extends AppCompatActivity {
 
 
     public boolean confirmInput(View v){
-        return (!validateEmail() || !validatePassword());
+        return (validateEmail() && validatePassword());
     }
 
     public void submitLoginRequest(View v){
@@ -110,18 +110,6 @@ public class Login extends AppCompatActivity {
 
         //TODO parse information to be sent to server for login
 
-        //check with server to see whether password and email match
-        String url = "";
-        URL object;
-
-
-        JSONObject json = new JSONObject();
-        try {
-            json.put("username", textInputEmail.getEditText().getText().toString());
-            json.put("password", textInputPassword.getEditText().getText().toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
 
         String username = textInputEmail.getEditText().getText().toString();
@@ -129,7 +117,11 @@ public class Login extends AppCompatActivity {
         Call<MeetingService.AuthToken> c = Server.getService().login(new MeetingService.LoginData(username, password));
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
+
+                    Toast.makeText(Login.this,response.toString() , Toast.LENGTH_LONG).show();
                     if (response.isSuccessful()) {
+
+
                         assert response.body() != null;
                         Server.authenticate(response.body().key);
                     } else {
@@ -138,40 +130,15 @@ public class Login extends AppCompatActivity {
                             System.out.println("response.error = " + response.errorBody().string());
                         } catch (IOException e) {
                             e.printStackTrace();
+
+
                         }
                     }
                 },
                 (call, t) -> t.printStackTrace()
         ));
 
-        //Send put request to server
-        try {
-            object = new URL(url);
-            HttpURLConnection con = (HttpURLConnection) object.openConnection();
-            con.setDoOutput(true);
-            con.setRequestMethod("PUT");
 
-            //get response from server about whether the password is valid
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                    (Request.Method.PUT, url, json, new Response.Listener<JSONObject>() {
-
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            //login successful, switch activity to homepage
-                            Toast.makeText(Login.this,response.toString() , Toast.LENGTH_LONG).show();
-                        }
-                    }, new Response.ErrorListener() {
-
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(Login.this,"Invalid Username or Password" , Toast.LENGTH_LONG).show();
-
-                        }
-                    });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
     }
 }

@@ -8,6 +8,9 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+
+import retrofit2.http.PATCH;
+
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Query;
@@ -65,6 +68,10 @@ public interface MeetingService {
      */
     @GET("/users/")
     Call<List<UserProfile>> users(@Query("search") String search);
+
+
+    @PATCH("/events/{id}/")
+    Call<Void> users(@Body EventData data);
 
 
     /* ******************** *
@@ -130,8 +137,20 @@ public interface MeetingService {
         public String phone_number;
         public String profile_picture;
 
+
+
+        public void setFirst_name(String first_name) {
+            this.first_name = first_name;
+        }
+
+        public void setLast_name(String last_name) {
+            this.last_name = last_name;
+        }
+
         @Override
         @NonNull
+
+
         public String toString() {
             return "UserProfile{" +
                     "pk=" + pk +
@@ -143,6 +162,35 @@ public interface MeetingService {
                     ", profile_picture='" + profile_picture + '\'' +
                     '}';
         }
+
+        public int getPk() {
+            return pk;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public String getFirst_name() {
+            return first_name;
+        }
+
+        public String getLast_name() {
+            return last_name;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public String getPhone_number() {
+            return phone_number;
+        }
+
+        public String getProfile_picture() {
+            return profile_picture;
+        }
+
     }
 
     class UserProfileError {
@@ -235,6 +283,7 @@ public interface MeetingService {
                     ", non_field_errors=" + Arrays.toString(non_field_errors) +
                     '}';
         }
+
     }
 
     class EventData {
@@ -260,4 +309,5 @@ public interface MeetingService {
             this.event_location = event_location;
         }
     }
+
 }

@@ -1,6 +1,6 @@
 from .models import Event
 from rest_framework import serializers
-from invitations.serializers import InvitationModelSerializer
+from api.invitations.serializers import InvitationModelSerializer
 
 
 class EventModelSerializer(serializers.ModelSerializer):

@@ -18,10 +18,10 @@ from django.urls import include, path
 from rest_framework import routers
 from rest_framework_swagger.views import get_swagger_view
 
-import invitations.urls
+import api.invitations.urls
 
-from users.views import UserViewSet
-from events.views import EventViewSet
+from api.users.views import UserViewSet
+from api.events.views import EventViewSet
 
 router = routers.DefaultRouter()
 router.register('users', UserViewSet, 'user')
@@ -33,7 +33,7 @@ urlpatterns = [
     path('register/', include('rest_auth.registration.urls')),
     path('rest-auth/', include('rest_auth.urls')),
     # path(r'events/', include(events.urls)),
-    path(r'invitations/', include(invitations.urls)),
+    path(r'invitations/', include(api.invitations.urls)),
     path('', include(router.urls)),
 ]
 

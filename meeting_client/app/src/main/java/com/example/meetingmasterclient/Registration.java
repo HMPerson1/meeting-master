@@ -173,23 +173,26 @@ public class Registration extends AppCompatActivity {
         String last_name = textInputLastName.getEditText().getText().toString().trim();
         String phone_number = textInputPhoneNumber.getEditText().getText().toString().trim();
 
-        Call<MeetingService.AuthToken> c = Server.getService().register(
-                new MeetingService.RegistrationData(
-                        username,first_name,last_name,email,password1,password2,phone_number));
+
+        Call<MeetingService.AuthToken> c = Server.getService().register(new MeetingService.RegistrationData(username,first_name,last_name,email,password1,password2,phone_number));
+
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
                     if (response.isSuccessful()) {
                         assert response.body() != null;
                         Server.authenticate(response.body().key);
                     } else {
-                        Server.parseUnsuccessful(response, MeetingService.RegistrationError.class,
-                                System.out::println, System.out::println);
+
+                        Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, System.out::println, System.out::println);
+
                     }
                 },
                 (call, t) -> t.printStackTrace()
         ));
 
+
         //TODO everything below this is kinda unnecessary, but we could keep it for debugging for now(?)
+
         JSONObject json = new JSONObject();
         try {
             json.put("username", username);
