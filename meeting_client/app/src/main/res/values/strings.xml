@@ -61,4 +61,5 @@
     <string name="notification_edit_body">%s has been edited</string>
 
     <string name="create_event_button">Create Event</string>
+    <string name="title_activity_profile_details">ProfileDetails</string>
 </resources>
