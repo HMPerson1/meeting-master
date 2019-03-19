@@ -26,9 +26,6 @@ public class EventDetails extends AppCompatActivity {
         final TextInputEditText textInputRoomNo = findViewById(R.id.room_num);
 
         //TODO: get info from backend
-        MeetingService.EventsData eventData = new MeetingService.EventsData();
-
-
-
+        //MeetingService.EventData eventData = new MeetingService.EventData();
     }
 }

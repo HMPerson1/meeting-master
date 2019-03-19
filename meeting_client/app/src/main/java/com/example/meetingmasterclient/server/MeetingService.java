@@ -71,7 +71,7 @@ public interface MeetingService {
 
 
     @PATCH("/events/{id}/")
-    Call<Void> users(@Body EventsData data);
+    Call<Void> users(@Body EventData data);
 
 
     /* ******************** *
