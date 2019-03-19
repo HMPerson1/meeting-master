@@ -2,13 +2,16 @@ package com.example.meetingmasterclient;
 
 import android.content.Intent;
 import android.os.Bundle;
+
 import android.support.design.widget.TextInputEditText;
+
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
 public class EventCreation extends AppCompatActivity {
+
     private TextInputEditText textInputEventName;
     private TextInputEditText textInputDate;
     private TextInputEditText textInputTime;
@@ -19,13 +22,16 @@ public class EventCreation extends AppCompatActivity {
     private TextInputEditText textInputRoomNo;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_creation);
 
         configureAddUserButton();
+
         configureAttendeeListButton();
+
 
         textInputEventName = findViewById(R.id.text_input_event_name);
         textInputDate = findViewById(R.id.text_input_date);
@@ -36,15 +42,14 @@ public class EventCreation extends AppCompatActivity {
         textInputState = findViewById(R.id.text_input_state);
         textInputRoomNo = findViewById(R.id.text_input_room_no);
 
-
-
-
     }
 
     /* input validation */
 
     private boolean validateEventName(){
+
         String eventName = textInputEventName.getText().toString();
+
         if (eventName.isEmpty()){
             textInputEventName.setError("Event name cannot be empty");
             return false;
@@ -98,6 +103,7 @@ public class EventCreation extends AppCompatActivity {
             public void onClick(View v) {
                 startActivity(new Intent(EventCreation.this, AddUserstoMeeting.class));
 
+
             }
         });
     }
@@ -113,6 +119,7 @@ public class EventCreation extends AppCompatActivity {
             }
         });
     }//configureAttendee
+
 
     public boolean confirmInput(View v) {
         return (!validateEventName() | !validateStreetAddr() | !validateCity() | !validateStreetAddr()

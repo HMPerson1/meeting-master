@@ -4,6 +4,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+
 import com.example.meetingmasterclient.server.MeetingService;
 
 public class EventDetails extends AppCompatActivity {
@@ -15,6 +16,7 @@ public class EventDetails extends AppCompatActivity {
 
         //testing changing text fields
         final TextInputEditText nameInput = (TextInputEditText) findViewById(R.id.meeting_name);
+
         final TextInputEditText textInputDate = findViewById(R.id.date);
         final TextInputEditText textInputTime = findViewById(R.id.time);
         final TextInputEditText textInputNotes = findViewById(R.id.notes);
@@ -25,6 +27,7 @@ public class EventDetails extends AppCompatActivity {
 
         //TODO: get info from backend
         MeetingService.EventsData eventData = new MeetingService.EventsData();
+
 
 
     }

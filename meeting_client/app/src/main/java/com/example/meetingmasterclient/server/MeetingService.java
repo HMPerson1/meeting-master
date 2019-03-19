@@ -8,7 +8,9 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+
 import retrofit2.http.PATCH;
+
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Query;
@@ -66,6 +68,7 @@ public interface MeetingService {
      */
     @GET("/users/")
     Call<List<UserProfile>> users(@Query("search") String search);
+
 
     @PATCH("/events/{id}/")
     Call<Void> users(@Body EventsData data);
@@ -135,6 +138,7 @@ public interface MeetingService {
         public String profile_picture;
 
 
+
         public void setFirst_name(String first_name) {
             this.first_name = first_name;
         }
@@ -145,6 +149,7 @@ public interface MeetingService {
 
         @Override
         @NonNull
+
 
         public String toString() {
             return "UserProfile{" +
@@ -157,6 +162,7 @@ public interface MeetingService {
                     ", profile_picture='" + profile_picture + '\'' +
                     '}';
         }
+
         public int getPk() {
             return pk;
         }
@@ -184,6 +190,7 @@ public interface MeetingService {
         public String getProfile_picture() {
             return profile_picture;
         }
+
     }
 
     class UserProfileError {
@@ -276,17 +283,31 @@ public interface MeetingService {
                     ", non_field_errors=" + Arrays.toString(non_field_errors) +
                     '}';
         }
-    }//Confirm Password Reset Error
 
-    class EventsData{
+    }
+
+    class EventData {
+        public int id;
+        public int event_admin;
         public String event_name;
         public String event_date;
-        public String duration;
+        public String event_time;
+        public String event_duration;
+        public String file_attachment;
         public String notes;
+        public int event_location;
 
-    }//EventsData
+        public EventData(int id, int event_admin, String event_name, String event_date, String event_time, String event_duration, String file_attachment, String notes, int event_location) {
+            this.id = id;
+            this.event_admin = event_admin;
+            this.event_name = event_name;
+            this.event_date = event_date;
+            this.event_time = event_time;
+            this.event_duration = event_duration;
+            this.file_attachment = file_attachment;
+            this.notes = notes;
+            this.event_location = event_location;
+        }
+    }
 
-    class LocationData{
-
-    }//LocationData
 }

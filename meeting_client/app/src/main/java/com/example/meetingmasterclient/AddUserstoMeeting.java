@@ -58,11 +58,12 @@ public class AddUserstoMeeting extends AppCompatActivity {
         //make listview checkable so that people can be removed from the list
 
         final boolean [] checkedItems;
+
         // listViewInvitedPeople.setItemChecked(1, true);
 
 
-        listViewInvitedPeople.setAdapter(adapter);
 
+        listViewInvitedPeople.setAdapter(adapter);
 
 
         //if User clicks the remove button, remove all checked items in listview
