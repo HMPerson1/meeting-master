@@ -1,6 +1,6 @@
 from django.db import models
-from users.models import UserProfile
-from locations.models import Location
+from api.users.models import UserProfile
+from api.locations.models import Location
 from rest_framework.fields import ListField
 
 import datetime

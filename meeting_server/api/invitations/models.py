@@ -1,8 +1,8 @@
 # Create your models here.
 
 from django.db import models
-from users.models import UserProfile
-from events.models import Event
+from api.users.models import UserProfile
+from api.events.models import Event
 
 inv_status = {
     "PENDING": 1,

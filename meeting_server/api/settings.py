@@ -33,10 +33,10 @@ EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'email_outbox')
 # Application definition
 
 INSTALLED_APPS = [
-    'users.apps.UsersConfig',
-    'events.apps.EventsConfig',
-    'invitations.apps.InvitationsConfig',
-    'locations.apps.LocationsConfig',
+    'api.users.apps.UsersConfig',
+    'api.events.apps.EventsConfig',
+    'api.invitations.apps.InvitationsConfig',
+    'api.locations.apps.LocationsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -62,11 +62,11 @@ REST_FRAMEWORK = {
     )
 }
 REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER': 'users.serializers.UserProfileSerializer',
-    'PASSWORD_RESET_SERIALIZER': 'users.serializers.PasswordResetSerializer'
+    'USER_DETAILS_SERIALIZER': 'api.users.serializers.UserProfileSerializer',
+    'PASSWORD_RESET_SERIALIZER': 'api.users.serializers.PasswordResetSerializer'
 }
 REST_AUTH_REGISTER_SERIALIZERS = {
-    'REGISTER_SERIALIZER': 'users.serializers.RegisterSerializer',
+    'REGISTER_SERIALIZER': 'api.users.serializers.RegisterSerializer',
 }
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 

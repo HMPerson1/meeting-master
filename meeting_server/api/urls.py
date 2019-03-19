@@ -19,10 +19,11 @@ from rest_framework import routers, permissions
 from rest_framework.urls import url
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from users.views import UserViewSet
-import invitations.urls
-import locations.urls
-import events.urls
+from api.users.views import UserViewSet
+
+from api.invitations import urls as invitations_urls
+from api.locations import urls as locations_urls
+from api.events import urls as events_urls
 
 router = routers.DefaultRouter()
 router.register('users', UserViewSet, 'user')
@@ -46,9 +47,9 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^register/', include('rest_auth.registration.urls')),
     url(r'^rest-auth/', include('rest_auth.urls')),
-    url(r'^events/', include(events.urls)),
-    url(r'^locations/', include(locations.urls)),
-    url(r'^invitations/', include(invitations.urls)),
+    url(r'^events/', include(events_urls)),
+    url(r'^locations/', include(locations_urls)),
+    url(r'^invitations/', include(invitations_urls)),
     path(r'^/$', include(router.urls))
 ]
 

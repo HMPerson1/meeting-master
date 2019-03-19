@@ -5,10 +5,10 @@ from rest_framework.response import Response
 
 from rest_framework import status
 from rest_framework import serializers
-from users.serializers import UserProfileSerializer
-from locations.serializers import LocationModelSerializer
+from api.users.serializers import UserProfileSerializer
+from api.locations.serializers import LocationModelSerializer
 from django.forms import FileField
-from locations.models import Location
+from api.locations.models import Location
 
 
 class EventModelSerializer(serializers.ModelSerializer):
