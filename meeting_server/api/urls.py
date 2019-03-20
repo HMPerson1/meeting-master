@@ -15,25 +15,44 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from rest_framework import routers
-from rest_framework_swagger.views import get_swagger_view
+from rest_framework import routers, permissions
+from rest_framework.urls import url
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+from api.users.views import UserViewSet
 
-import invitations.urls
+from api.invitations import urls as invitations_urls
+from api.locations import urls as locations_urls
+from api.events import urls as events_urls
 
-from users.views import UserViewSet
-from events.views import EventViewSet
+from api.users.views import SetFirebaseRegToken
 
 router = routers.DefaultRouter()
 router.register('users', UserViewSet, 'user')
-router.register('events', EventViewSet, 'event')
+# router.register('events', EventViewSet, 'event')
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title='Meeting Master API',
+        default_version='v1',
+        description='A suite of API Endpoints for the Meeting Master mobile app backend.'
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
+
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', get_swagger_view()),
-    path('register/', include('rest_auth.registration.urls')),
-    path('rest-auth/', include('rest_auth.urls')),
-    # path(r'events/', include(events.urls)),
-    path(r'invitations/', include(invitations.urls)),
-    path('', include(router.urls)),
+    # url(r'^swagger(?p<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    url(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    url(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    url(r'^admin/', admin.site.urls),
+    url(r'^register/', include('rest_auth.registration.urls')),
+    url(r'^rest-auth/', include('rest_auth.urls')),
+    url(r'^events/', include(events_urls)),
+    url(r'^locations/', include(locations_urls)),
+    url(r'^invitations/', include(invitations_urls)),
+    path(r'^/$', include(router.urls)),
+    url('^firebase_reg_token/$', SetFirebaseRegToken.as_view()),
 ]
 

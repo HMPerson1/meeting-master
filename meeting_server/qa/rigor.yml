@@ -1,0 +1,22 @@
+host: http://localhost:8000
+
+#schemas:
+#    api: api/schema?format=openapi
+#
+#
+#globals:
+#    # tokens: Auth thokes can go here
+#
+#
+#headers:
+#    # Authorization: Token {tokens.workbench}
+#
+#excludes:
+#    - broken
+#    - wip
+#
+#profiles:
+#
+#    testtarget:
+#        host: http://testtarget:8000
+

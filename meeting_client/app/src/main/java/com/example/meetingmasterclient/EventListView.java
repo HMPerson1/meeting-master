@@ -8,20 +8,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
+import com.example.meetingmasterclient.server.MeetingService;
+import com.example.meetingmasterclient.server.Server;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
+import java.util.LinkedList;
+import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import retrofit2.Call;
 
 public class EventListView extends AppCompatActivity {
+    Menu optionsMenu;
+    byte timePeriod;
     ListView eventData;
 
     @Override
@@ -32,37 +29,108 @@ public class EventListView extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         eventData = findViewById(R.id.event_data);
-        sendSearchRequest("");
+
+        // TODO: Get current user (somehow) to obtain their events only
+        //sendSearchRequest((byte)0, false);
+
+        /*Call<MeetingService.UserProfile> c = Server.getService().getCurrentUser();
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (!response.isSuccessful()) {
+                        Toast.makeText(getApplicationContext(), "An error has occurred", Toast.LENGTH_SHORT);
+                        return;
+                    }
+
+                    sendSearchRequest((byte)0, false);
+                },
+                (call, t) -> t.printStackTrace()
+        ));*/
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_event_list_view, menu);
-        return true;
+        optionsMenu = menu;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         ListView eventData = findViewById(R.id.event_data);
+        MenuItem declined = optionsMenu.findItem(R.id.show_declined_events);
 
-        // TODO: Input the appropriate URL into each call
         switch (item.getItemId()) {
+            case R.id.today:
+                //sendSearchRequest((byte)0, declined.isChecked());
+                break;
             case R.id.this_week:
-                sendSearchRequest("");
+                //sendSearchRequest((byte)1, declined.isChecked());
                 break;
             case R.id.this_month:
-                sendSearchRequest("");
+                //sendSearchRequest((byte)2, declined.isChecked());
+                break;
+            case R.id.show_declined_events:
+                declined.setChecked(!declined.isChecked());
+                //sendSearchRequest(timePeriod, declined.isChecked());
                 break;
             default:
-                sendSearchRequest("");
+                // just to avoid trouble
                 break;
         }
 
         return true;
     }
 
-    RequestQueue eventQueue;
+    private void getInvitationByUser(int user_id) {
+        Call<List<MeetingService.InvitationData>> c = Server.getService().getInvitations("/invitations/" + user_id + "/");
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        getEventByInvitation(response.body());
+                    } else {
+                        // TODO: Parse error
+                        //Server.parseUnsuccessful(response, MeetingService.InvitationDataError.class(), System.out::println, System.out::println);
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
+    }
 
+    private void getEventByInvitation(List<MeetingService.InvitationData> invitations) {
+        List<MeetingService.EventData> events = new LinkedList<MeetingService.EventData>();
+
+        for (MeetingService.InvitationData inv : invitations) {
+            Call<MeetingService.EventData> c = Server.getService().getEvent("/events/" + inv.event_id + "/");
+            c.enqueue(Server.mkCallback(
+                    (call, response) -> {
+                        if (response.isSuccessful()) {
+                            events.add(response.body());
+                        } else {
+                            // TODO: Parse error
+                            //Server.parseUnsuccessful(response, MeetingService.EventDetailsError.class(), System.out::println, System.out::println);
+                        }
+                    },
+                    (call, t) -> t.printStackTrace()
+            ));
+        }
+
+        while (events.size() == 0) {}
+
+        eventData.setAdapter(new EventViewAdapter(getApplicationContext(), events));
+        eventData.setVisibility(View.VISIBLE);
+    }
+
+    // TODO: Code request for event filtering
+    public void sendSearchRequest(byte period, boolean declined) {
+        timePeriod = period;
+        // period = 0 ==> today
+        // period = 1 ==> this week
+        // period = 2 ==> this month
+        // declined = true ==> show declined events
+        // declined = false ==> do not show declined events
+    }
+
+    /*
     private void sendSearchRequest(String url) {
         eventQueue = Volley.newRequestQueue(this);
 
@@ -97,5 +165,5 @@ public class EventListView extends AppCompatActivity {
         });
 
         eventQueue.add(eventRequest);
-    }
+    }*/
 }

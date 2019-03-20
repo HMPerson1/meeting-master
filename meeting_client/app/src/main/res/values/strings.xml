@@ -49,6 +49,7 @@
 
     <string name="invite_accept">Accept</string>
     <string name="decline">Decline</string>
+
     <string name="msg_token_fmt">InstanceID Token: %s</string>
     <string name="log_fcm_token">Log FCM Token</string>
     <string name="channel_invite_name">Invitations</string>
@@ -61,4 +62,6 @@
     <string name="notification_edit_body">%s has been edited</string>
 
     <string name="create_event_button">Create Event</string>
+    <string name="title_activity_profile_details">ProfileDetails</string>
+
 </resources>
