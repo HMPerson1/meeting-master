@@ -15,10 +15,6 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".AttendeeList"
-            android:label="@string/title_activity_attendee_list"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity
             android:name=".DebugLauncherActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -46,10 +42,10 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".AddUserstoMeeting"
-            android:label="Add User to Meeting" />
+            android:label="@string/title_activity_add_users_to_meeting" />
         <activity
             android:name=".AttendeeList"
-            android:label="Attendee List" />
+            android:label="@string/title_activity_attendee_list"/>
         <activity
             android:name=".InvitationListActivity"
             android:label="@string/title_activity_invitation_list"
