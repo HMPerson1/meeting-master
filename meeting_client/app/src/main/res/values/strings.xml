@@ -64,4 +64,7 @@
     <string name="create_event_button">Create Event</string>
     <string name="title_activity_profile_details">ProfileDetails</string>
 
+    <string name="attendees_list">Attendees List</string>
+    <string name="title_activity_attendee_list">AttendeeList</string>
+
 </resources>

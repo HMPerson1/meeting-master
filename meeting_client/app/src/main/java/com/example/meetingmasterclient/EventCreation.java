@@ -114,7 +114,7 @@ public class EventCreation extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //switch to attendeeList where you can edit permissions
-                startActivity(new Intent(EventCreation.this,Attendee_List.class));
+                startActivity(new Intent(EventCreation.this,AttendeeList.class));
 
             }
         });
