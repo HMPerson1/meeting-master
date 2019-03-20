@@ -13,19 +13,20 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls import url
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-from rest_framework import routers, permissions
-from rest_framework.urls import url
-from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from api.users.views import UserViewSet
+from drf_yasg.views import get_schema_view
+from rest_framework import routers, permissions
 
+from api.events import urls as events_urls
 from api.invitations import urls as invitations_urls
 from api.locations import urls as locations_urls
-from api.events import urls as events_urls
-
-from api.users.views import SetFirebaseRegToken
+from api.users import urls as users_urls
+from api.users.views import UserViewSet
 
 router = routers.DefaultRouter()
 router.register('users', UserViewSet, 'user')
@@ -41,9 +42,7 @@ schema_view = get_schema_view(
     permission_classes=(permissions.AllowAny,),
 )
 
-
 urlpatterns = [
-    # url(r'^swagger(?p<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     url(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     url(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     url(r'^admin/', admin.site.urls),
@@ -52,7 +51,7 @@ urlpatterns = [
     url(r'^events/', include(events_urls)),
     url(r'^locations/', include(locations_urls)),
     url(r'^invitations/', include(invitations_urls)),
-    path(r'^/$', include(router.urls)),
-    url('^firebase_reg_token/$', SetFirebaseRegToken.as_view()),
+    url(r'^current_user/', include(users_urls)),
+    path('', include(router.urls)),
 ]
-
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -9,7 +9,7 @@ from api.users.serializers import UserProfileSerializer
 from api.locations.serializers import LocationModelSerializer
 from django.forms import FileField
 from api.locations.models import Location
-
+import api.fcm as fcm
 
 class EventModelSerializer(serializers.ModelSerializer):
     # event_admin = UserProfileSerializer(many=False, read_only=True)
@@ -26,6 +26,11 @@ class EventModelSerializer(serializers.ModelSerializer):
             "notes",
             "file_attachment"
         )
+
+    def update(self, instance, validated_data):
+        ret = super().update(instance, validated_data)
+        fcm.notify_edit(ret)
+        return ret
 
     # def to_representation(self, instance):
     #     response = super().to_representation(instance)

@@ -1,8 +1,12 @@
 from django.http import Http404
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework import generics as drf_generics
+
+from api.users.models import UserProfile
+from api.users.serializers import UserProfileSerializer
 from .models import Event
 from .serializers import EventModelSerializer, EventCreateSerializer, EventListQuerySerializer
 from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
@@ -80,3 +84,12 @@ class EventDetailView(APIView):
         event = self.get_object(pk=pk)
         event.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class EventAttendeesView(drf_generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserProfileSerializer
+
+    def get_queryset(self):
+        # what is that related name
+        UserProfile.objects.filter(user_id__event_id=self.kwargs['id'])
