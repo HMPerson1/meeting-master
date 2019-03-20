@@ -28,31 +28,6 @@ public class ProfileDetails extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         getUserById(getIntent().getIntExtra("id", -1));
-
-
-
-        /*
-        Call<List<MeetingService.UserProfile>> c = Server.getService().users("");
-        c.enqueue(Server.mkCallback(
-                (call, response) -> {
-                    if (!response.isSuccessful()) {
-                        Toast.makeText(getApplicationContext(), "An error has occurred", Toast.LENGTH_SHORT);
-                        return;
-                    }
-
-                    MeetingService.UserProfile profile = response.body().get(0);
-
-                    // TODO: Set image
-                    //((ImageView)findViewById(R.id.profile_details_picture));
-                    ((TextView)findViewById(R.id.profile_details_first_name)).setText(profile.first_name);
-                    ((TextView)findViewById(R.id.profile_details_last_name)).setText(profile.last_name);
-                    ((TextView)findViewById(R.id.profile_details_username)).setText(profile.username);
-                    ((TextView)findViewById(R.id.profile_details_email)).setText(profile.email);
-                    ((TextView)findViewById(R.id.profile_details_phone)).setText(profile.phone_number);
-
-                },
-                (call, t) -> t.printStackTrace()
-        ));*/
     }
 
     private void getUserById(int id) {
@@ -65,7 +40,14 @@ public class ProfileDetails extends AppCompatActivity {
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
                     if (response.isSuccessful()) {
-                        // TODO: set TextField values to retrieved profile
+                        MeetingService.UserProfile profile = response.body();
+
+                        // TODO: Set profile picture
+                        ((TextView)findViewById(R.id.profile_details_first_name)).setText("First name: " + profile.first_name);
+                        ((TextView)findViewById(R.id.profile_details_last_name)).setText("Last name: " + profile.last_name);
+                        ((TextView)findViewById(R.id.profile_details_username)).setText("Username: " + profile.username);
+                        ((TextView)findViewById(R.id.profile_details_email)).setText("Email: " + profile.email);
+                        ((TextView)findViewById(R.id.profile_details_phone)).setText("Phone number: " + profile.phone_number);
                     } else {
                         Server.parseUnsuccessful(response, MeetingService.UserProfileError.class, System.out::println, System.out::println);
                     }

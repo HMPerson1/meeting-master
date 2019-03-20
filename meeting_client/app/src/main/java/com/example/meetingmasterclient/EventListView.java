@@ -17,9 +17,10 @@ import java.util.List;
 import retrofit2.Call;
 
 public class EventListView extends AppCompatActivity {
-    Menu optionsMenu;
-    byte timePeriod;
-    ListView eventData;
+    private Menu optionsMenu;
+    private byte timePeriod;
+    private ListView eventData;
+    private int numberOfEvents;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,21 +31,7 @@ public class EventListView extends AppCompatActivity {
 
         eventData = findViewById(R.id.event_data);
 
-        // TODO: Get current user (somehow) to obtain their events only
-        //sendSearchRequest((byte)0, false);
-
-        /*Call<MeetingService.UserProfile> c = Server.getService().getCurrentUser();
-        c.enqueue(Server.mkCallback(
-                (call, response) -> {
-                    if (!response.isSuccessful()) {
-                        Toast.makeText(getApplicationContext(), "An error has occurred", Toast.LENGTH_SHORT);
-                        return;
-                    }
-
-                    sendSearchRequest((byte)0, false);
-                },
-                (call, t) -> t.printStackTrace()
-        ));*/
+        getInvitationByUser(getIntent().getIntExtra("user_id", -1));
     }
 
     @Override
@@ -74,7 +61,6 @@ public class EventListView extends AppCompatActivity {
                 //sendSearchRequest(timePeriod, declined.isChecked());
                 break;
             default:
-                // just to avoid trouble
                 break;
         }
 
@@ -82,6 +68,11 @@ public class EventListView extends AppCompatActivity {
     }
 
     private void getInvitationByUser(int user_id) {
+        if (user_id == -1) {
+            Toast.makeText(getApplicationContext(), "An error has occurred", Toast.LENGTH_SHORT);
+            return;
+        }
+
         Call<List<MeetingService.InvitationData>> c = Server.getService().getInvitations("/invitations/" + user_id + "/");
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
@@ -97,6 +88,8 @@ public class EventListView extends AppCompatActivity {
     }
 
     private void getEventByInvitation(List<MeetingService.InvitationData> invitations) {
+        numberOfEvents = invitations.size();
+
         List<MeetingService.EventData> events = new LinkedList<MeetingService.EventData>();
 
         for (MeetingService.InvitationData inv : invitations) {
@@ -114,7 +107,7 @@ public class EventListView extends AppCompatActivity {
             ));
         }
 
-        while (events.size() == 0) {}
+        do {} while (events.size() < numberOfEvents);
 
         eventData.setAdapter(new EventViewAdapter(getApplicationContext(), events));
         eventData.setVisibility(View.VISIBLE);
@@ -129,41 +122,4 @@ public class EventListView extends AppCompatActivity {
         // declined = true ==> show declined events
         // declined = false ==> do not show declined events
     }
-
-    /*
-    private void sendSearchRequest(String url) {
-        eventQueue = Volley.newRequestQueue(this);
-
-        JsonArrayRequest eventRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                String[][] eventInfo = new String[response.length()][4];
-
-                try {
-                    for (int i = 0; i < response.length(); i++) {
-                        eventInfo[i][0] = response.getJSONObject(i).getString("admin");
-                        eventInfo[i][1] = response.getJSONObject(i).getString("name");
-                        eventInfo[i][2] = response.getJSONObject(i).getString("date");
-                        eventInfo[i][3] = response.getJSONObject(i).getString("location");
-                    }
-
-                    EventViewAdapter results = new EventViewAdapter(getApplicationContext(), eventInfo);
-                    eventData.setAdapter(results);
-                    eventData.setVisibility(View.VISIBLE);
-                } catch(JSONException e) {
-                    Toast.makeText(getApplicationContext(), "An error has occurred while processing the information", Toast.LENGTH_SHORT).show();
-                } finally {
-                    eventQueue.stop();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), "An error has occurred in the network", Toast.LENGTH_SHORT).show();
-                eventQueue.stop();
-            }
-        });
-
-        eventQueue.add(eventRequest);
-    }*/
 }
