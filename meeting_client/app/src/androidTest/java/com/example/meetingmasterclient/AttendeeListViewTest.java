@@ -1,6 +1,7 @@
 package com.example.meetingmasterclient;
 
 import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
 
 import com.example.meetingmasterclient.server.MeetingService;
 
@@ -29,14 +30,16 @@ public class AttendeeListViewTest {
         };
     }
 
-    //@Rule
-    //public ActivityTestRule<AttendeeListView> activityRule = new ActivityTestRule<>(AttendeeListView.class, false, false);
+    @Rule
+    public ActivityTestRule<AttendeeListView> activityRule = new ActivityTestRule<>(AttendeeListView.class, false, false);
 
     @Test
     public void testAttendeeList() {
-        // Assuming the event's id is passed in the intent
         Intent intent = new Intent();
         intent.putExtra("id", 1);
-        //activityRule.launchActivity(intent);
+        activityRule.launchActivity(intent);
     }
+
+    // Placeholder so that the file compiles; will be removed when the attendee list activity is completed
+    class AttendeeListView extends AppCompatActivity {}
 }
