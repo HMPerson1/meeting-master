@@ -168,11 +168,10 @@
             android:id="@+id/attendees_list_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Attendees List"
+            android:text="@string/attendees_list"
             />
 
         <Button
-
             android:id="@+id/add_users_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
