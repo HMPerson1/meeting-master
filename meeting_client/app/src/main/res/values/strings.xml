@@ -68,5 +68,6 @@
     <string name="attendees_list">Attendees List</string>
     <string name="title_activity_attendee_list">AttendeeList</string>
     <string name="save_changes">Save Changes</string>
+    <string name="title_activity_event_details">EventDetails</string>
 
 </resources>
