@@ -54,4 +54,6 @@ urlpatterns = [
     url(r'^current_user/', include(users_urls)),
     path('', include(router.urls)),
 ]
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

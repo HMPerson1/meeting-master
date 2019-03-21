@@ -1,5 +1,4 @@
-from django.conf import settings
-from django.conf.urls import url, static
+from django.conf.urls import url
 
 from . import views
 
@@ -10,6 +9,3 @@ urlpatterns = [
     url(r'(?P<id>.+)/attendees$', views.EventAttendeesView.as_view(), name='api-event-detail'),
     url(r'(?P<id>.+)$', views.EventDetailView.as_view(), name='api-event-detail'),
 ]
-
-if settings.DEBUG:
-  urlpatterns += static.static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
