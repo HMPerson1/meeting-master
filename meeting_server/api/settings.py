@@ -57,11 +57,13 @@ INSTALLED_APPS = [
 SITE_ID = 1
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-    )
+    ]
 }
+if DEBUG:
+    REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] += ['rest_framework.authentication.SessionAuthentication']
+
 REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'api.users.serializers.UserProfileSerializer',
     'PASSWORD_RESET_SERIALIZER': 'api.users.serializers.PasswordResetSerializer'
@@ -72,6 +74,16 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 PHONENUMBER_DB_FORMAT = "E164"
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
