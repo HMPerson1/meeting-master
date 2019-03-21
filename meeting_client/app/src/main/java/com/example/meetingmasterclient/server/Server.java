@@ -20,7 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class Server {
     private static final String TAG = "Server";
 
-    private static final String BASE_URL = "http://10.0.2.2:8000/";
+    private static final String BASE_URL = "http://0.0.0.0:8000";
 
     private static Server instance;
     private @NonNull
@@ -63,9 +63,10 @@ public class Server {
         return getInstance().service;
     }
 
-    public static void authenticate(String authToken) {
+    public static boolean authenticate(String authToken) {
         getInstance().authToken = authToken;
         Log.d(TAG, "authenticated");
+        return true;
     }
 
     public static <T> void parseUnsuccessful(@NonNull Response<?> response, Class<T> errorResponseClass, Consumer<T> badRequest, IntConsumer otherError) {

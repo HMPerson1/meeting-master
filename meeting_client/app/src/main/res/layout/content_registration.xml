@@ -83,8 +83,8 @@
             <android.support.design.widget.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/phone_number"
-                android:inputType="phone"/>
+                android:hint="phone_number (optional) e.g. +1 888-555-5555"
+                android:inputType="phone" />
 
         </android.support.design.widget.TextInputLayout>
 
