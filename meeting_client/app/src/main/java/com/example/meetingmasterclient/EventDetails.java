@@ -19,6 +19,7 @@ import com.example.meetingmasterclient.server.MeetingService;
 public class EventDetails extends AppCompatActivity {
     public static final String PREFS_NAME = "App_Settings";
     private static final String TAG = "DebugLauncherActivity";
+    int eventId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +35,16 @@ public class EventDetails extends AppCompatActivity {
         final TextInputEditText textInputCity = findViewById(R.id.city);
         final TextInputEditText textInputState = findViewById(R.id.state);
         final TextInputEditText textInputRoomNo = findViewById(R.id.room_num);
+
+        //get the current intent
+        Intent intent = getIntent();
+        eventId= intent.getIntExtra("event_id", -1);
+
+        eventId =1234; //for testing
+
+        if (eventId<0){
+            finish();  //did not pass event_id
+        }
 
         //TODO: get info from backend
         //MeetingService.EventData eventData = new MeetingService.EventData();
@@ -54,11 +65,15 @@ public class EventDetails extends AppCompatActivity {
 
                 SharedPreferences sharedPref = getSharedPreferences(PREFS_NAME,Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putBoolean("checkStatus", menuItem.isChecked());
+                String NotificationStatusKey= String.valueOf(eventId) +"checkStatus";
+                editor.putBoolean(NotificationStatusKey, menuItem.isChecked());
                 editor.commit();
+                /* true = notifications on, false= notifications off
+                    key= eventId+checkStatus;
+                 */
                 /*
                 //get pref
-                Boolean value = sharedPref.getBoolean("checkStatus", false);
+                Boolean value = sharedPref.getBoolean(NotificationStatusKey, false);
                 Log.d(TAG, value.toString());
                 */
                 return false;

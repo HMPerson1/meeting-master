@@ -26,7 +26,7 @@ public class EventEdition extends AppCompatActivity {
         save_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();//return to create a meeting
+                finish();//return to Event Details
 
             }
         });
