@@ -2,11 +2,13 @@ package com.example.meetingmasterclient.server;
 
 import android.support.annotation.NonNull;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 
 import retrofit2.http.PATCH;
@@ -122,6 +124,12 @@ public interface MeetingService {
 
     @GET
     Call<EventData> getEvent(@Url String url);
+
+    /**
+     * TODO someone check this, not sure if correct
+     */
+    @DELETE("/events/{id}/")
+    Call<Void> deleteEvent(@Url String url);
 
     /* ******************** *
      * Dumb data containers *
@@ -356,6 +364,34 @@ public interface MeetingService {
             this.file_attachment = file_attachment;
             this.notes = notes;
             this.event_location = event_location;
+        }
+    }
+
+    class EventDataError{
+        public int[] id;
+        public int[] event_admin;
+        public String[] event_name;
+        public String[] event_date;
+        public String[] event_time;
+        public String[] event_duration;
+        public String[] file_attachment;
+        public String[] notes;
+        public int[] event_location;
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "EventDataError{" +
+                    "id=" + Arrays.toString(id) +
+                    ", event_admin=" + Arrays.toString(event_admin) +
+                    ", event_name=" + Arrays.toString(event_name) +
+                    ", event_date=" + Arrays.toString(event_date) +
+                    ", event_time=" + Arrays.toString(event_time) +
+                    ", event_duration=" + Arrays.toString(event_duration) +
+                    ", file_attachment=" + Arrays.toString(file_attachment) +
+                    ", notes=" + Arrays.toString(notes) +
+                    ", event_location" + Arrays.toString(event_location) +
+                    '}';
         }
     }
 

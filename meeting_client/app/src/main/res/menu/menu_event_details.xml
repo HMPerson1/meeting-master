@@ -6,7 +6,7 @@
         android:title="@string/delete_event"
         app:showAsAction="never" />
 
-    <item android:id="@+id/export_event"
+    <item android:id="@+id/export_event_menu"
         android:title="@string/export_event"
         app:showAsAction="never" />
 
