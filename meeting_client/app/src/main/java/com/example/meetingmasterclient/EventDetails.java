@@ -59,10 +59,11 @@ public class EventDetails extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()) {
             case R.id.delete_event_menu:
-                //boolean userConfirm = openAlertDialog();
-                //if (userConfirm) {
+                boolean userConfirm = openAlertDialog();
+                userConfirm = true; //TODO delete this line once openAlertDialog() is fixed
+                if (userConfirm) {
                     deleteEvent();
-                //}
+                }
                 return true;
             case R.id.export_event_menu:
                 exportEvent();
