@@ -1,11 +1,13 @@
 package com.example.meetingmasterclient;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.example.meetingmasterclient.server.MeetingService;
@@ -157,7 +159,7 @@ public class EventListView extends AppCompatActivity {
 
                                 isDeclined = inv.status == 3;
 
-                                if (timeIsConsistent && (!declined || isDeclined)) {
+                                if (timeIsConsistent && (declined || !isDeclined)) {
                                     events.add(event);
                                 }
                             } catch(ParseException e) {}
@@ -171,6 +173,15 @@ public class EventListView extends AppCompatActivity {
         }
 
         eventData.setAdapter(new EventViewAdapter(getApplicationContext(), events));
+
+        eventData.setOnItemClickListener(
+            (parent, view, position, id) -> {
+                Intent intent = new Intent(getApplicationContext(), EventDetails.class);
+                intent.putExtra("event_id", ((MeetingService.EventData)eventData.getItemAtPosition(position)).id);
+                startActivity(intent);
+            }
+        );
+
         eventData.setVisibility(View.VISIBLE);
     }
 }
