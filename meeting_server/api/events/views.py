@@ -80,3 +80,24 @@ class EventDetailView(APIView):
         event = self.get_object(pk=pk)
         event.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# class EventPermissionView(APIView):
+#
+#     def get_object(self, pk):
+#         try:
+#             return Response.objects.get(pk=pk)
+#         except status.HTTP_404_NOT_FOUND:
+#             raise Http404
+#
+#     def put(self, request, pk, format=None):
+#         event = self.get_object(pk=pk)
+#
+#         if event.event_admin is not request.user
+#
+#         serializer = EventPermissionSerializer(event, data=request.DATA)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+
+
