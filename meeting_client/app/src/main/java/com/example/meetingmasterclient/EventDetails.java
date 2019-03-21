@@ -1,8 +1,12 @@
 package com.example.meetingmasterclient;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,7 +17,8 @@ import android.widget.CheckBox;
 import com.example.meetingmasterclient.server.MeetingService;
 
 public class EventDetails extends AppCompatActivity {
-
+    public static final String PREFS_NAME = "App_Settings";
+    private static final String TAG = "DebugLauncherActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,9 +52,29 @@ public class EventDetails extends AppCompatActivity {
                     menuItem.setChecked(true);
                 }
 
+                SharedPreferences sharedPref = getSharedPreferences(PREFS_NAME,Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putBoolean("checkStatus", menuItem.isChecked());
+                editor.commit();
+                /*
+                //get pref
+                Boolean value = sharedPref.getBoolean("checkStatus", false);
+                Log.d(TAG, value.toString());
+                */
                 return false;
             }
         });
+
+        menu.findItem(R.id.edit_Event).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                startActivity(new Intent(EventDetails.this, EventEdition.class));
+
+                return false;
+
+            }
+        });
+
         return true;
     }
 
