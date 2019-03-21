@@ -23,7 +23,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".EventDetails" />
         <activity
             android:name=".Registration"
             android:label="@string/title_activity_registration" />
@@ -38,13 +37,16 @@
         </activity>
         <activity
             android:name=".EventCreation"
-            android:label="@string/title_activity_event_creation"/>
+            android:label="@string/title_activity_event_creation" />
+        <activity
+            android:name=".EventDetails"
+            android:label="@string/title_activity_event_details"/>
         <activity
             android:name=".AddUserstoMeeting"
             android:label="@string/title_activity_add_users_to_meeting" />
         <activity
             android:name=".AttendeeList"
-            android:label="@string/title_activity_attendee_list"/>
+            android:label="@string/title_activity_attendee_list" />
         <activity
             android:name=".InvitationListActivity"
             android:label="@string/title_activity_invitation_list"

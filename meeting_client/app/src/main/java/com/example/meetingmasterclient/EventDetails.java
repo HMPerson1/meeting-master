@@ -3,6 +3,8 @@ package com.example.meetingmasterclient;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 
 
 import com.example.meetingmasterclient.server.MeetingService;
@@ -27,5 +29,12 @@ public class EventDetails extends AppCompatActivity {
 
         //TODO: get info from backend
         //MeetingService.EventData eventData = new MeetingService.EventData();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.event_details, menu);
+        return true;
     }
 }
