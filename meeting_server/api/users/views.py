@@ -4,7 +4,7 @@ from rest_framework import viewsets, permissions, generics as drf_generics
 from rest_framework.filters import SearchFilter
 
 from api.users.models import UserProfile
-from api.users.serializers import UserProfileSerializer
+from api.users.serializers import UserProfileSerializer, FirebaseRegTokenSerializer
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
