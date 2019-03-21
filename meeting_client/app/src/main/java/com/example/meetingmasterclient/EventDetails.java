@@ -5,6 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.CheckBox;
 
 
 import com.example.meetingmasterclient.server.MeetingService;
@@ -29,6 +32,25 @@ public class EventDetails extends AppCompatActivity {
 
         //TODO: get info from backend
         //MeetingService.EventData eventData = new MeetingService.EventData();
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        menu.findItem(R.id.notificationSwitch).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                if (menuItem.isChecked()){
+                    menuItem.setChecked(false);
+                }else{
+                    menuItem.setChecked(true);
+                }
+
+                return false;
+            }
+        });
+        return true;
     }
 
     @Override
