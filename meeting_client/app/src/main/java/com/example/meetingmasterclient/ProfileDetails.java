@@ -27,7 +27,7 @@ public class ProfileDetails extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getUserById(getIntent().getIntExtra("id", -1));
+        getUserById(getIntent().getIntExtra("user_id", -1));
     }
 
     private void getUserById(int id) {

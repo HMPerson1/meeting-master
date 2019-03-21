@@ -8,8 +8,11 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.meetingmasterclient.server.MeetingService;
+import com.example.meetingmasterclient.server.Server;
 
 import java.util.List;
+
+import retrofit2.Call;
 
 // TODO: Set up adapter to store entire event object
 public class EventViewAdapter extends BaseAdapter {
@@ -42,8 +45,18 @@ public class EventViewAdapter extends BaseAdapter {
         View infl = inflater.inflate(R.layout.event_view_item, null);
 
         TextView from = (TextView)infl.findViewById(R.id.from);
-        // TODO: Make query to obtain name of admin
-        from.setText(eventInfo.get(position).event_admin);
+        Call<MeetingService.UserProfile> c = Server.getService().getUser("/users/" + eventInfo.get(position).event_admin + "/");
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        from.setText(response.body().username);
+                    } else {
+                        // TODO: Parse error
+                        //Server.parseUnsuccessful(response, MeetingService.EventDetailsError.class(), System.out::println, System.out::println);
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
 
         TextView name = (TextView)infl.findViewById(R.id.event_name);
         name.setText(eventInfo.get(position).event_name);
