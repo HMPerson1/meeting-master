@@ -70,4 +70,8 @@
     <string name="save_changes">Save Changes</string>
     <string name="title_activity_event_details">EventDetails</string>
 
+    <!-- menu options -->
+    <string name="delete_event">Delete Event</string>
+    <string name="export_event">Export Event</string>
+
 </resources>

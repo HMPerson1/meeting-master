@@ -40,8 +40,7 @@
             android:label="@string/title_activity_event_creation" />
         <activity
             android:name=".EventDetails"
-            android:label="@string/title_activity_event_details"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:label="@string/title_activity_event_details"/>
         <activity
             android:name=".AddUserstoMeeting"
             android:label="@string/title_activity_add_users_to_meeting" />
