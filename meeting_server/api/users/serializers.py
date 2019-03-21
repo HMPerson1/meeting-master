@@ -1,3 +1,4 @@
+from collections import namedtuple
 from typing import Type, Union
 
 import django.contrib.auth.models as auth_models
@@ -6,6 +7,7 @@ import rest_auth.serializers as auth_serializers
 from rest_auth.serializers import UserDetailsSerializer
 from rest_framework import serializers
 from rest_framework.fields import empty, get_attribute
+from rest_framework.reverse import reverse
 
 from api.users.models import UserProfile
 
@@ -112,6 +114,15 @@ class ProfilePictureSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ('profile_picture',)
+
+
+class UserIcalUrlSerializer(serializers.Serializer):
+    ical_url = serializers.URLField()
+
+    def to_representation(self, instance: UserProfile):
+        i = namedtuple('n', 'ical_url')(
+            ical_url=reverse('api-event-ical', request=self.context['request'], kwargs={'ical_key': instance.ical_key}))
+        return super(UserIcalUrlSerializer, self).to_representation(i)
 
 
 def subset_dict(bigdict, keys):

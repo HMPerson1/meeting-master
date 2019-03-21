@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     'phonenumber_field',
     'allauth',
     'allauth.account',
-    'drf_yasg'
+    'drf_yasg',
 ]
 
 SITE_ID = 1
