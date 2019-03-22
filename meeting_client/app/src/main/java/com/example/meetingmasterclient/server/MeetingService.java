@@ -123,6 +123,13 @@ public interface MeetingService {
     @GET
     Call<EventData> getEvent(@Url String url);
 
+    /**
+     * needs authentication <br>
+     * never fails (if authenticated)
+     */
+    @PUT("/firebase_reg_token/")
+    Call<Void> putFirebaseRegToken(@Body FirebaseRegTokenData data);
+
     /* ******************** *
      * Dumb data containers *
      * ******************** */
@@ -378,6 +385,14 @@ public interface MeetingService {
             this.user_id = user_id;
             this.event_id = event_id;
             this.status = status;
+        }
+    }
+
+    class FirebaseRegTokenData {
+        public String firebase_reg_token;
+
+        public FirebaseRegTokenData(String firebase_reg_token) {
+            this.firebase_reg_token = firebase_reg_token;
         }
     }
 }

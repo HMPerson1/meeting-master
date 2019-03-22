@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.function.BiConsumer;
@@ -66,6 +68,16 @@ public class Server {
     public static void authenticate(String authToken) {
         getInstance().authToken = authToken;
         Log.d(TAG, "authenticated");
+        // tell the server our firebase registration token
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                return;
+            }
+            getService().putFirebaseRegToken(new MeetingService.FirebaseRegTokenData(task.getResult().getToken()))
+                    .enqueue(mkCallback(
+                            (call, response) -> {
+                            }, (call, t) -> t.printStackTrace()));
+        });
     }
 
     public static <T> void parseUnsuccessful(@NonNull Response<?> response, Class<T> errorResponseClass, Consumer<T> badRequest, IntConsumer otherError) {
