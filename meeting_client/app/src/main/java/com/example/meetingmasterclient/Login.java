@@ -17,15 +17,20 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpResponse;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.meetingmasterclient.server.MeetingService;
+import com.example.meetingmasterclient.server.Server;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import retrofit2.Call;
 
 
 public class Login extends AppCompatActivity {
@@ -97,7 +102,7 @@ public class Login extends AppCompatActivity {
 
 
     public boolean confirmInput(View v){
-        return (!validateEmail() || !validatePassword());
+        return (validateEmail() && validatePassword());
     }
 
     public void submitLoginRequest(View v){
@@ -105,47 +110,35 @@ public class Login extends AppCompatActivity {
 
         //TODO parse information to be sent to server for login
 
-        //check with server to see whether password and email match
-        String url = "";
-        URL object;
 
 
-        JSONObject json = new JSONObject();
-        try {
-            json.put("username", textInputEmail.getEditText().getText().toString());
-            json.put("password", textInputPassword.getEditText().getText().toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        String username = textInputEmail.getEditText().getText().toString();
+        String password = textInputPassword.getEditText().getText().toString();
+        Call<MeetingService.AuthToken> c = Server.getService().login(new MeetingService.LoginData(username, password));
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
 
-        //Send put request to server
-        try {
-            object = new URL(url);
-            HttpURLConnection con = (HttpURLConnection) object.openConnection();
-            con.setDoOutput(true);
-            con.setRequestMethod("PUT");
+                    Toast.makeText(Login.this,response.toString() , Toast.LENGTH_LONG).show();
+                    if (response.isSuccessful()) {
 
-            //get response from server about whether the password is valid
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                    (Request.Method.PUT, url, json, new Response.Listener<JSONObject>() {
 
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            //login successful, switch activity to homepage
-                            Toast.makeText(Login.this,response.toString() , Toast.LENGTH_LONG).show();
-                        }
-                    }, new Response.ErrorListener() {
+                        assert response.body() != null;
+                        Server.authenticate(response.body().key);
+                    } else {
+                        try {
+                            assert response.errorBody() != null;
+                            System.out.println("response.error = " + response.errorBody().string());
+                        } catch (IOException e) {
+                            e.printStackTrace();
 
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(Login.this,"Invalid Username or Password" , Toast.LENGTH_LONG).show();
 
                         }
-                    });
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
 
     }
 }

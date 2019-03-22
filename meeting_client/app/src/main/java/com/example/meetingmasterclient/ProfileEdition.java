@@ -21,11 +21,15 @@ public class ProfileEdition extends AppCompatActivity {
         setContentView(R.layout.activity_profile_edition);
 
         //initialize user fields
-        textInputFirstName = findViewById(R.id.textInputLayout2); //TODO change id name
-        textInputLastName = findViewById(R.id.last_name_layout);
-        textInputUsername = findViewById(R.id.username_layout);
-        textInputEmailAddress = findViewById(R.id.email_layout);
-        textInputPhoneNumber = findViewById(R.id.phone_layout);
+        textInputFirstName = findViewById(R.id.text_edit_first_name);
+        textInputLastName = findViewById(R.id.text_edit_last_name);
+        textInputUsername = findViewById(R.id.text_edit_username);
+        textInputEmailAddress = findViewById(R.id.text_edit_email);
+        textInputPhoneNumber = findViewById(R.id.text_edit_phone_number);
+    }
+
+    public void sendProfileEditionRequest(){
+
     }
 
 

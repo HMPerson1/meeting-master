@@ -1,4 +1,3 @@
-
 package com.example.meetingmasterclient;
 
 import android.app.ActionBar;
@@ -18,20 +17,27 @@ import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.meetingmasterclient.server.MeetingService;
+import com.example.meetingmasterclient.server.Server;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 public class AddUserstoMeeting extends AppCompatActivity {
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_usersto_meeting);
 
-    //TODO: get information(list) of invited people from database
-        
+        //TODO: get information(list) of invited people from database
+
 
         final List<String> list = new ArrayList<>(); //used for testing functionality of list
 
@@ -50,22 +56,16 @@ public class AddUserstoMeeting extends AppCompatActivity {
         final ArrayAdapter adapter = new ArrayAdapter<>(AddUserstoMeeting.this, android.R.layout.simple_list_item_multiple_choice, list);
 
         //make listview checkable so that people can be removed from the list
-        //people are removed from the list once a checkbox is checked
+
         final boolean [] checkedItems;
-        listViewInvitedPeople.setItemChecked(1, true);
+
+        // listViewInvitedPeople.setItemChecked(1, true);
+
 
 
         listViewInvitedPeople.setAdapter(adapter);
 
-        listViewInvitedPeople.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-               list.remove(position);
-               listViewInvitedPeople.setItemChecked(position, false);
-               adapter.notifyDataSetChanged();
-            }
-        });
-        
+
         //if User clicks the remove button, remove all checked items in listview
         Button remove_button = (Button)findViewById(R.id.removebutton);
 
@@ -95,7 +95,7 @@ public class AddUserstoMeeting extends AppCompatActivity {
                 String Email = String.valueOf(Email_Input.getText()); //get Email from input
                 Log.d("Email", Email);
                 //Check if Email in the Correct Components
-               if (!(Email.contains("@")||Email.contains("."))){
+                if (!(Email.contains("@")||Email.contains("."))){
                     //edit hint in textbox to indicate to user that they entered an invalid email
                     Log.d("insideif", "if");
                     Toast.makeText(AddUserstoMeeting.this, "Invalid Email", Toast.LENGTH_SHORT).show();
@@ -105,6 +105,36 @@ public class AddUserstoMeeting extends AppCompatActivity {
                 //check if user is in database
                 //if user not in database indicate to user that the email is invalid
                 //if user is in database, add user to the list of invited people
+
+
+
+                Call<List<MeetingService.UserProfile>> call = Server.getService().users(Email_Input.getText().toString());
+                call.enqueue(new Callback<List<MeetingService.UserProfile>>() {
+                    @Override
+                    public void onResponse(Call<List<MeetingService.UserProfile>> call, Response<List<MeetingService.UserProfile>> response) {
+                        if(!response.isSuccessful()){ //404 error?
+                            Toast.makeText(AddUserstoMeeting.this, "Oops, Something is wrong: "+response.code() , Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        Toast.makeText(AddUserstoMeeting.this,"response" , Toast.LENGTH_LONG).show();
+                        Toast.makeText(AddUserstoMeeting.this,response.toString() , Toast.LENGTH_LONG).show();
+
+                        //add user to list if successful
+                        List<MeetingService.UserProfile> userProfs =response.body();//store response
+                        for (MeetingService.UserProfile userProf : userProfs){
+                            list.add(userProf.username);
+                            adapter.notifyDataSetChanged();
+                        }//end for
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<MeetingService.UserProfile>> call, Throwable t) {//error from server
+
+                        Toast.makeText(AddUserstoMeeting.this,t.getMessage() , Toast.LENGTH_LONG).show();
+
+                    }
+                });
 
             }
         });
@@ -128,9 +158,3 @@ public class AddUserstoMeeting extends AppCompatActivity {
 
 
 }
-
-
-
-
-
-

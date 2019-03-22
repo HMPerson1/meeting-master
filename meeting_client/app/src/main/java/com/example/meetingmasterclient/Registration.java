@@ -9,11 +9,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.meetingmasterclient.server.MeetingService;
+import com.example.meetingmasterclient.server.Server;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import retrofit2.Call;
 
 public class Registration extends AppCompatActivity {
     private TextInputLayout textInputFirstName;
@@ -149,11 +154,16 @@ public class Registration extends AppCompatActivity {
     }
 
     public boolean confirmInput(View v){
+        boolean help = !validatePassword() | !validateEmail() | !validateFirstName() | !validateLastName()
+                | !validateUsername() | validatePhoneNumber();
+        System.out.println(help);
         return (!validatePassword() | !validateEmail() | !validateFirstName() | !validateLastName()
                 | !validateUsername() | validatePhoneNumber());
     }
 
-    public String formJSON(){
+    public void sendRegistrationRequest(View v){
+        if (!confirmInput(v)) return;
+
         //parse information to be sent to server for registration
         String username = textInputUsername.getEditText().getText().toString().trim();
         String email = textInputEmailAddress.getEditText().getText().toString().trim();
@@ -162,6 +172,26 @@ public class Registration extends AppCompatActivity {
         String first_name = textInputFirstName.getEditText().getText().toString().trim();
         String last_name = textInputLastName.getEditText().getText().toString().trim();
         String phone_number = textInputPhoneNumber.getEditText().getText().toString().trim();
+
+
+        Call<MeetingService.AuthToken> c = Server.getService().register(new MeetingService.RegistrationData(username,first_name,last_name,email,password1,password2,phone_number));
+
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        assert response.body() != null;
+                        Server.authenticate(response.body().key);
+                    } else {
+
+                        Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, System.out::println, System.out::println);
+
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
+
+
+        //TODO everything below this is kinda unnecessary, but we could keep it for debugging for now(?)
 
         JSONObject json = new JSONObject();
         try {
@@ -178,18 +208,5 @@ public class Registration extends AppCompatActivity {
         }
 
         System.out.println(json.toString());
-        return json.toString();
-    }
-
-    public void sendRegistrationRequest(View v){
-        if (!confirmInput(v)) return;
-
-        String json = formJSON();
-        HttpURLConnection http;
-        try {
-            URL url;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

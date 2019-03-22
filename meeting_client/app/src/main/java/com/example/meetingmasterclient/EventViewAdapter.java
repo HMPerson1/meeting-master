@@ -7,25 +7,31 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
+import com.example.meetingmasterclient.server.MeetingService;
+import com.example.meetingmasterclient.server.Server;
 
+import java.util.List;
+
+import retrofit2.Call;
+
+// TODO: Set up adapter to store entire event object
 public class EventViewAdapter extends BaseAdapter {
     Context context;
-    String[][] eventInfo;
+    List<MeetingService.EventData> eventInfo;
 
-    public EventViewAdapter(Context context, String[][] eventInfo) {
+    public EventViewAdapter(Context context, List<MeetingService.EventData> eventInfo) {
         this.context = context;
         this.eventInfo = eventInfo;
     }
 
     @Override
     public int getCount() {
-        return eventInfo.length;
+        return eventInfo.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return eventInfo[position];
+        return eventInfo.get(position);
     }
 
     @Override
@@ -39,16 +45,28 @@ public class EventViewAdapter extends BaseAdapter {
         View infl = inflater.inflate(R.layout.event_view_item, null);
 
         TextView from = (TextView)infl.findViewById(R.id.from);
-        from.setText(eventInfo[position][0]);
+        Call<MeetingService.UserProfile> c = Server.getService().getUser("/users/" + eventInfo.get(position).event_admin + "/");
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        from.setText(response.body().username);
+                    } else {
+                        // TODO: Parse error
+                        //Server.parseUnsuccessful(response, MeetingService.EventDetailsError.class(), System.out::println, System.out::println);
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
 
         TextView name = (TextView)infl.findViewById(R.id.event_name);
-        name.setText(eventInfo[position][1]);
+        name.setText(eventInfo.get(position).event_name);
 
         TextView date = (TextView)infl.findViewById(R.id.event_date);
-        date.setText(eventInfo[position][2]);
+        date.setText(eventInfo.get(position).event_date);
 
         TextView place = (TextView)infl.findViewById(R.id.event_place);
-        place.setText(eventInfo[position][3]);
+        // TODO: Make query to obtain location details
+        place.setText(eventInfo.get(position).event_location);
 
         return infl;
     }

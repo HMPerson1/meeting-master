@@ -1,50 +1,70 @@
 package com.example.meetingmasterclient;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+
+import android.support.design.widget.TextInputEditText;
+
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.widget.Button;
 
 public class EventCreation extends AppCompatActivity {
-    private TextInputLayout textInputStreetAddr;
-    private TextInputLayout textInputCity;
-    private TextInputLayout textInputState;
-    private TextInputLayout textInputRoomNo;
-    private TextInputLayout textInputEmail;
+
+    private TextInputEditText textInputEventName;
+    private TextInputEditText textInputDate;
+    private TextInputEditText textInputTime;
+    private TextInputEditText textInputNotes;
+    private TextInputEditText textInputStreetAddr;
+    private TextInputEditText textInputCity;
+    private TextInputEditText textInputState;
+    private TextInputEditText textInputRoomNo;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_event);
-        /**Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setContentView(R.layout.activity_event_creation);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });**/
-        
+        configureAddUserButton();
+
+        configureAttendeeListButton();
+
+
+        textInputEventName = findViewById(R.id.text_input_event_name);
+        textInputDate = findViewById(R.id.text_input_date);
+        textInputTime = findViewById(R.id.text_input_time);
+        textInputNotes = findViewById(R.id.text_input_notes);
         textInputStreetAddr = findViewById(R.id.text_input_street_address);
         textInputCity = findViewById(R.id.text_input_city);
         textInputState = findViewById(R.id.text_input_state);
         textInputRoomNo = findViewById(R.id.text_input_room_no);
-        textInputEmail = findViewById(R.id.text_input_email);
+
     }
-    
-    //check for form completion
+
+    /* input validation */
+
+    private boolean validateEventName(){
+
+        String eventName = textInputEventName.getText().toString();
+
+        if (eventName.isEmpty()){
+            textInputEventName.setError("Event name cannot be empty");
+            return false;
+        } else {
+            textInputEventName.setError(null);
+            return true;
+        }
+    }
+
+    //TODO validate date
+
+    //TODO validate time
 
     private boolean validateStreetAddr(){
-        String streetAddr = textInputStreetAddr.getEditText().getText().toString();
+        String streetAddr = textInputStreetAddr.getText().toString();
         if (streetAddr.isEmpty()){
             textInputStreetAddr.setError("Street address cannot be empty");
             return false;
@@ -55,7 +75,7 @@ public class EventCreation extends AppCompatActivity {
     }
 
     private boolean validateCity(){
-        String city = textInputCity.getEditText().getText().toString();
+        String city = textInputCity.getText().toString();
         if (city.isEmpty()){
             textInputCity.setError("City cannot be empty");
             return false;
@@ -66,7 +86,7 @@ public class EventCreation extends AppCompatActivity {
     }
 
     private boolean validateState(){
-        String state = textInputState.getEditText().getText().toString();
+        String state = textInputState.getText().toString();
         if (state.isEmpty()){
             textInputState.setError("State cannot be empty");
             return false;
@@ -76,40 +96,39 @@ public class EventCreation extends AppCompatActivity {
         }
     }
 
-    public boolean confirmInput(View v) {
-        return (!validateStreetAddr() || !validateCity() || !validateStreetAddr());
-    }
+    private void configureAddUserButton(){
+        Button add_button = (Button)findViewById(R.id.add_users_button);
+        add_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(EventCreation.this, AddUserstoMeeting.class));
 
-    public String formJSON(){
-        //parse information to be sent to server for registration
-        String addr = textInputStreetAddr.getEditText().getText().toString();
-        String city = textInputCity.getEditText().getText().toString();
-        String state = textInputState.getEditText().getText().toString();
-        String roomNo = textInputRoomNo.getEditText().getText().toString();
-        String email = textInputEmail.getEditText().getText().toString();
-        //TODO get emails as an array for multiple invitees
 
-        JSONObject json = new JSONObject();
-        try{
-            json.put("addr", addr);
-            json.put("city", city);
-            json.put("state", state);
-            if (!roomNo.isEmpty()){
-                json.put("roomNo", roomNo);
             }
-            json.put("email", email);
-        } catch (JSONException j){
-            j.printStackTrace();
-        }
+        });
+    }
+    private void configureAttendeeListButton() {
+        Button attendeeListButton = findViewById(R.id.attendees_list_button);
 
-        System.out.println(json.toString());
-        return json.toString();
+        attendeeListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //switch to attendeeList where you can edit permissions
+                startActivity(new Intent(EventCreation.this,AttendeeList.class));
+
+            }
+        });
+    }//configureAttendee
+
+
+    public boolean confirmInput(View v) {
+        return (!validateEventName() | !validateStreetAddr() | !validateCity() | !validateStreetAddr()
+            | !validateState());
     }
 
     public void submitInvitation(View v){
         if(!confirmInput(v)) return;
-        //TODO look up user by email, send invite to server, and display user on this page
-        String json = formJSON();
+
     }
 
 }
