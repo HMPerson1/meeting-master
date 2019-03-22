@@ -139,8 +139,8 @@ public interface MeetingService {
                                    @Path("user_id") String user_id,
                                    int status);     //TODO this probs needs fixing, event_id to string
 
-    @GET
-    Call<List<InvitationData>> getInvitations(@Url String url);
+    @GET("/invitations/user-invitations")
+    Call<List<InvitationData>> getUsersInvitations();
 
     @GET
     Call<EventData> getEvent(@Url String url);
@@ -520,11 +520,13 @@ public interface MeetingService {
         public int user_id;
         public int event_id;
         public int status;
+        public boolean edit_permission;
 
-        public InvitationData(int user_id, int event_id, int status) {
+        public InvitationData(int user_id, int event_id, int status, boolean edit_permission) {
             this.user_id = user_id;
             this.event_id = event_id;
             this.status = status;
+            this.edit_permission = edit_permission;
         }
 
         public int getUser_id() {
