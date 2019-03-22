@@ -307,6 +307,6 @@ public class EventDetails extends AppCompatActivity {
         csvExporter.setEvent(name, date, time, notes);
         csvExporter.writeToFile("test.csv");
 
-
+        //TODO finish implementation. Needs an intent and sent to calendar apps
     }
 }
