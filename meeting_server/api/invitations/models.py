@@ -1,18 +1,21 @@
 # Create your models here.
 
 from django.db import models
-from api.users.models import UserProfile
-from api.events.models import Event
 
-inv_status = {
-    "PENDING": 1,
-    "ACCEPTED": 2,
-    "DECLINED": 3
-}
+from api.events.models import Event
+from api.users.models import UserProfile
 
 
 class Invitation(models.Model):
-    # Django handles id, username, first_name, last_name, password, email
-    user_id = models.ForeignKey(UserProfile, related_name='user_id', on_delete=models.CASCADE)
-    event_id = models.ForeignKey(Event, related_name='event_id', on_delete=None)
-    status = models.PositiveIntegerField(default=inv_status["PENDING"], null=False, blank=False)
+    PENDING = 1
+    ACCEPTED = 2
+    DECLINED = 3
+    STATUS_CHOICES = (
+        (PENDING, 'PENDING'),
+        (ACCEPTED, 'ACCEPTED'),
+        (DECLINED, 'DECLINED'),
+    )
+    user_id = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    event_id = models.ForeignKey(Event, on_delete=models.CASCADE)
+    status = models.PositiveIntegerField(choices=STATUS_CHOICES, default=PENDING)
+    edit_permission = models.BooleanField(default=False)

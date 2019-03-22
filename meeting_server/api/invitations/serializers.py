@@ -14,12 +14,12 @@ class InvitationModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Invitation
-        fields = ('user_id', 'event_id', 'status')
+        fields = ('user_id', 'event_id', 'status', 'edit_permission')
 
     def create(self, validated_data):
         uid = validated_data.pop('user_id')
         eid = validated_data.pop('event_id')
-        invite = Invitation.objects.create(user_id=uid, event_id=eid, status=0)
+        invite = Invitation.objects.create(user_id=uid, event_id=eid)
         fcm.notify_invite(invite.user_id, invite.event_id)
         return invite
 

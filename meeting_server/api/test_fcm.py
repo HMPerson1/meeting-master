@@ -5,7 +5,7 @@ from django.test import TestCase
 
 from api import fcm
 from api.events.models import Event
-from api.invitations.models import Invitation, inv_status
+from api.invitations.models import Invitation
 from api.locations.models import Location
 from api.users.models import UserProfile
 
@@ -35,8 +35,8 @@ class FcmTests(TestCase):
             event_location=self.party_place,
             notes='PREPARE TO PARTY',
         )
-        Invitation.objects.create(user_id=self.bob, event_id=self.alice_party, status=inv_status['ACCEPTED'])
-        Invitation.objects.create(user_id=self.charlie, event_id=self.alice_party, status=inv_status['ACCEPTED'])
+        Invitation.objects.create(user_id=self.bob, event_id=self.alice_party, status=Invitation.ACCEPTED)
+        Invitation.objects.create(user_id=self.charlie, event_id=self.alice_party, status=Invitation.ACCEPTED)
 
     def test_notif_invite(self):
         self.dave.firebase_reg_token = _TEST_DEVICE_TOKEN

@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from api.events.models import Event
-from api.invitations.models import Invitation, inv_status
+from api.invitations.models import Invitation
 from api.locations.models import Location
 from api.users.models import UserProfile
 
@@ -25,10 +25,6 @@ class InvitationsByEventTests(TestCase):
             username='bob', first_name='Bob', last_name='Q.', email='bob@example.com'))
         self.charlie = UserProfile.objects.create(django_user=auth_models.User.objects.create(
             username='charlie', first_name='Bob', last_name='Q.', email='charlie@example.com'))
-        self.dave = UserProfile.objects.create(django_user=auth_models.User.objects.create(
-            username='dave', first_name='Bob', last_name='Q.', email='dave@example.com'))
-        self.emily = UserProfile.objects.create(django_user=auth_models.User.objects.create(
-            username='emily', first_name='Bob', last_name='Q.', email='emily@example.com'))
 
         self.party_place = Location.objects.create(street_address='123 Main St.', city='Anywhere', state='IN')
         self.alice_party = Event.objects.create(
@@ -40,8 +36,8 @@ class InvitationsByEventTests(TestCase):
             event_location=self.party_place,
             notes='PREPARE TO PARTY',
         )
-        Invitation.objects.create(user_id=self.bob, event_id=self.alice_party, status=inv_status['ACCEPTED'])
-        Invitation.objects.create(user_id=self.charlie, event_id=self.alice_party, status=inv_status['ACCEPTED'])
+        Invitation.objects.create(user_id=self.bob, event_id=self.alice_party, status=Invitation.ACCEPTED)
+        Invitation.objects.create(user_id=self.charlie, event_id=self.alice_party, status=Invitation.ACCEPTED)
 
         self.client = APIClient()
         self.client.credentials(
@@ -51,17 +47,21 @@ class InvitationsByEventTests(TestCase):
         response = self.client.get("/invitations/event-invitations/{}".format(self.alice_party.pk))
         assert response.status_code == status.HTTP_200_OK
         assert json.loads(response.content) == [
-            {'user_id': self.bob.pk, 'event_id': self.alice_party.pk, 'status': inv_status['ACCEPTED']},
-            {'user_id': self.charlie.pk, 'event_id': self.alice_party.pk, 'status': inv_status['ACCEPTED']},
+            {'user_id': self.bob.pk, 'event_id': self.alice_party.pk, 'status': Invitation.ACCEPTED,
+             'edit_permission': False},
+            {'user_id': self.charlie.pk, 'event_id': self.alice_party.pk, 'status': Invitation.ACCEPTED,
+             'edit_permission': False},
         ]
 
     def testGetInvitationsDeclined(self):
         bob_inv = Invitation.objects.get(user_id=self.bob, event_id=self.alice_party)
-        bob_inv.status = inv_status['DECLINED']
+        bob_inv.status = Invitation.DECLINED
         bob_inv.save()
         response = self.client.get("/invitations/event-invitations/{}".format(self.alice_party.pk))
         assert response.status_code == status.HTTP_200_OK
         assert json.loads(response.content) == [
-            {'user_id': self.bob.pk, 'event_id': self.alice_party.pk, 'status': inv_status['DECLINED']},
-            {'user_id': self.charlie.pk, 'event_id': self.alice_party.pk, 'status': inv_status['ACCEPTED']},
+            {'user_id': self.bob.pk, 'event_id': self.alice_party.pk, 'status': Invitation.DECLINED,
+             'edit_permission': False},
+            {'user_id': self.charlie.pk, 'event_id': self.alice_party.pk, 'status': Invitation.ACCEPTED,
+             'edit_permission': False},
         ]

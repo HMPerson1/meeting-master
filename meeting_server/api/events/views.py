@@ -110,5 +110,4 @@ class IcalView(drf_generics.ListAPIView):
     permission_classes = ()
 
     def get_queryset(self):
-        # what is that related name
-        return Event.objects.filter(event_id__user_id__ical_key=self.kwargs['ical_key'])
+        return Event.objects.filter(invitation__user_id__ical_key=self.kwargs['ical_key'])
