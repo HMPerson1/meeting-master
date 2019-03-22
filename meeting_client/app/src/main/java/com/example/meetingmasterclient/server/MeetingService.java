@@ -102,10 +102,10 @@ public interface MeetingService {
     @GET
     Call<UserProfile> getUser(@Url String url);
 
-    @GET
+    @GET("/locations/{id}/")
     Call<EventData> getLocationDetails(@Path("id") String id);
 
-    @GET
+    @GET("/events/{id}/")
     Call<EventData> getEventfromId(@Path("id") String id);
 
     @PUT("/events/{id}/")
@@ -123,6 +123,9 @@ public interface MeetingService {
         @Part MultipartBody.Part file
     );
     */
+
+    @GET("/invitations/{user_id}/")
+    Call<List<InvitationData>> getUserInvitations(@Path("user_id") String user_id);
 
     @GET
     Call<List<InvitationData>> getInvitations(@Url String url);
