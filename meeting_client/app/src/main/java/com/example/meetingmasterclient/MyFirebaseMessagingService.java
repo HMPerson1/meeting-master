@@ -76,8 +76,8 @@ class Notifier extends ContextWrapper {
     }
 
     private boolean shouldShowEditNotification(String eventId) {
-        // TODO
-        return true;
+        return getSharedPreferences(EventDetails.PREFS_NAME, Context.MODE_PRIVATE)
+                .getBoolean(eventId + "checkStatus", true);
     }
 
     public int nextNotificationId() {
