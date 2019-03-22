@@ -1,45 +1,116 @@
 package com.example.meetingmasterclient;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
-
-import com.example.meetingmasterclient.server.MeetingService;
+import android.content.res.Resources;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 
 import androidx.test.espresso.Espresso;
-import androidx.test.espresso.matcher.BoundedMatcher;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.rule.ActivityTestRule;
 
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 public class AttendeeListViewTest {
-    private static Matcher<MeetingService.UserProfile> attendeeIsEqual(final MeetingService.UserProfile profile) {
-        return new BoundedMatcher<MeetingService.UserProfile, MeetingService.UserProfile>(MeetingService.UserProfile.class) {
-            @Override
-            public boolean matchesSafely(MeetingService.UserProfile up) {
-                // TODO: Insert equality condition for remaining attributes
-                return up.pk == profile.pk && up.username.equals(profile.username) && up.first_name.equals(profile.first_name);
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("attendee is equal");
-            }
-        };
-    }
-
     @Rule
-    public ActivityTestRule<AttendeeListView> activityRule = new ActivityTestRule<>(AttendeeListView.class, false, false);
+    public ActivityTestRule<AttendeeList> activityRule = new ActivityTestRule<>(AttendeeList.class, false, false);
+
+    private Intent createAttendeeListIntent(int id) {
+        Intent intent = new Intent();
+        intent.putExtra("event_id", 1);
+        return intent;
+    }
 
     @Test
-    public void testAttendeeList() {
-        Intent intent = new Intent();
-        intent.putExtra("id", 1);
-        activityRule.launchActivity(intent);
+    public void attendeeListFirstTest() {
+        activityRule.launchActivity(createAttendeeListIntent(1));
+
+        Espresso.onView(new RecyclerViewMatcher(R.id.recycler_view_invited_people).atPosition(0))
+                .check(matches(hasDescendant(withText("Kinoko Nasu"))));
     }
 
-    // Placeholder so that the file compiles; will be removed when the attendee list activity is completed
-    class AttendeeListView extends AppCompatActivity {}
+    @Test
+    public void attendeeListSecondTest() {
+        activityRule.launchActivity(createAttendeeListIntent(3));
+
+        RecyclerViewMatcher rvm = new RecyclerViewMatcher(R.id.recycler_view_invited_people);
+
+        Espresso.onView(rvm.atPosition(1))
+                .check(matches(hasDescendant(withText("John Doe"))));
+
+        Espresso.onView(rvm.atPosition(2))
+                .check(matches(hasDescendant(withText("John Dutchman"))));
+    }
+
+    class RecyclerViewMatcher {
+        private final int recyclerViewId;
+
+        public RecyclerViewMatcher(int recyclerViewId) {
+            this.recyclerViewId = recyclerViewId;
+        }
+
+        public Matcher<View> atPosition(final int position) {
+            return atPositionOnView(position, -1);
+        }
+
+        public Matcher<View> atPositionOnView(final int position, final int targetViewId) {
+
+            return new TypeSafeMatcher<View>() {
+                Resources resources = null;
+                View childView;
+
+                public void describeTo(Description description) {
+                    String idDescription = Integer.toString(recyclerViewId);
+                    if (this.resources != null) {
+                        try {
+                            idDescription = this.resources.getResourceName(recyclerViewId);
+                        } catch (Resources.NotFoundException var4) {
+                            idDescription = String.format("%s (resource name not found)",
+                                    new Object[] { Integer.valueOf
+                                            (recyclerViewId) });
+                        }
+                    }
+
+                    description.appendText("with id: " + idDescription);
+                }
+
+                public boolean matchesSafely(View view) {
+
+                    this.resources = view.getResources();
+
+                    if (childView == null) {
+                        RecyclerView recyclerView =
+                                (RecyclerView) view.getRootView().findViewById(recyclerViewId);
+                        if (recyclerView != null && recyclerView.getId() == recyclerViewId) {
+                            childView = recyclerView.findViewHolderForAdapterPosition(position).itemView;
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+
+                    if (targetViewId == -1) {
+                        return view == childView;
+                    } else {
+                        View targetView = childView.findViewById(targetViewId);
+                        return view == targetView;
+                    }
+
+                }
+            };
+        }
+    }
+
+    public RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
+        return new RecyclerViewMatcher(recyclerViewId);
+    }
 }
