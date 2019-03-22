@@ -24,7 +24,7 @@ class InvitationsByEventTests(TestCase):
         self.bob = UserProfile.objects.create(django_user=auth_models.User.objects.create(
             username='bob', first_name='Bob', last_name='Q.', email='bob@example.com'))
         self.charlie = UserProfile.objects.create(django_user=auth_models.User.objects.create(
-            username='charlie', first_name='Bob', last_name='Q.', email='charlie@example.com'))
+            username='charlie', first_name='Charlie', last_name='Q.', email='charlie@example.com'))
 
         self.party_place = Location.objects.create(street_address='123 Main St.', city='Anywhere', state='IN')
         self.alice_party = Event.objects.create(

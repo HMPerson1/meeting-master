@@ -35,6 +35,12 @@ class EventModelSerializer(serializers.ModelSerializer):
         fcm.notify_edit(ret)
         return ret
 
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['event_location'] = LocationModelSerializer(instance.event_location).data
+        # response['event_admin'] = UserProfileSerializer(instance.event_admin).data
+        return response
+
     # def to_representation(self, instance):
     #     response = super().to_representation(instance)
     #     response['event_location'] = LocationModelSerializer(instance.event_location).data
@@ -51,7 +57,7 @@ class EventCreateSerializer(serializers.ModelSerializer):
     # event_admin = UserProfileSerializer(many=False, read_only=True)
     event_location = serializers.PrimaryKeyRelatedField(required=True, queryset=Location.objects.all(),
                                                   help_text="ID of the Location where the Event will be held")
-    file_attachment = serializers.FileField(required=False, use_url=True)
+    file_attachment = serializers.FileField(required=False, use_url=True, allow_empty_file=True, allow_null=True)
 
     class Meta:
         model = Event
@@ -99,8 +105,6 @@ class EventPermissionSerializer(serializers.ModelSerializer):
         fields = ('pk', 'event_admin')  # FIXME: probably broken
 
 
-
-
 # only for use with IcalRenderer
 class EventIcalSerializer(serializers.Serializer):
     file_attachment = serializers.FileField()
@@ -128,5 +132,5 @@ class EventIcalSerializer(serializers.Serializer):
                 'email': att.user_id.django_user.email,
                 'full_name': att.user_id.django_user.get_full_name(),
                 'status': att.status,
-            } for att in instance.invitation.all()],
+            } for att in instance.invitation_set.all()],
         }

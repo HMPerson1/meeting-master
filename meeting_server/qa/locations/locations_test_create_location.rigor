@@ -4,24 +4,28 @@ steps:
 
   - description: POST a new location
     request:
-      path: /locations
+      path: locations/
       method: POST
       data:
-        #Todo: Put in data after endpoint is completed
-#    extract:
-#      event_id: '{response.event_id}'
-#      user_id: '{response.user_id}'
-#    validate:
-#      - expect: 1
-#        actual: '{response.event_id}'
-#      - expect: 1
-#        actual: '{response.user_id}'
-#      - expect: 0
-#        actual: '{response.status}'
+        state: Indiana
+        city: West Lafayette
+        street_address: 500 W. Stadium Avenue
+      status: [201]
+    extract:
+      id: '{response.pk}'
 
-  - description: POST an already existing location
+  - description: POST a new location
     request:
-      path: /locations
+      path: locations/
       method: POST
       data:
-      # tODO: Put in data after endpoint is complete
+        state: Indiana
+        city: West Lafayette
+        street_address: 500 W. Stadium Avenue
+      status: [400]
+
+
+  - description: DELETE the location to clean dataset
+    request:
+      path: locations/{id}
+      method: DELETE

@@ -1,4 +1,6 @@
 from django.http import Http404
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -48,8 +50,8 @@ class EventDetailView(APIView):
 
     def get_object(self, pk):
         try:
-            return Response.objects.get(pk=pk)
-        except status.HTTP_404_NOT_FOUND:
+            return Event.objects.get(pk=pk)
+        except ObjectDoesNotExist:
             raise Http404
 
     def get(self, request, pk, format=None):
