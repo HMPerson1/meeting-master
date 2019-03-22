@@ -46,11 +46,11 @@ public class CSVExporter {
         this.desc = desc;
     }
 
-    public void setEvent(String subject, String startDate, String startTime, String location){
+    public void setEvent(String subject, String startDate, String startTime, String notes){
         this.subject = subject;
         this.startDate = startDate;
         this.startTime = startTime;
-        this.location = location;
+        this.desc = notes;
     }
 
     public void writeToFile(String fileName){
