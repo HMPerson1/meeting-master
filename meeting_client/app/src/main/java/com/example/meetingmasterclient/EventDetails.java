@@ -26,6 +26,8 @@ public class EventDetails extends AppCompatActivity {
     private static final String TAG = "DebugLauncherActivity";
     int eventID;
     private Button attendeeListButton;
+    private Button acceptInviteButton;
+    private Button declineInviteButton;
     //TODO disable "View Attachment" button if no attachment exists in document
 
     @Override
@@ -53,11 +55,27 @@ public class EventDetails extends AppCompatActivity {
             }
         });
 
+        acceptInviteButton = (Button) findViewById(R.id.Accept);
+        acceptInviteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        declineInviteButton = (Button) findViewById(R.id.decline);
+        declineInviteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
         //TODO: get info from backend
         //MeetingService.EventData eventData = new MeetingService.EventData();
         //get the current intent
         Intent intent = getIntent();
-        eventID= intent.getIntExtra("event_id", -1);
+        eventID = intent.getIntExtra("event_id", -1);
 
         eventID =1234; //for testing
 
@@ -69,9 +87,10 @@ public class EventDetails extends AppCompatActivity {
         Call<MeetingService.EventData> call = Server.getService().getEventfromId(String.valueOf(eventID));
         call.enqueue(new Callback<MeetingService.EventData>() {
             @Override
-            public void onResponse(Call<MeetingService.EventData> call, Response<MeetingService.EventData> response) {
+            public void onResponse(Call<MeetingService.EventData> call, Response<MeetingService.EventData>response) {
                 if(!response.isSuccessful()){ //404 error?
-                    Toast.makeText(EventDetails.this, "Oops, Something is wrong: "+response.code() , Toast.LENGTH_LONG).show();
+                    Toast.makeText(EventDetails.this, "Oops, Something is wrong: " +
+                            response.code(), Toast.LENGTH_LONG).show();
                     return;
                 }
                 Toast.makeText(EventDetails.this,"response" , Toast.LENGTH_LONG).show();
@@ -131,7 +150,7 @@ public class EventDetails extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem menuItem) {
                 if (menuItem.isChecked()){
                     menuItem.setChecked(false);
-                }else{
+                } else {
                     menuItem.setChecked(true);
                 }
 
@@ -156,9 +175,7 @@ public class EventDetails extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 startActivity(new Intent(EventDetails.this, EventEdition.class));
-
                 return false;
-
             }
         });
 
@@ -201,7 +218,8 @@ public class EventDetails extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         // TODO: set TextField values to retrieved event
                     } else {
-                        Server.parseUnsuccessful(response, MeetingService.EventDataError.class, System.out::println, System.out::println);
+                        Server.parseUnsuccessful(response, MeetingService.EventDataError.class,
+                                System.out::println, System.out::println);
                     }
                 },
                 (call, t) -> t.printStackTrace()
@@ -218,7 +236,8 @@ public class EventDetails extends AppCompatActivity {
                         assert response.body() != null;
                         //Server.authenticate(response.body().key);
                     } else {
-                        Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, System.out::println, System.out::println);
+                        Server.parseUnsuccessful(response, MeetingService.RegistrationError.class,
+                                System.out::println, System.out::println);
                     }
                 },
                 (call, t) -> t.printStackTrace()
