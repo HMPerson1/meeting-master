@@ -100,7 +100,7 @@ public interface MeetingService {
     Call<UserProfile> getUser(@Url String url);
 
     @GET("/locations/{id}/")
-    Call<EventData> getLocationDetails(@Path("id") String id);
+    Call<LocationData> getLocationDetails(@Path("id") String id);
 
     @POST("/locations/")
     Call<LocationData> newLocation(@Body LocationData data);
@@ -536,6 +536,26 @@ public interface MeetingService {
             this.street_address = street_address;
             this.city = city;
             this.state = state;
+        }
+
+        public int getPk() {
+            return pk;
+        }
+
+        public String getStreet_address() {
+            return street_address;
+        }
+
+        public String getCity() {
+            return city;
+        }
+
+        public String getState() {
+            return state;
+        }
+
+        public int getNumber_of_uses() {
+            return number_of_uses;
         }
     }
 
