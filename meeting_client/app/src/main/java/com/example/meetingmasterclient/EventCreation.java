@@ -168,9 +168,7 @@ public class EventCreation extends AppCompatActivity {
 
         Button createButton = findViewById(R.id.create_meeting_button);
 
-       createButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+
                 Call<MeetingService.EventCreationData> c = Server.getService().createEvent(new MeetingService
                         .EventCreationData(event_name, 0));
 
@@ -201,7 +199,7 @@ public class EventCreation extends AppCompatActivity {
                         (call2, t) -> t.printStackTrace()
                 ));
             }
-        });
+
 
 
     }

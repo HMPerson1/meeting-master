@@ -115,10 +115,8 @@ public class EventEdition extends AppCompatActivity {
     }
 
     private void configureSaveButton(){
-        Button save_button = (Button)findViewById(R.id.save_meeting_button);
-        save_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+
+
                 //get new event details
                 String name =nameInput.getEditText().getText().toString();
                 String date =textInputDate.getEditText().getText().toString();
@@ -150,8 +148,8 @@ public class EventEdition extends AppCompatActivity {
 
                 finish();//return to Event Details
 
-            }
-        });
+
+
     }
 
 }
