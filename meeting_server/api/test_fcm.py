@@ -9,6 +9,8 @@ from api.invitations.models import Invitation, inv_status
 from api.locations.models import Location
 from api.users.models import UserProfile
 
+_TEST_DEVICE_TOKEN = 'd_E_4VLXHk0:APA91bGUbUJWLFSwdHyF8OPoElqkwQM5qMkTsKNqa1jvKdMG6Ommpzr_lxpPFMgwn9sgchJgYk4P6CQrW5uZtReL5ArSscZOVBtdOWBHx4IsLmlmKSxBYTjMGroTY2fBZi_BnnE6ijTf'
+
 
 class FcmTests(TestCase):
     def setUp(self):
@@ -37,7 +39,7 @@ class FcmTests(TestCase):
         Invitation.objects.create(user_id=self.charlie, event_id=self.alice_party, status=inv_status['ACCEPTED'])
 
     def test_notif_invite(self):
-        self.dave.firebase_reg_token = 'c3qK8fsFYVU:APA91bGjTo7UNvJZTvEF4rGlNO_g3VQ1zxbeL8PDoh3y3UGK5584sBinVDyL6sLJdt626i5Fq_NfiZ2Ms0AD03dXUKXoKPLvIhql6rvP8O5im6ZFIyUcIGYaZIBzwC7JEdvenvp-q5d9'
+        self.dave.firebase_reg_token = _TEST_DEVICE_TOKEN
         fcm.notify_invite(self.dave, self.alice_party, dry_run=True)
 
     def test_notif_invite_notoken(self):
@@ -45,7 +47,7 @@ class FcmTests(TestCase):
         fcm.notify_invite(self.emily, self.alice_party, dry_run=True)
 
     def test_notif_edit(self):
-        self.bob.firebase_reg_token = 'c3qK8fsFYVU:APA91bGjTo7UNvJZTvEF4rGlNO_g3VQ1zxbeL8PDoh3y3UGK5584sBinVDyL6sLJdt626i5Fq_NfiZ2Ms0AD03dXUKXoKPLvIhql6rvP8O5im6ZFIyUcIGYaZIBzwC7JEdvenvp-q5d9'
+        self.bob.firebase_reg_token = _TEST_DEVICE_TOKEN
         self.bob.save()
         fcm.notify_edit(self.alice_party, dry_run=True)
 
