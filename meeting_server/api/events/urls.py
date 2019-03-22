@@ -4,9 +4,9 @@ from django.conf.urls import url, static
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.EventListView.as_view(), name='api-event-list'),
+    url(r'(?P<id>.+)$', views.EventDetailView.as_view(), name='api-event-detail'),
     url(r'new_event$', views.EventCreateView.as_view(), name='api-event-create'),
-    url(r'(?P<id>.+)$', views.EventDetailView.as_view(), name='api-event-detail')
+    url(r'^$', views.EventListView.as_view(), name='api-event-list'),
 ]
 
 if settings.DEBUG:

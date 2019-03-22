@@ -50,6 +50,6 @@ urlpatterns = [
     url(r'^events/', include(events_urls)),
     url(r'^locations/', include(locations_urls)),
     url(r'^invitations/', include(invitations_urls)),
-    url(r'^/$', include(router.urls))
+    url(r'^', include(router.urls))
 ]
 

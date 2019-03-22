@@ -17,7 +17,7 @@ class LocationModelSerializer(serializers.ModelSerializer):
         model = Location
         validators = [
             UniqueTogetherValidator(
-                queryset=Location.objects.all(),
+                queryset=Location,
                 fields=('street_address', 'city', 'state'),
                 message="This location already exists"
             )
