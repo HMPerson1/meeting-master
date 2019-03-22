@@ -174,7 +174,8 @@ public class Registration extends AppCompatActivity {
         String phone_number = textInputPhoneNumber.getEditText().getText().toString().trim();
 
 
-        Call<MeetingService.AuthToken> c = Server.getService().register(new MeetingService.RegistrationData(username,first_name,last_name,email,password1,password2,phone_number));
+        Call<MeetingService.AuthToken> c = Server.getService().register(new MeetingService
+                .RegistrationData(username,first_name,last_name,email,password1,password2,phone_number));
 
         c.enqueue(Server.mkCallback(
                 (call, response) -> {

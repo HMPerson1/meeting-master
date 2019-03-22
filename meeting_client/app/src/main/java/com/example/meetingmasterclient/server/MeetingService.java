@@ -6,15 +6,19 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 
+import retrofit2.http.Multipart;
 import retrofit2.http.PATCH;
 
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 import retrofit2.http.Url;
 
@@ -25,7 +29,7 @@ public interface MeetingService {
     @POST("/register/")
     Call<AuthToken> register(@Body RegistrationData data);
 
-    /*
+
     @Multipart
     @POST("/register/")
     Call<AuthToken> register(
@@ -38,7 +42,7 @@ public interface MeetingService {
         @Part("phone_number") RequestBody phone_number,
         @Part MultipartBody.Part profile_picture
     );
-    */
+
 
     /**
      * may fail with "Unable to log in with provided credentials."
@@ -106,18 +110,19 @@ public interface MeetingService {
     @PATCH("/events/{id}/")
     Call<Void> users(@Body EventData data);
 
-    /*
+
     @Multipart
     @POST("/events/")
-    Call<EventDetails> createEvent(
+    Call<EventData> createEvent(
         @Part("event_name") RequestBody event_name,
         @Part("event_date") RequestBody event_date,
         @Part("event_time") RequestBody event_time,
         @Part("event_duration") RequestBody event_duration,
+        @Part("event_location") RequestBody event_location,
         @Part("notes") RequestBody notes,
         @Part MultipartBody.Part file
     );
-    */
+
 
     @GET
     Call<List<InvitationData>> getInvitations(@Url String url);

@@ -22,6 +22,7 @@ public class EventCreation extends AppCompatActivity {
     private TextInputLayout textInputEventName;
     private TextInputLayout textInputDate;
     private TextInputLayout textInputTime;
+    private TextInputLayout textInputDuration;
     private TextInputLayout textInputNotes;
     private TextInputLayout textInputStreetAddr;
     private TextInputLayout textInputCity;
@@ -43,6 +44,7 @@ public class EventCreation extends AppCompatActivity {
         textInputEventName = findViewById(R.id.text_input_event_name);
         textInputDate = findViewById(R.id.text_input_date);
         textInputTime = findViewById(R.id.text_input_time);
+        textInputDuration = findViewById(R.id.text_input_duration);
         textInputNotes = findViewById(R.id.text_input_notes);
         textInputStreetAddr = findViewById(R.id.text_input_street_address);
         textInputCity = findViewById(R.id.text_input_city);
@@ -136,12 +138,13 @@ public class EventCreation extends AppCompatActivity {
         String event_name = textInputEventName.getEditText().getText().toString().trim();
         String event_date = textInputDate.getEditText().getText().toString().trim();
         String event_time = textInputTime.getEditText().getText().toString().trim();
-        //String event_duration
-        //int event_location =
+        String event_duration = textInputDuration.getEditText().getText().toString().trim();
+        int event_location = 0;
         String notes = textInputNotes.getEditText().getText().toString().trim();
         //File file_attachment
 
-        //Call<MeetingService.UserProfile> c = Server.getService().
+        //Call<MeetingService.EventData> c = Server.getService().createEvent(event_name, event_date,
+        //        event_time, event_duration, event_location, notes, null);
     }
 
 }
