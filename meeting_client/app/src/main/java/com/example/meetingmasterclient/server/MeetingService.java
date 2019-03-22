@@ -103,6 +103,9 @@ public interface MeetingService {
     Call<UserProfile> getUser(@Url String url);
 
     @GET
+    Call<EventData> getLocationDetails(@Path("id") String id);
+
+    @GET
     Call<EventData> getEventfromId(@Path("id") String id);
 
     @PUT("/events/{id}/")
@@ -409,5 +412,9 @@ public interface MeetingService {
             this.event_id = event_id;
             this.status = status;
         }
+    }
+
+    class LocationData {
+        
     }
 }

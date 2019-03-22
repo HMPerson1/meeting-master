@@ -73,6 +73,12 @@ public class EventDetails extends AppCompatActivity {
                 textInputTime.setText(eventInfo.getEvent_time());
                 textInputNotes.setText(eventInfo.getNotes());
 
+                //get location details from server
+
+                int location_id = eventInfo.getEvent_location();
+
+
+
                 /*//display location details to the user
                 textInputStreetAddr.setText();
                 textInputCity
