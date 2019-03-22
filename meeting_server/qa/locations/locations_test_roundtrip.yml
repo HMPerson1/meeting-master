@@ -1,0 +1,51 @@
+name: Tests all Locations Endpoints
+
+steps:
+
+  - description: POST a new location
+    request:
+      path: locations/
+      method: POST
+      data:
+        state: Indiana
+        city: West Lafayette
+        street_address: 500 W. Stadium Avenue
+      status: [201]
+    extract:
+      id: '{response.pk}'
+
+  - description: GET all locations'
+    request:
+      path: locations/
+      method: GET
+    extract:
+      all_locs: '{response}'
+    validate:
+      - actual: '{all_locs}'
+        compate: not equals
+        expect: []
+
+  - description: GET the Location that was just created
+    request:
+      path: locations/{id}
+      method: GET
+    validate:
+      - expect: '{id}'
+        actual: '{response.pk}'
+      - expect: Indiana
+        actual: '{response.state}'
+      - expect: West Lafayette
+        actual: '{response.city}'
+      - expect: 500 W. Stadium Avenue
+        actual: '{response.street_address}'
+
+  - description: DELETE the location that was just created
+    request:
+      path: locations/{id}
+      method: DELETE
+
+  - description: Confirm that the DELETE succeeded
+    request:
+      path: locations/{id}
+      method: GET
+      status: [404]
