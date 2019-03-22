@@ -147,7 +147,7 @@ public interface MeetingService {
      * needs authentication <br>
      * never fails (if authenticated)
      */
-    @PUT("/firebase_reg_token/")
+    @PUT("/current_user/firebase_reg_token")
     Call<Void> putFirebaseRegToken(@Body FirebaseRegTokenData data);
 
     /**
