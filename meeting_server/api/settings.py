@@ -25,7 +25,7 @@ SECRET_KEY = 'w!77$bdpbl%myk8)-z2*%9%s@afc=i836(!ne-%4%_ixr04ew2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'email_outbox')
 MAX_UPLOAD_SIZE = 2 ** 20
