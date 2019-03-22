@@ -12,9 +12,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.Toast;
 
 
 import com.example.meetingmasterclient.server.MeetingService;
+import com.example.meetingmasterclient.server.Server;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class EventDetails extends AppCompatActivity {
     public static final String PREFS_NAME = "App_Settings";
@@ -46,8 +52,47 @@ public class EventDetails extends AppCompatActivity {
             finish();  //did not pass event_id
         }
 
-        //TODO: get info from backend
-        //MeetingService.EventData eventData = new MeetingService.EventData();
+        //TODO: get event info from backend
+        Call<MeetingService.EventData> call = Server.getService().getEventfromId(String.valueOf(eventId));
+        call.enqueue(new Callback<MeetingService.EventData>() {
+            @Override
+            public void onResponse(Call<MeetingService.EventData> call, Response<MeetingService.EventData> response) {
+                if(!response.isSuccessful()){ //404 error?
+                    Toast.makeText(EventDetails.this, "Oops, Something is wrong: "+response.code() , Toast.LENGTH_LONG).show();
+                    return;
+                }
+                Toast.makeText(EventDetails.this,"response" , Toast.LENGTH_LONG).show();
+                Toast.makeText(EventDetails.this,response.toString() , Toast.LENGTH_LONG).show();
+
+                //add user to list if successful
+                MeetingService.EventData eventInfo =response.body();//store response
+
+                //display the event details to the user
+                nameInput.setText(eventInfo.getEvent_name());
+                textInputDate.setText(eventInfo.getEvent_date());
+                textInputTime.setText(eventInfo.getEvent_time());
+                textInputNotes.setText(eventInfo.getNotes());
+
+                /*//display location details to the user
+                textInputStreetAddr.setText();
+                textInputCity
+                textInputState
+                textInputRoomNo
+                */
+
+
+
+            }
+
+            @Override
+            public void onFailure(Call<MeetingService.EventData> call, Throwable t) {//error from server
+
+                Toast.makeText(EventDetails.this,t.getMessage() , Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+
     }
 
     @Override

@@ -13,6 +13,7 @@ import retrofit2.http.PATCH;
 
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.Url;
 
@@ -101,8 +102,11 @@ public interface MeetingService {
     @GET
     Call<UserProfile> getUser(@Url String url);
 
-    @PATCH("/events/{id}/")
-    Call<Void> users(@Body EventData data);
+    @GET
+    Call<EventData> getEventfromId(@Path("id") String id);
+
+    @PUT("/events/{id}/")
+    Call<Void> updateEvent(@Body EventData data);
 
     /*
     @Multipart
@@ -356,6 +360,42 @@ public interface MeetingService {
             this.file_attachment = file_attachment;
             this.notes = notes;
             this.event_location = event_location;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public int getEvent_admin() {
+            return event_admin;
+        }
+
+        public String getEvent_name() {
+            return event_name;
+        }
+
+        public String getEvent_date() {
+            return event_date;
+        }
+
+        public String getEvent_time() {
+            return event_time;
+        }
+
+        public String getEvent_duration() {
+            return event_duration;
+        }
+
+        public String getFile_attachment() {
+            return file_attachment;
+        }
+
+        public String getNotes() {
+            return notes;
+        }
+
+        public int getEvent_location() {
+            return event_location;
         }
     }
 
