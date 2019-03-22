@@ -96,6 +96,7 @@ public class EventDetails extends AppCompatActivity {
                 Toast.makeText(EventDetails.this,t.getMessage() , Toast.LENGTH_LONG).show();
 
             }
+
         });
 
 
@@ -134,7 +135,10 @@ public class EventDetails extends AppCompatActivity {
         menu.findItem(R.id.edit_Event).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
-                startActivity(new Intent(EventDetails.this, EventEdition.class));
+                Intent intent = new Intent(getApplicationContext(), EventEdition.class);
+                intent.putExtra("event_id", eventId);
+                startActivity(intent);
+
 
                 return false;
 
