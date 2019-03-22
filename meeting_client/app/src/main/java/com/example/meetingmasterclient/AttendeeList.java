@@ -112,8 +112,6 @@ public class AttendeeList extends AppCompatActivity {
             String name =dataSet.get(position).getFirst_name()+" "+ dataSet.get(position).getLast_name();
             holder.personName.setText(name);
             holder.index=position;
-
-
         }
 
         @Override
@@ -140,10 +138,9 @@ public class AttendeeList extends AppCompatActivity {
 
                     @Override
                     public void onClick(View view) {
-                        if(permissions.getText()==permissions.getTextOn()) {
-
+                        if (permissions.getText()==permissions.getTextOn()) {
                             editingPermit.set(index,true);
-                        }else {
+                        } else {
                             editingPermit.set(index,false);
                         }
                     }

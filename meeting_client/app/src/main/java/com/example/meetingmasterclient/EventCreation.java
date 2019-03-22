@@ -47,7 +47,6 @@ public class EventCreation extends AppCompatActivity {
 
         configureAttendeeListButton();
 
-
         textInputEventName = findViewById(R.id.text_input_event_name);
         textInputDate = findViewById(R.id.text_input_date);
         textInputTime = findViewById(R.id.text_input_time);

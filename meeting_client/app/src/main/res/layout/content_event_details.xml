@@ -11,15 +11,14 @@
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -40,6 +39,7 @@
                     android:text="Meeting Name"
                     android:textSize="30sp" />
             </android.support.design.widget.TextInputLayout>
+            <!-- above android:text should be changed to an @string with %s to automatically update Meeting Name-->
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -167,22 +167,26 @@
                 android:layout_height="wrap_content"
                 android:text="View Attendees" />
 
-            <TableRow
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:weightSum="2">
 
                 <Button
                     android:id="@+id/Accept"
-                    android:layout_width="198dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Accept" />
+                    android:text="@string/accept"
+                    android:layout_weight="1"/>
 
                 <Button
                     android:id="@+id/decline"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Decline" />
-            </TableRow>
+                    android:text="@string/decline"
+                    android:layout_weight="1"/>
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

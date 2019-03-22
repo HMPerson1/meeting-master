@@ -30,8 +30,12 @@ import retrofit2.Response;
 public class EventDetails extends AppCompatActivity {
     public static final String PREFS_NAME = "App_Settings";
     private static final String TAG = "DebugLauncherActivity";
-    int eventID;
+    int eventID;    //TODO this will change to string
+    String userID;
     private Button attendeeListButton;
+    private Button acceptInviteButton;
+    private Button declineInviteButton;
+    //TODO disable "View Attachment" button if no attachment exists in document
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +66,8 @@ public class EventDetails extends AppCompatActivity {
         //MeetingService.EventData eventData = new MeetingService.EventData();
         //get the current intent
         Intent intent = getIntent();
-        eventID= intent.getIntExtra("event_id", -1);
+        eventID = intent.getIntExtra("event_id", -1);
+        userID = intent.getStringExtra("user_id");
 
         eventID =1234; //for testing
 
@@ -74,9 +79,10 @@ public class EventDetails extends AppCompatActivity {
         Call<MeetingService.EventData> call = Server.getService().getEventfromId(String.valueOf(eventID));
         call.enqueue(new Callback<MeetingService.EventData>() {
             @Override
-            public void onResponse(Call<MeetingService.EventData> call, Response<MeetingService.EventData> response) {
+            public void onResponse(Call<MeetingService.EventData> call, Response<MeetingService.EventData>response) {
                 if(!response.isSuccessful()){ //404 error?
-                    Toast.makeText(EventDetails.this, "Oops, Something is wrong: "+response.code() , Toast.LENGTH_LONG).show();
+                    Toast.makeText(EventDetails.this, "Oops, Something is wrong: " +
+                            response.code(), Toast.LENGTH_LONG).show();
                     return;
                 }
                 Toast.makeText(EventDetails.this,"response" , Toast.LENGTH_LONG).show();
@@ -133,6 +139,38 @@ public class EventDetails extends AppCompatActivity {
 
         });
 
+        acceptInviteButton = (Button) findViewById(R.id.Accept);
+        acceptInviteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeInvitationStatus(eventID, userID, 2);
+            }
+        });
+
+        declineInviteButton = (Button) findViewById(R.id.decline);
+        declineInviteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeInvitationStatus(eventID, userID, 3);
+            }
+        });
+    }
+
+    public void changeInvitationStatus(int eventID, String userID, int newStatus){
+        Call<Void> c = Server.getService().setInvitationStatus(eventID, userID, newStatus);
+        c.enqueue
+        (Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        // TODO: change button to reflect this
+                    } else {
+                        //Server.parseUnsuccessful(response, MeetingService.EventDataError.class,
+                        //        System.out::println, System.out::println);
+                        //TODO: make InvitationData error
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
 
     }
 
@@ -153,7 +191,7 @@ public class EventDetails extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem menuItem) {
                 if (menuItem.isChecked()){
                     menuItem.setChecked(false);
-                }else{
+                } else {
                     menuItem.setChecked(true);
                 }
 
@@ -177,13 +215,16 @@ public class EventDetails extends AppCompatActivity {
         menu.findItem(R.id.edit_event).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
+
                 Intent intent = new Intent(getApplicationContext(), EventEdition.class);
                 intent.putExtra("event_id", eventID);
                 startActivity(intent);
 
 
-                return false;
 
+                startActivity(new Intent(EventDetails.this, EventEdition.class));
+
+                return false;
             }
         });
 
@@ -226,7 +267,8 @@ public class EventDetails extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         // TODO: set TextField values to retrieved event
                     } else {
-                        Server.parseUnsuccessful(response, MeetingService.EventDataError.class, System.out::println, System.out::println);
+                        Server.parseUnsuccessful(response, MeetingService.EventDataError.class,
+                                System.out::println, System.out::println);
                     }
                 },
                 (call, t) -> t.printStackTrace()
@@ -243,7 +285,8 @@ public class EventDetails extends AppCompatActivity {
                         assert response.body() != null;
                         //Server.authenticate(response.body().key);
                     } else {
-                        Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, System.out::println, System.out::println);
+                        Server.parseUnsuccessful(response, MeetingService.RegistrationError.class,
+                                System.out::println, System.out::println);
                     }
                 },
                 (call, t) -> t.printStackTrace()

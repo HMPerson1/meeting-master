@@ -30,6 +30,7 @@
     <string name="profile_pic">Profile Picture</string>
     <string name="confirm">Confirm</string>
     <string name="upload">Upload</string>
+    <string name="accept">Accept</string>
 
     <!-- event/location strings-->
     <string name="event_details">Event Details</string>

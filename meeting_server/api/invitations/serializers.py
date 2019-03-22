@@ -17,8 +17,8 @@ class InvitationModelSerializer(serializers.ModelSerializer):
         fields = ('user_id', 'event_id', 'status')
 
     def create(self, validated_data):
-        uid = validated_data.pop['user_id']
-        eid = validated_data.pop['event_id']
+        uid = validated_data.pop('user_id')
+        eid = validated_data.pop('event_id')
         invite = Invitation.objects.create(user_id=uid, event_id=eid, status=0)
         fcm.notify_invite(invite.user_id, invite.event_id)
         return invite
