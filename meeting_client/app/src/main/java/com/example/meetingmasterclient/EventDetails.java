@@ -17,6 +17,12 @@ import android.widget.CheckBox;
 import android.widget.Toast;
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -82,7 +88,7 @@ public class EventDetails extends AppCompatActivity {
                 Toast.makeText(EventDetails.this,"response" , Toast.LENGTH_LONG).show();
                 Toast.makeText(EventDetails.this,response.toString() , Toast.LENGTH_LONG).show();
 
-                //add user to list if successful
+
                 MeetingService.EventData eventInfo =response.body();//store response
 
                 //display the event details to the user
@@ -95,14 +101,30 @@ public class EventDetails extends AppCompatActivity {
 
                 int location_id = eventInfo.getEvent_location();
 
+                Call<MeetingService.LocationData> c = Server.getService().getLocationDetails(String.valueOf(location_id));
+                c.enqueue(Server.mkCallback(
+                        (call2, response2) -> {
+                            if (response2.isSuccessful()) {
+                                assert response2.body() != null;
+                                MeetingService.LocationData locationInfo =response2.body();//store response
+                                 //display location details to the user
+                                textInputStreetAddr.setText(locationInfo.getStreet_address());
+                                textInputCity.setText(locationInfo.getCity());
+                                textInputState.setText(locationInfo.getState());
+                                //textInputRoomNo.setText(locationInfo.);
+
+                            } else {
+                                try {
+                                    System.out.println("response.error = " + response2.errorBody().string());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        },
+                        (call2, t) -> t.printStackTrace()
+                ));
 
 
-                /*//display location details to the user
-                textInputStreetAddr.setText();
-                textInputCity
-                textInputState
-                textInputRoomNo
-                */
 
 
 
@@ -114,6 +136,7 @@ public class EventDetails extends AppCompatActivity {
                 Toast.makeText(EventDetails.this,t.getMessage() , Toast.LENGTH_LONG).show();
 
             }
+
         });
 
         acceptInviteButton = (Button) findViewById(R.id.Accept);
@@ -192,7 +215,15 @@ public class EventDetails extends AppCompatActivity {
         menu.findItem(R.id.edit_event).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
+
+                Intent intent = new Intent(getApplicationContext(), EventEdition.class);
+                intent.putExtra("event_id", eventID);
+                startActivity(intent);
+
+
+
                 startActivity(new Intent(EventDetails.this, EventEdition.class));
+
                 return false;
             }
         });
