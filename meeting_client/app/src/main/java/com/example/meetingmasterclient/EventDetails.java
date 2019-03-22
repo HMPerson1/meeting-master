@@ -26,6 +26,7 @@ public class EventDetails extends AppCompatActivity {
     private static final String TAG = "DebugLauncherActivity";
     int eventID;
     private Button attendeeListButton;
+    //TODO disable "View Attachment" button if no attachment exists in document
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
