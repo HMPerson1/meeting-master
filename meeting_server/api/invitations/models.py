@@ -3,7 +3,6 @@
 from django.db import models
 from api.users.models import UserProfile
 from api.events.models import Event
-from composite_pk import composite
 
 inv_status = {
     "PENDING": 1,
