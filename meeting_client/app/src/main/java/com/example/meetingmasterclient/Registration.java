@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
@@ -144,13 +145,7 @@ public class Registration extends AppCompatActivity {
 
     private boolean validatePhoneNumber(){
         String phone = textInputPhoneNumber.getEditText().getText().toString().trim();
-        if (phone.isEmpty()){
-            textInputPhoneNumber.setError("Phone number cannot be empty");
-            return false;
-        } else {
-            textInputPhoneNumber.setError(null);
-            return true;
-        }
+       return true;
     }
 
     public boolean confirmInput(View v){
@@ -181,10 +176,11 @@ public class Registration extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         assert response.body() != null;
                         Server.authenticate(response.body().key);
+                        Toast.makeText(Registration.this, "Registration Success", Toast.LENGTH_LONG).show();
+
                     } else {
-
+                        String error=null;
                         Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, System.out::println, System.out::println);
-
                     }
                 },
                 (call, t) -> t.printStackTrace()
