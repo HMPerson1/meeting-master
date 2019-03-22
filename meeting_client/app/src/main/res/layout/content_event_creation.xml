@@ -69,6 +69,18 @@
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:errorEnabled="true">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/text_input_duration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/duration"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
 
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -183,6 +195,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/create_event_button"
-            android:onClick="submitInvitation"/>
+            android:onClick="createMeetingRequest"/>
     </LinearLayout>
 </ScrollView>

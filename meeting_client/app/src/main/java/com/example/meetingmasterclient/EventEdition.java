@@ -17,8 +17,6 @@ public class EventEdition extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         configureSaveButton();
-
-
     }
 
     private void configureSaveButton(){

@@ -7,17 +7,16 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.EventLog;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Toast;
-
-
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -25,7 +24,9 @@ import retrofit2.Response;
 public class EventDetails extends AppCompatActivity {
     public static final String PREFS_NAME = "App_Settings";
     private static final String TAG = "DebugLauncherActivity";
-    int eventId;
+    int eventID;
+    private Button attendeeListButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +34,6 @@ public class EventDetails extends AppCompatActivity {
 
         //testing changing text fields
         final TextInputEditText nameInput = (TextInputEditText) findViewById(R.id.meeting_name);
-
         final TextInputEditText textInputDate = findViewById(R.id.date);
         final TextInputEditText textInputTime = findViewById(R.id.time);
         final TextInputEditText textInputNotes = findViewById(R.id.notes);
@@ -42,18 +42,29 @@ public class EventDetails extends AppCompatActivity {
         final TextInputEditText textInputState = findViewById(R.id.state);
         final TextInputEditText textInputRoomNo = findViewById(R.id.room_num);
 
+        eventID = getEventByID(getIntent().getIntExtra("id", -1));
+
+        attendeeListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(EventDetails.this, AttendeeList.class));
+            }
+        });
+
+        //TODO: get info from backend
+        //MeetingService.EventData eventData = new MeetingService.EventData();
         //get the current intent
         Intent intent = getIntent();
-        eventId= intent.getIntExtra("event_id", -1);
+        eventID= intent.getIntExtra("event_id", -1);
 
-        eventId =1234; //for testing
+        eventID =1234; //for testing
 
-        if (eventId<0){
+        if (eventID<0){
             finish();  //did not pass event_id
         }
 
         //TODO: get event info from backend
-        Call<MeetingService.EventData> call = Server.getService().getEventfromId(String.valueOf(eventId));
+        Call<MeetingService.EventData> call = Server.getService().getEventfromId(String.valueOf(eventID));
         call.enqueue(new Callback<MeetingService.EventData>() {
             @Override
             public void onResponse(Call<MeetingService.EventData> call, Response<MeetingService.EventData> response) {
@@ -101,6 +112,14 @@ public class EventDetails extends AppCompatActivity {
 
     }
 
+    public boolean openAlertDialog(){
+        AlertDialogDelete alertDialogDelete = new AlertDialogDelete();
+        alertDialogDelete.show(getSupportFragmentManager(), "warning");
+        boolean userConfirm = alertDialogDelete.getStatus();
+        System.out.println("Sure? " + userConfirm);
+        return userConfirm;
+    }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
@@ -116,11 +135,11 @@ public class EventDetails extends AppCompatActivity {
 
                 SharedPreferences sharedPref = getSharedPreferences(PREFS_NAME,Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
-                String NotificationStatusKey= String.valueOf(eventId) +"checkStatus";
+                String NotificationStatusKey= String.valueOf(eventID) +"checkStatus";
                 editor.putBoolean(NotificationStatusKey, menuItem.isChecked());
                 editor.commit();
                 /* true = notifications on, false= notifications off
-                    key= eventId+checkStatus;
+                    key= eventID+checkStatus;
                  */
                 /*
                 //get pref
@@ -131,7 +150,7 @@ public class EventDetails extends AppCompatActivity {
             }
         });
 
-        menu.findItem(R.id.edit_Event).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        menu.findItem(R.id.edit_event).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 startActivity(new Intent(EventDetails.this, EventEdition.class));
@@ -147,7 +166,64 @@ public class EventDetails extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.event_details, menu);
+        inflater.inflate(R.menu.menu_event_details, menu);
         return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()) {
+            case R.id.delete_event_menu:
+                boolean userConfirm = openAlertDialog();
+                userConfirm = true; //TODO delete this line once openAlertDialog() is fixed
+                if (userConfirm) {
+                    deleteEvent();
+                }
+                return true;
+            case R.id.export_event_menu:
+                exportEvent();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private int getEventByID(int eventID){
+        if (eventID== -1) {
+            Toast.makeText(getApplicationContext(), "An error has occurred", Toast.LENGTH_SHORT).show();
+            return -1;
+        }
+
+        Call<MeetingService.EventData> c = Server.getService().getEvent("/events/" + eventID+ "/");
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        // TODO: set TextField values to retrieved event
+                    } else {
+                        Server.parseUnsuccessful(response, MeetingService.EventDataError.class, System.out::println, System.out::println);
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
+
+        return eventID;
+    }
+
+    public void deleteEvent(){
+        Call<Void> d = Server.getService().deleteEvent("/events/" + eventID + "/");
+        d.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        assert response.body() != null;
+                        //Server.authenticate(response.body().key);
+                    } else {
+                        Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, System.out::println, System.out::println);
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
+    }
+
+    public void exportEvent(){
+        //TODO implement
     }
 }
