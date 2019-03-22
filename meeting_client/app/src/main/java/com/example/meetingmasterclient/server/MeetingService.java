@@ -158,6 +158,13 @@ public interface MeetingService {
     @DELETE("/events/{id}/")
     Call<Void> deleteEvent(@Url String url);
 
+    /**
+     * needs authentication <br>
+     * never fails (if authenticated)
+     */
+    @GET("/current_user/ical_url")
+    Call<IcalUrlData> getIcalUrl();
+
     /* ******************** *
      * Dumb data containers *
      * ******************** */
@@ -575,6 +582,10 @@ public interface MeetingService {
             this.firebase_reg_token = firebase_reg_token;
         }
 
+    }
+
+    class IcalUrlData {
+        public String ical_url;
     }
 
 }
