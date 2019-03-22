@@ -132,5 +132,5 @@ class EventIcalSerializer(serializers.Serializer):
                 'email': att.user_id.django_user.email,
                 'full_name': att.user_id.django_user.get_full_name(),
                 'status': att.status,
-            } for att in instance.invitation.all()],
+            } for att in instance.invitation_set.all()],
         }
