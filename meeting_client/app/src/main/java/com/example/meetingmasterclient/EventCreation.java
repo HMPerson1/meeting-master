@@ -9,6 +9,12 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
+
+import com.example.meetingmasterclient.server.MeetingService;
+import com.example.meetingmasterclient.server.Server;
+
+import retrofit2.Call;
 
 public class EventCreation extends AppCompatActivity {
 
@@ -41,6 +47,21 @@ public class EventCreation extends AppCompatActivity {
         textInputCity = findViewById(R.id.text_input_city);
         textInputState = findViewById(R.id.text_input_state);
         textInputRoomNo = findViewById(R.id.text_input_room_no);
+
+        Call<MeetingService.LocationData> c = Server.getService().newLocation(new MeetingService.LocationData(textInputStreetAddr.getText().toString(),
+                textInputCity.getText().toString(),textInputState.getText().toString()));
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        assert response.body() != null;
+                        Toast.makeText(EventCreation.this, response.body().toString() , Toast.LENGTH_LONG).show();
+                    } else {
+                        Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, System.out::println, System.out::println);
+
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
 
     }
 
@@ -130,5 +151,7 @@ public class EventCreation extends AppCompatActivity {
         if(!confirmInput(v)) return;
 
     }
+
+
 
 }

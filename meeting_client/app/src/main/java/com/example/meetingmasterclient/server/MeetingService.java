@@ -105,6 +105,9 @@ public interface MeetingService {
     @GET("/locations/{id}/")
     Call<EventData> getLocationDetails(@Path("id") String id);
 
+    @POST("/locations/")
+    Call<LocationData> newLocation(@Body LocationData data);
+
     @GET("/events/{id}/")
     Call<EventData> getEventfromId(@Path("id") String id);
 
@@ -452,7 +455,17 @@ public interface MeetingService {
 
 
     class LocationData {
+        int pk;
+        String street_address;
+        String city;
+        String state;
+        int number_of_uses;
 
+        public LocationData(String street_address, String city, String state) {
+            this.street_address = street_address;
+            this.city = city;
+            this.state = state;
+        }
     }
 
     class FirebaseRegTokenData {
