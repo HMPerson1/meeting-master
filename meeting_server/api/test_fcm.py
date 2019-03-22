@@ -19,11 +19,11 @@ class FcmTests(TestCase):
         self.bob = UserProfile.objects.create(django_user=auth_models.User.objects.create(
             username='bob', first_name='Bob', last_name='Q.', email='bob@example.com'))
         self.charlie = UserProfile.objects.create(django_user=auth_models.User.objects.create(
-            username='charlie', first_name='Bob', last_name='Q.', email='charlie@example.com'))
+            username='charlie', first_name='Charlie', last_name='Q.', email='charlie@example.com'))
         self.dave = UserProfile.objects.create(django_user=auth_models.User.objects.create(
-            username='dave', first_name='Bob', last_name='Q.', email='dave@example.com'))
+            username='dave', first_name='Dave', last_name='Q.', email='dave@example.com'))
         self.emily = UserProfile.objects.create(django_user=auth_models.User.objects.create(
-            username='emily', first_name='Bob', last_name='Q.', email='emily@example.com'))
+            username='emily', first_name='Emily', last_name='Q.', email='emily@example.com'))
 
         self.party_place = Location.objects.create(street_address='123 Main St.', city='Anywhere', state='IN')
         self.alice_party = Event.objects.create(
