@@ -122,6 +122,7 @@ public class AddUserstoMeeting extends AppCompatActivity {
                         //add user to list if successful
                         List<MeetingService.UserProfile> userProfs =response.body();//store response
                         for (MeetingService.UserProfile userProf : userProfs){
+                            //get event name
                             list.add(userProf.username);
                             adapter.notifyDataSetChanged();
                         }//end for
