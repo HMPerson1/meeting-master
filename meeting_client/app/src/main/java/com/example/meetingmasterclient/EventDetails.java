@@ -1,24 +1,30 @@
 package com.example.meetingmasterclient;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.EventLog;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Toast;
-
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
-
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class EventDetails extends AppCompatActivity {
-    private int eventID;
+    public static final String PREFS_NAME = "App_Settings";
+    private static final String TAG = "DebugLauncherActivity";
+    int eventID;
     private Button attendeeListButton;
 
     @Override
@@ -47,6 +53,63 @@ public class EventDetails extends AppCompatActivity {
 
         //TODO: get info from backend
         //MeetingService.EventData eventData = new MeetingService.EventData();
+        //get the current intent
+        Intent intent = getIntent();
+        eventID= intent.getIntExtra("event_id", -1);
+
+        eventID =1234; //for testing
+
+        if (eventID<0){
+            finish();  //did not pass event_id
+        }
+
+        //TODO: get event info from backend
+        Call<MeetingService.EventData> call = Server.getService().getEventfromId(String.valueOf(eventID));
+        call.enqueue(new Callback<MeetingService.EventData>() {
+            @Override
+            public void onResponse(Call<MeetingService.EventData> call, Response<MeetingService.EventData> response) {
+                if(!response.isSuccessful()){ //404 error?
+                    Toast.makeText(EventDetails.this, "Oops, Something is wrong: "+response.code() , Toast.LENGTH_LONG).show();
+                    return;
+                }
+                Toast.makeText(EventDetails.this,"response" , Toast.LENGTH_LONG).show();
+                Toast.makeText(EventDetails.this,response.toString() , Toast.LENGTH_LONG).show();
+
+                //add user to list if successful
+                MeetingService.EventData eventInfo =response.body();//store response
+
+                //display the event details to the user
+                nameInput.setText(eventInfo.getEvent_name());
+                textInputDate.setText(eventInfo.getEvent_date());
+                textInputTime.setText(eventInfo.getEvent_time());
+                textInputNotes.setText(eventInfo.getNotes());
+
+                //get location details from server
+
+                int location_id = eventInfo.getEvent_location();
+
+
+
+                /*//display location details to the user
+                textInputStreetAddr.setText();
+                textInputCity
+                textInputState
+                textInputRoomNo
+                */
+
+
+
+            }
+
+            @Override
+            public void onFailure(Call<MeetingService.EventData> call, Throwable t) {//error from server
+
+                Toast.makeText(EventDetails.this,t.getMessage() , Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+
     }
 
     public boolean openAlertDialog(){
@@ -55,6 +118,49 @@ public class EventDetails extends AppCompatActivity {
         boolean userConfirm = alertDialogDelete.getStatus();
         System.out.println("Sure? " + userConfirm);
         return userConfirm;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        menu.findItem(R.id.notificationSwitch).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                if (menuItem.isChecked()){
+                    menuItem.setChecked(false);
+                }else{
+                    menuItem.setChecked(true);
+                }
+
+                SharedPreferences sharedPref = getSharedPreferences(PREFS_NAME,Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                String NotificationStatusKey= String.valueOf(eventID) +"checkStatus";
+                editor.putBoolean(NotificationStatusKey, menuItem.isChecked());
+                editor.commit();
+                /* true = notifications on, false= notifications off
+                    key= eventID+checkStatus;
+                 */
+                /*
+                //get pref
+                Boolean value = sharedPref.getBoolean(NotificationStatusKey, false);
+                Log.d(TAG, value.toString());
+                */
+                return false;
+            }
+        });
+
+        menu.findItem(R.id.edit_event).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                startActivity(new Intent(EventDetails.this, EventEdition.class));
+
+                return false;
+
+            }
+        });
+
+        return true;
     }
 
     @Override

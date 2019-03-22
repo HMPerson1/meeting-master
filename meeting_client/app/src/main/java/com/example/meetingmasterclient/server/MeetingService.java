@@ -19,6 +19,7 @@ import retrofit2.http.PATCH;
 
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Path;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
 import retrofit2.http.Url;
@@ -108,10 +109,16 @@ public interface MeetingService {
     @GET
     Call<UserProfile> getUser(@Url String url);
 
-    @PATCH("/events/{id}/")
-    Call<Void> users(@Body EventData data);
+    @GET("/locations/{id}/")
+    Call<EventData> getLocationDetails(@Path("id") String id);
 
-/*
+    @GET("/events/{id}/")
+    Call<EventData> getEventfromId(@Path("id") String id);
+
+    @PUT("/events/{id}/")
+    Call<Void> updateEvent(@Body EventData data);
+
+    /*
     @Multipart
     @POST("/events/")
     Call<EventData> createEvent(
@@ -126,6 +133,9 @@ public interface MeetingService {
 */
     @POST("/events/")
     Call<EventCreationData> createEvent(@Body EventCreationData data);
+
+    @GET("/invitations/{user_id}/")
+    Call<List<InvitationData>> getUserInvitations(@Path("user_id") String user_id);
 
     @GET
     Call<List<InvitationData>> getInvitations(@Url String url);
@@ -400,6 +410,42 @@ public interface MeetingService {
             this.notes = notes;
             this.event_location = event_location;
         }
+
+        public int getId() {
+            return id;
+        }
+
+        public int getEvent_admin() {
+            return event_admin;
+        }
+
+        public String getEvent_name() {
+            return event_name;
+        }
+
+        public String getEvent_date() {
+            return event_date;
+        }
+
+        public String getEvent_time() {
+            return event_time;
+        }
+
+        public String getEvent_duration() {
+            return event_duration;
+        }
+
+        public String getFile_attachment() {
+            return file_attachment;
+        }
+
+        public String getNotes() {
+            return notes;
+        }
+
+        public int getEvent_location() {
+            return event_location;
+        }
     }
 
     class EventCreationData{
@@ -473,11 +519,19 @@ public interface MeetingService {
         }
     }
 
+
+    class LocationData {
+
+    }
+
     class FirebaseRegTokenData {
         public String firebase_reg_token;
 
         public FirebaseRegTokenData(String firebase_reg_token) {
             this.firebase_reg_token = firebase_reg_token;
         }
+
     }
+
 }
+
