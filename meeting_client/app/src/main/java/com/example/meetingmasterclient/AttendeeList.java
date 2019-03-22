@@ -55,11 +55,11 @@ public class AttendeeList extends AppCompatActivity {
         final List<MeetingService.UserProfile> list = new ArrayList<>(); //used for testing functionality of list
 
         // TODO: for testing
-        MeetingService.UserProfile test =new MeetingService.UserProfile();
+        MeetingService.UserProfile test = new MeetingService.UserProfile();
         test.setFirst_name("john");
         test.setLast_name("meyer");
 
-        MeetingService.UserProfile test2 =new MeetingService.UserProfile();
+        MeetingService.UserProfile test2 = new MeetingService.UserProfile();
         test2.setFirst_name("john");
         test2.setLast_name("bull");
 

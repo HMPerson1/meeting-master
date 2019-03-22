@@ -1,8 +1,10 @@
 package com.example.meetingmasterclient;
 
+import android.content.Intent;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.EventLog;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,8 +19,7 @@ import retrofit2.Call;
 
 public class EventDetails extends AppCompatActivity {
     private int eventID;
-    Button confirmButton;
-    private Button cancelButton;
+    private Button attendeeListButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,13 @@ public class EventDetails extends AppCompatActivity {
         final TextInputEditText textInputRoomNo = findViewById(R.id.room_num);
 
         eventID = getEventByID(getIntent().getIntExtra("id", -1));
+
+        attendeeListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(EventDetails.this, AttendeeList.class));
+            }
+        });
 
         //TODO: get info from backend
         //MeetingService.EventData eventData = new MeetingService.EventData();
