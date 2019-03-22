@@ -148,6 +148,8 @@ public class EventCreation extends AppCompatActivity {
     }//configureAttendee
 
 
+
+
     public boolean confirmInput(View v) {
         return (!validateEventName() | !validateStreetAddr() | !validateCity() | !validateStreetAddr()
             | !validateState());
@@ -174,6 +176,21 @@ public class EventCreation extends AppCompatActivity {
                         //Server.authenticate(response.body().key); TODO check this
                     } else {
                         Server.parseUnsuccessful(response, MeetingService.EventCreationData.class, System.out::println, System.out::println);
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
+
+        Call<MeetingService.LocationData> c2 = Server.getService().newLocation(new MeetingService.LocationData(textInputStreetAddr.getEditText().getText().toString(),
+                textInputCity.getEditText().getText().toString(),textInputState.getEditText().getText().toString()));
+        c2.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        assert response.body() != null;
+                        Toast.makeText(EventCreation.this, response.body().toString() , Toast.LENGTH_LONG).show();
+                    } else {
+                        Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, System.out::println, System.out::println);
+
                     }
                 },
                 (call, t) -> t.printStackTrace()
