@@ -18,21 +18,21 @@ except FileNotFoundError:
     pass
 
 
-def notify_invite(user: UserProfile, event: Event):
+def notify_invite(user: UserProfile, event: Event, dry_run=False):
     if not firebase_enabled:
         return
     if user.firebase_reg_token != "":
         messaging.send(messaging.Message(
             data={
                 'kind': 'invite',
-                'event_id': event.pk,
+                'event_id': str(event.pk),
                 'event_name': event.event_name,
             },
             token=user.firebase_reg_token
-        ))
+        ), dry_run=dry_run)
 
 
-def notify_edit(event: Event):
+def notify_edit(event: Event, dry_run=False):
     if not firebase_enabled:
         return
     for user in UserProfile.objects.filter(user_id__event_id=event, user_id__status=inv_status["ACCEPTED"]):
@@ -40,8 +40,8 @@ def notify_edit(event: Event):
             messaging.send(messaging.Message(
                 data={
                     'kind': 'edit',
-                    'event_id': event.pk,
+                    'event_id': str(event.pk),
                     'event_name': event.event_name,
                 },
                 token=user.firebase_reg_token
-            ))
+            ), dry_run=dry_run)
