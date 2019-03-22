@@ -245,6 +245,16 @@ public interface MeetingService {
             this.profile_picture = profile_picture;
         }
 
+        public UserProfile(){
+            this.pk = -1;
+            this.username = null;
+            this.first_name = null;
+            this.last_name = null;
+            this.email = null;
+            this.phone_number = null;
+            this.profile_picture = null;
+        }
+
         public int getPk() {
             return pk;
         }
