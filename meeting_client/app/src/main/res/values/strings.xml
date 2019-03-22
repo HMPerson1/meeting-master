@@ -78,5 +78,6 @@
     <!-- menu options -->
     <string name="delete_event">Delete Event</string>
     <string name="export_event">Export Event</string>
+    <string name="sync_calendar">Sync Calendar</string>
 
 </resources>

@@ -9,6 +9,12 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
+
+import com.example.meetingmasterclient.server.MeetingService;
+import com.example.meetingmasterclient.server.Server;
+
+import retrofit2.Call;
 
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
@@ -16,9 +22,11 @@ import com.example.meetingmasterclient.server.Server;
 import java.io.File;
 
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class EventCreation extends AppCompatActivity {
-
+    int LocationID;
     private TextInputLayout textInputEventName;
     private TextInputLayout textInputDate;
     private TextInputLayout textInputTime;
@@ -28,6 +36,7 @@ public class EventCreation extends AppCompatActivity {
     private TextInputLayout textInputCity;
     private TextInputLayout textInputState;
     private TextInputLayout textInputRoomNo;
+
 
 
 
@@ -49,6 +58,8 @@ public class EventCreation extends AppCompatActivity {
         textInputCity = findViewById(R.id.text_input_city);
         textInputState = findViewById(R.id.text_input_state);
         textInputRoomNo = findViewById(R.id.text_input_room_no);
+
+
 
     }
 
@@ -126,8 +137,10 @@ public class EventCreation extends AppCompatActivity {
     }//configureAttendee
 
 
+
+
     public boolean confirmInput(View v) {
-        return (!validateEventName() | !validateStreetAddr() | !validateCity() | !validateStreetAddr()
+        return (!validateEventName() | !validateStreetAddr() | !validateCity()
             | !validateState());
     }
 
@@ -156,6 +169,44 @@ public class EventCreation extends AppCompatActivity {
                 },
                 (call, t) -> t.printStackTrace()
         ));
+
+        postLocation();
     }
 
-}
+    public void postLocation(){
+
+        Call<MeetingService.LocationData> c2 = Server.getService().newLocation(new MeetingService.LocationData(textInputStreetAddr.getEditText().getText().toString(),
+                textInputCity.getEditText().getText().toString(),textInputState.getEditText().getText().toString()));
+        c2.enqueue(new Callback<MeetingService.LocationData>() {
+            @Override
+            public void onResponse(Call<MeetingService.LocationData> call, Response<MeetingService.LocationData> response) {
+                if(!response.isSuccessful()){ //404 error?
+                    Toast.makeText(EventCreation.this, "Oops, Something is wrong: "+response.code() , Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                Toast.makeText(EventCreation.this,response.toString() , Toast.LENGTH_LONG).show();
+                MeetingService.LocationData locationInfo =response.body();
+                LocationID= locationInfo.getPk();
+
+
+
+            }
+
+            @Override
+            public void onFailure(Call<MeetingService.LocationData> call, Throwable t) {//error from server
+
+                Toast.makeText(EventCreation.this,t.getMessage() , Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+    }
+
+
+
+    }
+
+
+
+

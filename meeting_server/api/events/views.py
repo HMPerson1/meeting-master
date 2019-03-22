@@ -7,8 +7,6 @@ from rest_framework.views import APIView
 from rest_framework import generics as drf_generics
 
 from api.events.renderers import IcalRenderer
-from api.users.models import UserProfile
-from api.users.serializers import UserProfileSerializer
 from .models import Event
 from .serializers import EventModelSerializer, EventCreateSerializer, EventListQuerySerializer, EventIcalSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
@@ -107,15 +105,6 @@ class EventDetailView(APIView):
 #             return Response(serializer.data)
 
 
-class EventAttendeesView(drf_generics.ListAPIView):
-    permission_classes = (IsAuthenticated,)
-    serializer_class = UserProfileSerializer
-
-    def get_queryset(self):
-        # what is that related name
-        return UserProfile.objects.filter(user_id__event_id=self.kwargs['id'])
-
-
 class IcalView(drf_generics.ListAPIView):
     serializer_class = EventIcalSerializer
     pagination_class = None
@@ -123,5 +112,4 @@ class IcalView(drf_generics.ListAPIView):
     permission_classes = ()
 
     def get_queryset(self):
-        # what is that related name
-        return Event.objects.filter(event_id__user_id__ical_key=self.kwargs['ical_key'])
+        return Event.objects.filter(invitation__user_id__ical_key=self.kwargs['ical_key'])

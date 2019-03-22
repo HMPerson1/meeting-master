@@ -76,17 +76,7 @@ public class Login extends AppCompatActivity {
     }
 
     private boolean validateEmail(){
-        String email = textInputEmail.getEditText().getText().toString();
-        if (email.isEmpty()){
-            textInputEmail.setError("Email cannot be empty");
-            return false;
-        } else if (!email.contains("@") || !email.contains(".")) {
-            textInputEmail.setError("Not a valid email address");
-            return false;
-        } else {
-            textInputEmail.setError(null);
-            return true;
-        }
+        return true;
     }
 
     private boolean validatePassword(){
