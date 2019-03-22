@@ -67,6 +67,36 @@ public class EventCreationTest {
 
     }
 
+    @Test
+    public void testInputEventDetails(){
+        //display name of Event, check if name of Event is displayed
+        Espresso.onView(withId(R.id.text_input_event_name)).perform(scrollTo()).perform(typeText(someText));
+        Espresso.onView(withId(R.id.text_input_date)).perform(scrollTo()).perform(typeText(someText));
+        Espresso.onView(withId(R.id.text_input_duration)).perform(scrollTo()).perform(typeText(someText));
+        Espresso.onView(withId(R.id.text_input_notes)).perform(scrollTo()).perform(typeText(someText));
+
+
+    }
+
+    @Test
+    public void inputAndCreate() {
+        //display name of Event, check if name of Event is displayed
+        Espresso.onView(withId(R.id.text_input_event_name)).perform(scrollTo()).perform(typeText(someText));
+        Espresso.onView(withId(R.id.text_input_date)).perform(scrollTo()).perform(typeText(someText));
+        Espresso.onView(withId(R.id.text_input_duration)).perform(scrollTo()).perform(typeText(someText));
+        Espresso.onView(withId(R.id.text_input_notes)).perform(scrollTo()).perform(typeText(someText));
+
+        //display name of Event, check if name of Event is displayed
+        Espresso.onView(withId(R.id.text_input_room_no)).perform(typeText(someText));
+        Espresso.onView(withId(R.id.text_input_city)).perform(typeText(someText));
+        Espresso.onView(withId(R.id.text_input_street_address)).perform(typeText(someText));
+        Espresso.onView(withId(R.id.text_input_state)).perform(typeText(someText));
+
+
+        Espresso.onView(withId(R.id.create_meeting_button)).perform(scrollTo()).perform(click());
+
+    }
+
 
     @After
     public void tearDown() throws Exception {

@@ -37,6 +37,7 @@ public class EventCreation extends AppCompatActivity {
 
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -166,35 +167,44 @@ public class EventCreation extends AppCompatActivity {
         String notes = textInputNotes.getEditText().getText().toString().trim();
         //File file_attachment
 
-        Call<MeetingService.EventCreationData> c = Server.getService().createEvent(new MeetingService
-                .EventCreationData(event_name, 0));
+        Button createButton = findViewById(R.id.create_meeting_button);
 
-        c.enqueue(Server.mkCallback(
-                (call, response) -> {
-                    if (response.isSuccessful()) {
-                        assert response.body() != null;
-                        //Server.authenticate(response.body().key); TODO check this
-                    } else {
-                        Server.parseUnsuccessful(response, MeetingService.EventCreationData.class, System.out::println, System.out::println);
-                    }
-                },
-                (call, t) -> t.printStackTrace()
-        ));
+       createButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Call<MeetingService.EventCreationData> c = Server.getService().createEvent(new MeetingService
+                        .EventCreationData(event_name, 0));
 
-        Call<MeetingService.LocationData> c2 = Server.getService().newLocation(new MeetingService.LocationData(textInputStreetAddr.getEditText().getText().toString(),
-                textInputCity.getEditText().getText().toString(),textInputState.getEditText().getText().toString()));
-        c2.enqueue(Server.mkCallback(
-                (call, response) -> {
-                    if (response.isSuccessful()) {
-                        assert response.body() != null;
-                        Toast.makeText(EventCreation.this, response.body().toString() , Toast.LENGTH_LONG).show();
-                    } else {
-                        Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, System.out::println, System.out::println);
+                c.enqueue(Server.mkCallback(
+                        (call, response) -> {
+                            if (response.isSuccessful()) {
+                                assert response.body() != null;
+                                //Server.authenticate(response.body().key); TODO check this
+                            } else {
+                                Server.parseUnsuccessful(response, MeetingService.EventCreationData.class, System.out::println, System.out::println);
+                            }
+                        },
+                        (call, t) -> t.printStackTrace()
+                ));
 
-                    }
-                },
-                (call, t) -> t.printStackTrace()
-        ));
+                Call<MeetingService.LocationData> c2 = Server.getService().newLocation(new MeetingService.LocationData(textInputStreetAddr.getEditText().getText().toString(),
+                        textInputCity.getEditText().getText().toString(),textInputState.getEditText().getText().toString()));
+                c2.enqueue(Server.mkCallback(
+                        (call2, response2) -> {
+                            if (response2.isSuccessful()) {
+                                assert response2.body() != null;
+                                Toast.makeText(EventCreation.this, response2.body().toString() , Toast.LENGTH_LONG).show();
+                            } else {
+                                Server.parseUnsuccessful(response2, MeetingService.RegistrationError.class, System.out::println, System.out::println);
+
+                            }
+                        },
+                        (call2, t) -> t.printStackTrace()
+                ));
+            }
+        });
+
+
     }
 
 

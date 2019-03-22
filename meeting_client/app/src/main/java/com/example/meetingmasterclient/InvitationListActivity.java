@@ -71,7 +71,7 @@ public class InvitationListActivity extends AppCompatActivity {
                     Toast.makeText(InvitationListActivity.this, "Oops, Something is wrong: " + response.code(), Toast.LENGTH_LONG).show();
                     return;
                 }
-                Toast.makeText(InvitationListActivity.this, "response", Toast.LENGTH_LONG).show();
+                Toast.makeText(InvitationListActivity.this, "response"+response.body(), Toast.LENGTH_LONG).show();
                 Toast.makeText(InvitationListActivity.this, response.toString(), Toast.LENGTH_LONG).show();
 
 
@@ -100,7 +100,7 @@ public class InvitationListActivity extends AppCompatActivity {
                         Toast.makeText(InvitationListActivity.this, "Oops, Something is wrong: " + response.code(), Toast.LENGTH_LONG).show();
                         return;
                     }
-                    Toast.makeText(InvitationListActivity.this, "response", Toast.LENGTH_LONG).show();
+                    Toast.makeText(InvitationListActivity.this, "response"+response.body(), Toast.LENGTH_LONG).show();
                     Toast.makeText(InvitationListActivity.this, response.toString(), Toast.LENGTH_LONG).show();
 
                     //add user to list if successful
@@ -118,7 +118,7 @@ public class InvitationListActivity extends AppCompatActivity {
                                     Toast.makeText(InvitationListActivity.this, "Oops, Something is wrong: " + response.code(), Toast.LENGTH_LONG).show();
                                     return;
                                 }
-                                Toast.makeText(InvitationListActivity.this, "response", Toast.LENGTH_LONG).show();
+                                Toast.makeText(InvitationListActivity.this, "response"+response.body(), Toast.LENGTH_LONG).show();
                                 Toast.makeText(InvitationListActivity.this, response.toString(), Toast.LENGTH_LONG).show();
 
 
