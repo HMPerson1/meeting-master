@@ -18,9 +18,11 @@ public class EventEdition extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         configureSaveButton();
+
         //get the current intent
         Intent intent = getIntent();
         eventId= intent.getIntExtra("event_id", -1);
+
 
 
     }

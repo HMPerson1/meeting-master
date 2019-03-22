@@ -2,19 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/edit_Event"
-        android:title="Edit  Event" />
+    <item android:id="@+id/edit_event"
+        android:title="@string/edit_event"/>
     <item android:id="@+id/delete_event_menu"
         android:title="@string/delete_event"
         app:showAsAction="never" />
-
-    <item android:id="@+id/export_event"
+    <item android:id="@+id/export_event_menu"
         android:title="@string/export_event"
         app:showAsAction="never" />
     <item
         android:id="@+id/notificationSwitch"
-        android:title="Get Notifications"
+        android:title="@string/get_notifications"
         android:icon="@android:drawable/ic_menu_preferences"
         android:checkable="true"/>
 
