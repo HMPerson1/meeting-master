@@ -75,3 +75,26 @@ class RegisterTests(TestCase):
                                     format='json')
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert json.loads(response.content) == {'username': ['A user with that username already exists.']}
+
+
+class LoginTests(TestCase):
+    def setUp(self):
+        super(LoginTests, self).setUp()
+        self.alice = UserProfile.objects.create(django_user=auth_models.User.objects.create(
+            username='alice', first_name='Alice', last_name='Q.', email='alice@example.com'))
+        self.alice.django_user.set_password('a1b2c3qqq')
+        self.alice.django_user.save()
+        self.client = APIClient()
+        self.client.credentials()
+
+    def testLogin(self):
+        response = self.client.post('/rest-auth/login/', data={'username': 'alice', 'password': 'a1b2c3qqq'},
+                                    format='json')
+        assert response.status_code == status.HTTP_200_OK
+        assert 'key' in json.loads(response.content)
+
+    def testLoginWrongPassword(self):
+        response = self.client.post('/rest-auth/login/', data={'username': 'alice', 'password': 'jjjjjjjjjjjj'},
+                                    format='json')
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert json.loads(response.content) == {'non_field_errors': ['Unable to log in with provided credentials.']}
