@@ -1,12 +1,18 @@
 <resources>
     <string name="app_name">Meeting Master</string>
+
+    <!--activity titles-->
     <string name="title_activity_password_reset">PasswordReset</string>
-    <string name="title_activity_event_note_addition">EventNoteAddition</string>
     <string name="title_activity_profile_edition">ProfileEdition</string>
     <string name="title_activity_user_search">UserSearch</string>
     <string name="title_activity_event_edition">EventEdition</string>
     <string name="title_activity_event_list_view">EventListView</string>
     <string name="title_activity_registration">Registration</string>
+    <string name="title_activity_create_event">CreateEvent</string>
+    <string name="title_activity_login">Login</string>
+    <string name="title_activity_invitation_list">Invitations</string>
+    <string name="title_activity_event_creation">EventCreation</string>
+    <string name="title_activity_add_users_to_meeting">AddUserstoMeeting</string>
 
     <!--registration/login strings-->
     <string name="first_name">First Name</string>
@@ -15,14 +21,26 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="confirm_password">Confirm Password</string>
+    <string name="forgot_password">Forgot Password?</string>
     <string name="phone_number">Phone Number</string>
+    <string name="phone_number_opt">Phone Number (Opt.)</string>
     <string name="submit_button">Submit</string>
     <string name="cancel_button">Cancel</string>
-    <string name="title_activity_login">Login</string>
     <string name="register">New User?</string>
-    <string name="title_activity_create_event">CreateEvent</string>
+    <string name="profile_pic">Profile Picture</string>
+    <string name="confirm">Confirm</string>
+    <string name="upload">Upload</string>
+    <string name="accept">Accept</string>
 
     <!-- event/location strings-->
+    <string name="event_details">Event Details</string>
+    <string name="location_details">Location Details</string>
+    <string name="add_file">Add File</string>
+
+    <string name="event_name">Event Name</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="notes_opt">Event Notes (Optional)</string>
     <string name="street_address">Street Address</string>
     <string name="city">City</string>
     <string name="state">State</string>
@@ -30,8 +48,35 @@
     <string name="room_no_opt">Room Number (Optional)</string>
     <string name="location">Location</string>
     <string name="invitees">Invitees</string>
-    <string name="invite_button">Invite</string>
-    <string name="title_activity_invitation_list">Invitations</string>
+    <string name="invite_button">Invite Users</string>
+
     <string name="invite_accept">Accept</string>
     <string name="decline">Decline</string>
+
+    <string name="msg_token_fmt">InstanceID Token: %s</string>
+    <string name="log_fcm_token">Log FCM Token</string>
+    <string name="channel_invite_name">Invitations</string>
+    <string name="channel_invite_description">When you are invited to an event</string>
+    <string name="channel_edit_name">Edits</string>
+    <string name="channel_edit_description">When another user edits an event</string>
+    <string name="notification_invite_title">Event Invitation</string>
+    <string name="notification_invite_body">You have been invited to attend %s</string>
+    <string name="notification_edit_title">Event Edited</string>
+    <string name="notification_edit_body">%s has been edited</string>
+
+    <string name="create_event_button">Create Event</string>
+    <string name="title_activity_profile_details">ProfileDetails</string>
+
+    <string name="attendees_list">Attendees List</string>
+    <string name="title_activity_attendee_list">AttendeeList</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="title_activity_event_details">EventDetails</string>
+    <string name="edit_event">Edit Event</string>
+    <string name="get_notifications">Notifications</string>
+    <string name="duration">Duration</string>
+
+    <!-- menu options -->
+    <string name="delete_event">Delete Event</string>
+    <string name="export_event">Export Event</string>
+
 </resources>
