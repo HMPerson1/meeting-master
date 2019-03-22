@@ -229,6 +229,10 @@ public interface MeetingService {
                     '}';
         }
 
+        public UserProfile() {
+
+        }
+
         public UserProfile(int pk, String username, String first_name, String last_name, String email, String phone_number, String profile_picture) {
             this.pk = pk;
             this.username = username;
