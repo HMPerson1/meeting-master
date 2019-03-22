@@ -92,7 +92,7 @@ public class InvitationListActivity extends AppCompatActivity {
 
         if (user_id<0) { //user is logged in
             JSONArray jArray = new JSONArray();
-            Call<List<MeetingService.InvitationData>> call = Server.getService().getUserInvitations(String.valueOf(user_id));
+            Call<List<MeetingService.InvitationData>> call = Server.getService().getUsersInvitations();
             call.enqueue(new Callback<List<MeetingService.InvitationData>>() {
                 @Override
                 public void onResponse(Call<List<MeetingService.InvitationData>> call, retrofit2.Response<List<MeetingService.InvitationData>> response) {
