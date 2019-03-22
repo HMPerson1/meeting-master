@@ -1,6 +1,7 @@
 package com.example.meetingmasterclient;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import org.junit.Test;
 
@@ -13,6 +14,7 @@ import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.Until;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -33,6 +35,7 @@ public class NotificationTest {
         notifier.onMessageRecieved(makeNotifyInivteData("999", event_name));
         // wait for notification
         assertTrue(uiDevice.wait(Until.hasObject(By.text(appContext.getString(R.string.app_name))), TIMEOUT));
+        assertTrue(uiDevice.wait(Until.hasObject(By.text(appContext.getString(R.string.notification_invite_title))), TIMEOUT));
         // check notification content
         assertNotNull(uiDevice.findObject(By.textContains(event_name)));
 
@@ -52,6 +55,7 @@ public class NotificationTest {
         notifier.onMessageRecieved(makeNotifyInivteData("999", event_name));
         // wait for notification
         assertTrue(uiDevice.wait(Until.hasObject(By.text(appContext.getString(R.string.app_name))), TIMEOUT));
+        assertTrue(uiDevice.wait(Until.hasObject(By.text(appContext.getString(R.string.notification_invite_title))), TIMEOUT));
         uiDevice.findObject(By.textContains(event_name)).click();
         // check activity
         assertTrue(uiDevice.wait(Until.hasObject(By.text(appContext.getString(R.string.title_activity_event_details))), TIMEOUT));
@@ -72,6 +76,7 @@ public class NotificationTest {
         notifier.onMessageRecieved(makeNotifyEditData("999", event_name));
         // wait for notification
         assertTrue(uiDevice.wait(Until.hasObject(By.text(appContext.getString(R.string.app_name))), TIMEOUT));
+        assertTrue(uiDevice.wait(Until.hasObject(By.text(appContext.getString(R.string.notification_edit_title))), TIMEOUT));
         // check notification content
         assertNotNull(uiDevice.findObject(By.textContains(event_name)));
 
@@ -91,9 +96,40 @@ public class NotificationTest {
         notifier.onMessageRecieved(makeNotifyEditData("999", event_name));
         // wait for notification
         assertTrue(uiDevice.wait(Until.hasObject(By.text(appContext.getString(R.string.app_name))), TIMEOUT));
+        assertTrue(uiDevice.wait(Until.hasObject(By.text(appContext.getString(R.string.notification_edit_title))), TIMEOUT));
         uiDevice.findObject(By.textContains(event_name)).click();
         // check activity
         assertTrue(uiDevice.wait(Until.hasObject(By.text(appContext.getString(R.string.title_activity_event_details))), TIMEOUT));
+
+        clearAllNotifications();
+    }
+
+    @Test
+    public void notifEditedSurpressed() {
+        UiDevice uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        uiDevice.openNotification();
+
+        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Notifier notifier = new Notifier(appContext);
+
+        String event_name = "Alice's Party!";
+
+        SharedPreferences preferences = appContext.getSharedPreferences(EventDetails.PREFS_NAME, Context.MODE_PRIVATE);
+        synchronized (appContext.getApplicationContext()) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean("3355checkStatus", false);
+            editor.commit();
+        }
+
+        notifier.onMessageRecieved(makeNotifyEditData("3355", event_name));
+        // wait for (lack of) notification
+        assertFalse(uiDevice.wait(Until.hasObject(By.text(appContext.getString(R.string.app_name))), TIMEOUT));
+
+        synchronized (appContext.getApplicationContext()) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.remove("3355checkStatus");
+            editor.commit();
+        }
 
         clearAllNotifications();
     }
@@ -103,9 +139,10 @@ public class NotificationTest {
     private void clearAllNotifications() {
         UiDevice uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         uiDevice.openNotification();
-        uiDevice.wait(Until.hasObject(By.text("CLEAR ALL")), TIMEOUT);
-        UiObject2 clearAll = uiDevice.findObject(By.text("CLEAR ALL"));
-        clearAll.click();
+        UiObject2 clearAll = uiDevice.wait(Until.findObject(By.text("CLEAR ALL")), TIMEOUT);
+        if (clearAll != null) {
+            clearAll.click();
+        }
         uiDevice.wait(Until.gone(By.text("CLEAR ALL")), TIMEOUT);
     }
 
