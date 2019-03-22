@@ -1,25 +1,33 @@
 package com.example.meetingmasterclient;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import retrofit2.Call;
 
 public class EventListView extends AppCompatActivity {
-    Menu optionsMenu;
-    byte timePeriod;
-    ListView eventData;
+    private int user_id;
+    private Menu optionsMenu;
+    private byte timePeriod;
+    private ListView eventData;
+    private boolean declined;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,22 +37,9 @@ public class EventListView extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         eventData = findViewById(R.id.event_data);
-
-        // TODO: Get current user (somehow) to obtain their events only
-        //sendSearchRequest((byte)0, false);
-
-        /*Call<MeetingService.UserProfile> c = Server.getService().getCurrentUser();
-        c.enqueue(Server.mkCallback(
-                (call, response) -> {
-                    if (!response.isSuccessful()) {
-                        Toast.makeText(getApplicationContext(), "An error has occurred", Toast.LENGTH_SHORT);
-                        return;
-                    }
-
-                    sendSearchRequest((byte)0, false);
-                },
-                (call, t) -> t.printStackTrace()
-        ));*/
+        user_id = getIntent().getIntExtra("user_id", -1);
+        declined = false;
+        getInvitationByUser();
     }
 
     @Override
@@ -57,31 +52,39 @@ public class EventListView extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         ListView eventData = findViewById(R.id.event_data);
-        MenuItem declined = optionsMenu.findItem(R.id.show_declined_events);
+        MenuItem declinedCheckbox = optionsMenu.findItem(R.id.show_declined_events);
 
         switch (item.getItemId()) {
             case R.id.today:
-                //sendSearchRequest((byte)0, declined.isChecked());
+                timePeriod = 0;
+                getInvitationByUser();
                 break;
             case R.id.this_week:
-                //sendSearchRequest((byte)1, declined.isChecked());
+                timePeriod = 1;
+                getInvitationByUser();
                 break;
             case R.id.this_month:
-                //sendSearchRequest((byte)2, declined.isChecked());
+                timePeriod = 2;
+                getInvitationByUser();
                 break;
             case R.id.show_declined_events:
-                declined.setChecked(!declined.isChecked());
-                //sendSearchRequest(timePeriod, declined.isChecked());
+                declined = !declinedCheckbox.isChecked();
+                declinedCheckbox.setChecked(declined);
+                getInvitationByUser();
                 break;
             default:
-                // just to avoid trouble
                 break;
         }
 
         return true;
     }
 
-    private void getInvitationByUser(int user_id) {
+    private void getInvitationByUser() {
+        if (user_id == -1) {
+            Toast.makeText(getApplicationContext(), "An error has occurred", Toast.LENGTH_SHORT);
+            return;
+        }
+
         Call<List<MeetingService.InvitationData>> c = Server.getService().getInvitations("/invitations/" + user_id + "/");
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
@@ -98,13 +101,68 @@ public class EventListView extends AppCompatActivity {
 
     private void getEventByInvitation(List<MeetingService.InvitationData> invitations) {
         List<MeetingService.EventData> events = new LinkedList<MeetingService.EventData>();
+        Calendar today = Calendar.getInstance();
 
         for (MeetingService.InvitationData inv : invitations) {
             Call<MeetingService.EventData> c = Server.getService().getEvent("/events/" + inv.event_id + "/");
             c.enqueue(Server.mkCallback(
                     (call, response) -> {
                         if (response.isSuccessful()) {
-                            events.add(response.body());
+                            MeetingService.EventData event = response.body();
+
+                            try {
+                                Calendar eventCal = Calendar.getInstance();
+                                eventCal.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(event.event_date));
+                                eventCal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(event.event_time.substring(0, 2)));
+                                eventCal.set(Calendar.MINUTE, Integer.parseInt(event.event_time.substring(3)));
+                                boolean timeIsConsistent;
+                                boolean isDeclined;
+
+                                switch(timePeriod) {
+                                    case 0:
+                                        timeIsConsistent = eventCal.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)
+                                                && eventCal.get(Calendar.YEAR) == today.get(Calendar.YEAR)
+                                                &&
+                                                (eventCal.get(Calendar.HOUR_OF_DAY) > today.get(Calendar.HOUR_OF_DAY)
+                                                || (eventCal.get(Calendar.HOUR_OF_DAY) == today.get(Calendar.HOUR_OF_DAY)
+                                                        && eventCal.get(Calendar.MINUTE) >= today.get(Calendar.MINUTE)));
+                                        break;
+                                    case 1:
+                                        timeIsConsistent = eventCal.get(Calendar.WEEK_OF_YEAR) == today.get(Calendar.WEEK_OF_YEAR)
+                                                && eventCal.get(Calendar.YEAR) == today.get(Calendar.YEAR)
+                                                &&
+                                                (eventCal.get(Calendar.DAY_OF_WEEK) > eventCal.get(Calendar.DAY_OF_WEEK)
+                                                || (eventCal.get(Calendar.DAY_OF_WEEK) == eventCal.get(Calendar.DAY_OF_WEEK)
+                                                        &&
+                                                        (eventCal.get(Calendar.HOUR_OF_DAY) > today.get(Calendar.HOUR_OF_DAY)
+                                                        || (eventCal.get(Calendar.HOUR_OF_DAY) == today.get(Calendar.HOUR_OF_DAY)
+                                                                && eventCal.get(Calendar.MINUTE) >= eventCal.get(Calendar.MINUTE)))));
+                                        break;
+                                    case 2:
+                                        timeIsConsistent = eventCal.get(Calendar.MONTH) == today.get(Calendar.MONTH)
+                                                && eventCal.get(Calendar.YEAR) == today.get(Calendar.YEAR)
+                                                &&
+                                                (eventCal.get(Calendar.WEEK_OF_MONTH) == today.get(Calendar.WEEK_OF_MONTH)
+                                                        && eventCal.get(Calendar.YEAR) == today.get(Calendar.YEAR)
+                                                        &&
+                                                        (eventCal.get(Calendar.DAY_OF_WEEK) > eventCal.get(Calendar.DAY_OF_WEEK)
+                                                                || (eventCal.get(Calendar.DAY_OF_WEEK) == eventCal.get(Calendar.DAY_OF_WEEK)
+                                                                &&
+                                                                (eventCal.get(Calendar.HOUR) > today.get(Calendar.HOUR)
+                                                                        || (eventCal.get(Calendar.HOUR) == today.get(Calendar.HOUR)
+                                                                        && eventCal.get(Calendar.MINUTE) >= eventCal.get(Calendar.MINUTE))))));
+                                        break;
+                                    default:
+                                        timeIsConsistent = false;
+                                        break;
+                                }
+
+                                isDeclined = inv.status == 3;
+
+                                if (timeIsConsistent && (declined || !isDeclined)) {
+                                    events.add(event);
+                                }
+                            } catch(ParseException e) {}
                         } else {
                             // TODO: Parse error
                             //Server.parseUnsuccessful(response, MeetingService.EventDetailsError.class(), System.out::println, System.out::println);
@@ -114,56 +172,16 @@ public class EventListView extends AppCompatActivity {
             ));
         }
 
-        while (events.size() == 0) {}
-
         eventData.setAdapter(new EventViewAdapter(getApplicationContext(), events));
+
+        eventData.setOnItemClickListener(
+            (parent, view, position, id) -> {
+                Intent intent = new Intent(getApplicationContext(), EventDetails.class);
+                intent.putExtra("event_id", ((MeetingService.EventData)eventData.getItemAtPosition(position)).id);
+                startActivity(intent);
+            }
+        );
+
         eventData.setVisibility(View.VISIBLE);
     }
-
-    // TODO: Code request for event filtering
-    public void sendSearchRequest(byte period, boolean declined) {
-        timePeriod = period;
-        // period = 0 ==> today
-        // period = 1 ==> this week
-        // period = 2 ==> this month
-        // declined = true ==> show declined events
-        // declined = false ==> do not show declined events
-    }
-
-    /*
-    private void sendSearchRequest(String url) {
-        eventQueue = Volley.newRequestQueue(this);
-
-        JsonArrayRequest eventRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                String[][] eventInfo = new String[response.length()][4];
-
-                try {
-                    for (int i = 0; i < response.length(); i++) {
-                        eventInfo[i][0] = response.getJSONObject(i).getString("admin");
-                        eventInfo[i][1] = response.getJSONObject(i).getString("name");
-                        eventInfo[i][2] = response.getJSONObject(i).getString("date");
-                        eventInfo[i][3] = response.getJSONObject(i).getString("location");
-                    }
-
-                    EventViewAdapter results = new EventViewAdapter(getApplicationContext(), eventInfo);
-                    eventData.setAdapter(results);
-                    eventData.setVisibility(View.VISIBLE);
-                } catch(JSONException e) {
-                    Toast.makeText(getApplicationContext(), "An error has occurred while processing the information", Toast.LENGTH_SHORT).show();
-                } finally {
-                    eventQueue.stop();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), "An error has occurred in the network", Toast.LENGTH_SHORT).show();
-                eventQueue.stop();
-            }
-        });
-
-        eventQueue.add(eventRequest);
-    }*/
 }

@@ -131,6 +131,13 @@ public interface MeetingService {
     Call<EventData> getEvent(@Url String url);
 
     /**
+     * needs authentication <br>
+     * never fails (if authenticated)
+     */
+    @PUT("/firebase_reg_token/")
+    Call<Void> putFirebaseRegToken(@Body FirebaseRegTokenData data);
+
+    /**
      * TODO someone check this, not sure if correct
      */
     @DELETE("/events/{id}/")
@@ -223,6 +230,16 @@ public interface MeetingService {
                     ", phone_number='" + phone_number + '\'' +
                     ", profile_picture='" + profile_picture + '\'' +
                     '}';
+        }
+
+        public UserProfile(int pk, String username, String first_name, String last_name, String email, String phone_number, String profile_picture) {
+            this.pk = pk;
+            this.username = username;
+            this.first_name = first_name;
+            this.last_name = last_name;
+            this.email = email;
+            this.phone_number = phone_number;
+            this.profile_picture = profile_picture;
         }
 
         public int getPk() {
@@ -409,6 +426,14 @@ public interface MeetingService {
             this.user_id = user_id;
             this.event_id = event_id;
             this.status = status;
+        }
+    }
+
+    class FirebaseRegTokenData {
+        public String firebase_reg_token;
+
+        public FirebaseRegTokenData(String firebase_reg_token) {
+            this.firebase_reg_token = firebase_reg_token;
         }
     }
 }
