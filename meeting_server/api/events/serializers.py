@@ -96,7 +96,7 @@ class EventPermissionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ('pk', 'event_admin', 'permissions')
+        fields = ('pk', 'event_admin')  # FIXME: probably broken
 
 
 
