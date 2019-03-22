@@ -107,9 +107,9 @@ class EventPermissionSerializer(serializers.ModelSerializer):
 
 # only for use with IcalRenderer
 class EventIcalSerializer(serializers.Serializer):
-    file_attachment = serializers.FileField()
-
     def to_representation(self, instance: Event):
+        file_attachment_field = serializers.FileField()
+        file_attachment_field.bind('file_attachment', self)
         return {
             'pk': instance.pk,
             'event_name': instance.event_name,
@@ -127,7 +127,7 @@ class EventIcalSerializer(serializers.Serializer):
                 'state': instance.event_location.state,
             },
             'notes': instance.notes,
-            'file_attachment': self.fields['file_attachment'].to_representation(instance.file_attachment),
+            'file_attachment': file_attachment_field.to_representation(instance.file_attachment),
             'attendees': [{
                 'email': att.user_id.django_user.email,
                 'full_name': att.user_id.django_user.get_full_name(),
