@@ -44,6 +44,7 @@ public class EventDetails extends AppCompatActivity {
 
         eventID = getEventByID(getIntent().getIntExtra("id", -1));
 
+        attendeeListButton = (Button) findViewById(R.id.view_attendees_button);
         attendeeListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
