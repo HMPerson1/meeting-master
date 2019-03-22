@@ -10,6 +10,7 @@ from rest_framework import serializers
 from api.users.serializers import UserProfileSerializer
 from api.locations.serializers import LocationModelSerializer
 from django.forms import FileField
+from api.users.models import UserProfile
 from api.locations.models import Location
 import api.fcm as fcm
 
@@ -87,6 +88,16 @@ class EventCreateSerializer(serializers.ModelSerializer):
             notes=validated_data.pop('notes')
         )
         return event
+
+
+class EventPermissionSerializer(serializers.ModelSerializer):
+    # permissions = serializers.PrimaryKeyRelatedField(many=True, read_only=False, queryset=UserProfile.objects.all())
+
+    class Meta:
+        model = Event
+        fields = ('pk', 'event_admin', 'permissions')
+
+
 
 
 # only for use with IcalRenderer

@@ -52,7 +52,7 @@ urlpatterns = [
     url(r'^locations/', include(locations_urls)),
     url(r'^invitations/', include(invitations_urls)),
     url(r'^current_user/', include(users_urls)),
-    path('', include(router.urls)),
+    url(r'^', include(router.urls))
 ]
 
 if settings.DEBUG:
