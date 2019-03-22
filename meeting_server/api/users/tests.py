@@ -53,3 +53,25 @@ class ProfilePictureTests(TestCase):
         response = self.client.get("/rest-auth/user/")
         assert response.status_code == status.HTTP_200_OK
         assert json.loads(response.content)['profile_picture'] is None
+
+
+class RegisterTests(TestCase):
+    def setUp(self):
+        super(RegisterTests, self).setUp()
+        self.client = APIClient()
+        self.client.credentials()
+
+    def testRegister(self):
+        response = self.client.post('/register/',
+                                    {'username': 'alice', 'password1': 'a1b2c3qqq', 'password2': 'a1b2c3qqq'},
+                                    format='json')
+        assert response.status_code == status.HTTP_201_CREATED
+
+    def testRegisterExistingUsername(self):
+        UserProfile.objects.create(django_user=auth_models.User.objects.create(
+            username='alice', first_name='Alice', last_name='Q.', email='alice@example.com')).save()
+        response = self.client.post('/register/',
+                                    {'username': 'alice', 'password1': 'a1b2c3qqq', 'password2': 'a1b2c3qqq'},
+                                    format='json')
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert json.loads(response.content) == {'username': ['A user with that username already exists.']}
