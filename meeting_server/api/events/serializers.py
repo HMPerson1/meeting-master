@@ -79,6 +79,7 @@ class EventCreateSerializer(serializers.ModelSerializer):
         # Todo: Check date, check location, and admin_id
         # event_admin=event_admin,
         event = Event.objects.create(
+            event_admin=self.context['request'].user.userprofile,
             event_name=validated_data.pop('event_name'),
             event_date=event_date,
             event_time=validated_data.pop('event_time'),
