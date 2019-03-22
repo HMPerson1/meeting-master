@@ -2,6 +2,7 @@ package com.example.meetingmasterclient.server;
 
 import android.support.annotation.NonNull;
 
+import java.io.File;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
@@ -110,7 +111,7 @@ public interface MeetingService {
     @PATCH("/events/{id}/")
     Call<Void> users(@Body EventData data);
 
-
+/*
     @Multipart
     @POST("/events/")
     Call<EventData> createEvent(
@@ -122,7 +123,9 @@ public interface MeetingService {
         @Part("notes") RequestBody notes,
         @Part MultipartBody.Part file
     );
-
+*/
+    @POST("/events/")
+    Call<EventCreationData> createEvent(@Body EventCreationData data);
 
     @GET
     Call<List<InvitationData>> getInvitations(@Url String url);
@@ -386,6 +389,37 @@ public interface MeetingService {
             this.file_attachment = file_attachment;
             this.notes = notes;
             this.event_location = event_location;
+        }
+    }
+
+    class EventCreationData{
+        public String event_name;
+        public String event_date;
+        public String event_time;
+        public String event_duration;
+        public int event_location;
+        public String notes;
+        public File file_attachment;
+
+        public EventCreationData(String event_name, String event_date, String event_time, String event_duration,
+            int event_location, String notes, File file_attachment){
+            this.event_name = event_name;
+            this.event_date = event_date;
+            this.event_time = event_time;
+            this.event_duration = event_duration;
+            this.event_location = event_location;
+            this.notes = notes;
+            this.file_attachment = file_attachment;
+        }
+
+        public EventCreationData(String event_name, int event_location){
+            this.event_name = event_name;
+            this.event_date = null;
+            this.event_time = null;
+            this.event_duration = null;
+            this.event_location = event_location;
+            this.notes = null;
+            this.file_attachment = null;
         }
     }
 

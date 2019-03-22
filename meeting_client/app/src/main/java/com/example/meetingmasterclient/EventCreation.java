@@ -143,8 +143,20 @@ public class EventCreation extends AppCompatActivity {
         String notes = textInputNotes.getEditText().getText().toString().trim();
         //File file_attachment
 
-        //Call<MeetingService.EventData> c = Server.getService().createEvent(event_name, event_date,
-        //        event_time, event_duration, event_location, notes, null);
+        Call<MeetingService.EventCreationData> c = Server.getService().createEvent(new MeetingService
+                .EventCreationData(event_name, 0));
+
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        assert response.body() != null;
+                        //Server.authenticate(response.body().key); TODO check this
+                    } else {
+                        Server.parseUnsuccessful(response, MeetingService.EventCreationData.class, System.out::println, System.out::println);
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
     }
 
 }
