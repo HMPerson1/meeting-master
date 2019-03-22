@@ -9,6 +9,7 @@ import java.util.List;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -30,21 +31,6 @@ public interface MeetingService {
      */
     @POST("/register/")
     Call<AuthToken> register(@Body RegistrationData data);
-
-
-    @Multipart
-    @POST("/register/")
-    Call<AuthToken> register(
-        @Part("username") RequestBody username,
-        @Part("first_name") RequestBody first_name,
-        @Part("last_name") RequestBody last_name,
-        @Part("email") RequestBody email,
-        @Part("password1") RequestBody password1,
-        @Part("password2") RequestBody password2,
-        @Part("phone_number") RequestBody phone_number,
-        @Part MultipartBody.Part profile_picture
-    );
-
 
     /**
      * may fail with "Unable to log in with provided credentials."
@@ -73,6 +59,10 @@ public interface MeetingService {
      */
     @PUT("/rest-auth/user/")
     Call<UserProfile> putCurrentUser(@Body UserProfile data);
+
+    @Multipart
+    @PUT("/current_user/profile_picture")
+    Call<ResponseBody> uploadProfilePicture(@Part MultipartBody.Part profile_picture);
 
     /*
     @Multipart
