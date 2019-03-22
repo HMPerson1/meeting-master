@@ -2,18 +2,25 @@ package com.example.meetingmasterclient.server;
 
 import android.support.annotation.NonNull;
 
+import java.io.File;
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 
+import retrofit2.http.Multipart;
 import retrofit2.http.PATCH;
 
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 import retrofit2.http.Url;
 
@@ -24,7 +31,7 @@ public interface MeetingService {
     @POST("/register/")
     Call<AuthToken> register(@Body RegistrationData data);
 
-    /*
+
     @Multipart
     @POST("/register/")
     Call<AuthToken> register(
@@ -37,7 +44,7 @@ public interface MeetingService {
         @Part("phone_number") RequestBody phone_number,
         @Part MultipartBody.Part profile_picture
     );
-    */
+
 
     /**
      * may fail with "Unable to log in with provided credentials."
@@ -114,15 +121,18 @@ public interface MeetingService {
     /*
     @Multipart
     @POST("/events/")
-    Call<EventDetails> createEvent(
+    Call<EventData> createEvent(
         @Part("event_name") RequestBody event_name,
         @Part("event_date") RequestBody event_date,
         @Part("event_time") RequestBody event_time,
         @Part("event_duration") RequestBody event_duration,
+        @Part("event_location") RequestBody event_location,
         @Part("notes") RequestBody notes,
         @Part MultipartBody.Part file
     );
-    */
+*/
+    @POST("/events/")
+    Call<EventCreationData> createEvent(@Body EventCreationData data);
 
     @GET("/invitations/{user_id}/")
     Call<List<InvitationData>> getUserInvitations(@Path("user_id") String user_id);
@@ -139,6 +149,12 @@ public interface MeetingService {
      */
     @PUT("/firebase_reg_token/")
     Call<Void> putFirebaseRegToken(@Body FirebaseRegTokenData data);
+
+    /**
+     * TODO someone check this, not sure if correct
+     */
+    @DELETE("/events/{id}/")
+    Call<Void> deleteEvent(@Url String url);
 
     /* ******************** *
      * Dumb data containers *
@@ -229,10 +245,6 @@ public interface MeetingService {
                     '}';
         }
 
-        public UserProfile() {
-
-        }
-
         public UserProfile(int pk, String username, String first_name, String last_name, String email, String phone_number, String profile_picture) {
             this.pk = pk;
             this.username = username;
@@ -241,6 +253,16 @@ public interface MeetingService {
             this.email = email;
             this.phone_number = phone_number;
             this.profile_picture = profile_picture;
+        }
+
+        public UserProfile(){
+            this.pk = -1;
+            this.username = null;
+            this.first_name = null;
+            this.last_name = null;
+            this.email = null;
+            this.phone_number = null;
+            this.profile_picture = null;
         }
 
         public int getPk() {
@@ -423,6 +445,65 @@ public interface MeetingService {
 
         public int getEvent_location() {
             return event_location;
+        }
+    }
+
+    class EventCreationData{
+        public String event_name;
+        public String event_date;
+        public String event_time;
+        public String event_duration;
+        public int event_location;
+        public String notes;
+        public File file_attachment;
+
+        public EventCreationData(String event_name, String event_date, String event_time, String event_duration,
+            int event_location, String notes, File file_attachment){
+            this.event_name = event_name;
+            this.event_date = event_date;
+            this.event_time = event_time;
+            this.event_duration = event_duration;
+            this.event_location = event_location;
+            this.notes = notes;
+            this.file_attachment = file_attachment;
+        }
+
+        public EventCreationData(String event_name, int event_location){
+            this.event_name = event_name;
+            this.event_date = null;
+            this.event_time = null;
+            this.event_duration = null;
+            this.event_location = event_location;
+            this.notes = null;
+            this.file_attachment = null;
+        }
+    }
+
+    class EventDataError{
+        public int[] id;
+        public int[] event_admin;
+        public String[] event_name;
+        public String[] event_date;
+        public String[] event_time;
+        public String[] event_duration;
+        public String[] file_attachment;
+        public String[] notes;
+        public int[] event_location;
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "EventDataError{" +
+                    "id=" + Arrays.toString(id) +
+                    ", event_admin=" + Arrays.toString(event_admin) +
+                    ", event_name=" + Arrays.toString(event_name) +
+                    ", event_date=" + Arrays.toString(event_date) +
+                    ", event_time=" + Arrays.toString(event_time) +
+                    ", event_duration=" + Arrays.toString(event_duration) +
+                    ", file_attachment=" + Arrays.toString(file_attachment) +
+                    ", notes=" + Arrays.toString(notes) +
+                    ", event_location" + Arrays.toString(event_location) +
+                    '}';
         }
     }
 
