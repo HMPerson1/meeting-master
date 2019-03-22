@@ -1,10 +1,15 @@
 from django.http import Http404
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework import generics as drf_generics
+
+from api.events.renderers import IcalRenderer
+from api.users.models import UserProfile
+from api.users.serializers import UserProfileSerializer
 from .models import Event
-from .serializers import EventModelSerializer, EventCreateSerializer, EventListQuerySerializer
+from .serializers import EventModelSerializer, EventCreateSerializer, EventListQuerySerializer, EventIcalSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -101,3 +106,21 @@ class EventDetailView(APIView):
 #             return Response(serializer.data)
 
 
+class EventAttendeesView(drf_generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserProfileSerializer
+
+    def get_queryset(self):
+        # what is that related name
+        return UserProfile.objects.filter(user_id__event_id=self.kwargs['id'])
+
+
+class IcalView(drf_generics.ListAPIView):
+    serializer_class = EventIcalSerializer
+    pagination_class = None
+    renderer_classes = (IcalRenderer,)
+    permission_classes = ()
+
+    def get_queryset(self):
+        # what is that related name
+        return Event.objects.filter(event_id__user_id__ical_key=self.kwargs['ical_key'])

@@ -1,3 +1,4 @@
+from collections import namedtuple
 from typing import Type, Union
 
 import django.contrib.auth.models as auth_models
@@ -6,6 +7,7 @@ import rest_auth.serializers as auth_serializers
 from rest_auth.serializers import UserDetailsSerializer
 from rest_framework import serializers
 from rest_framework.fields import empty, get_attribute
+from rest_framework.reverse import reverse
 
 from api.users.models import UserProfile
 
@@ -26,7 +28,7 @@ class UserProfileSerializer(UserDetailsSerializer):
     class Meta:
         model = auth_models.User
         fields = ('pk', 'username', 'first_name', 'last_name', 'email', 'phone_number', 'profile_picture')
-        read_only_fields = ('pk',)
+        read_only_fields = ('pk', 'profile_picture')
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('userprofile', {})
@@ -56,7 +58,6 @@ class RegisterSerializer(serializers.Serializer):
     phone_number = serializers.ModelField(model_field=UserProfile._meta.get_field('phone_number'),
                                           validators=UserProfile._meta.get_field('phone_number').validators,
                                           required=False)
-    profile_picture = serializers.ImageField(required=False)
 
     def __init__(self, instance=None, data: Union[Type[empty], dict] = empty, **kwargs):
         super(RegisterSerializer, self).__init__(instance=instance, data=data, **kwargs)
@@ -87,7 +88,7 @@ class RegisterSerializer(serializers.Serializer):
             setattr(django_user, attr, value)
         django_user.save()
 
-        profile_validated_data = subset_dict(self.validated_data, {'phone_number', 'profile_picture'})
+        profile_validated_data = subset_dict(self.validated_data, {'phone_number'})
         profile_validated_data['django_user'] = django_user
         user_profile = UserProfile.objects.create(**profile_validated_data)
         return user_profile.django_user
@@ -101,6 +102,27 @@ class RegisterSerializer(serializers.Serializer):
 class PasswordResetSerializer(auth_serializers.PasswordResetSerializer):
     def get_email_options(self):
         return {'email_template_name': 'password_reset_email.html'}
+
+
+class FirebaseRegTokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('firebase_reg_token',)
+
+
+class ProfilePictureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('profile_picture',)
+
+
+class UserIcalUrlSerializer(serializers.Serializer):
+    ical_url = serializers.URLField()
+
+    def to_representation(self, instance: UserProfile):
+        i = namedtuple('n', 'ical_url')(
+            ical_url=reverse('api-event-ical', request=self.context['request'], kwargs={'ical_key': instance.ical_key}))
+        return super(UserIcalUrlSerializer, self).to_representation(i)
 
 
 def subset_dict(bigdict, keys):
