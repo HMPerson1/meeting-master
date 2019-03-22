@@ -2,6 +2,7 @@ package com.example.meetingmasterclient;
 
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.app.NotificationCompat;
@@ -12,19 +13,23 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.Map;
 import java.util.Objects;
 
-public class MyFirebaseMessagingService extends FirebaseMessagingService {
+class Notifier extends ContextWrapper {
     private static final String PREF_KEY_LAST_ID = "last_id";
     private static final String PREF_NAME = "notifications";
-    private static final String TAG = "MyFirebaseMessagingService";
+    private static final String TAG = "Notifier";
 
-    @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
+    public Notifier(Context base) {
+        super(base);
+    }
+
+    void onMessageRecieved(Map<String, String> data) {
         try {
-            String kind = Objects.requireNonNull(remoteMessage.getData().get("kind"), "data.kind == null");
-            String eventId = Objects.requireNonNull(remoteMessage.getData().get("event_id"), "data.event_id == null");
-            String eventName = Objects.requireNonNull(remoteMessage.getData().get("event_name"), "data.event_name == null");
+            String kind = Objects.requireNonNull(data.get("kind"), "data.kind == null");
+            String eventId = Objects.requireNonNull(data.get("event_id"), "data.event_id == null");
+            String eventName = Objects.requireNonNull(data.get("event_name"), "data.event_name == null");
             String channelId;
             String contentTitle;
             String contentText;
@@ -49,7 +54,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     return;
             }
 
-            Intent intent = new Intent(this, null); // TODO: eventdetailsactivity
+            Intent intent = new Intent(this, EventDetails.class);
             intent.putExtra("event_id", eventId);
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
             stackBuilder.addNextIntentWithParentStack(intent);
@@ -71,16 +76,32 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private boolean shouldShowEditNotification(String eventId) {
-        // TODO
-        return true;
+        return getSharedPreferences(EventDetails.PREFS_NAME, Context.MODE_PRIVATE)
+                .getBoolean(eventId + "checkStatus", true);
     }
 
     public int nextNotificationId() {
         SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        synchronized (getApplication()) {
+        synchronized (getApplicationContext()) {
             int id = preferences.getInt(PREF_KEY_LAST_ID, 0) + 1;
             preferences.edit().putInt(PREF_KEY_LAST_ID, id).apply();
             return id;
         }
     }
 }
+
+public class MyFirebaseMessagingService extends FirebaseMessagingService {
+    Notifier notifier;
+
+    @Override
+    public void onCreate() {
+        notifier = new Notifier(getApplication());
+        super.onCreate();
+    }
+
+    @Override
+    public void onMessageReceived(RemoteMessage remoteMessage) {
+        notifier.onMessageRecieved(remoteMessage.getData());
+    }
+}
+

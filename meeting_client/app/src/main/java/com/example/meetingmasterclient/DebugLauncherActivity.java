@@ -83,7 +83,7 @@ public class DebugLauncherActivity extends AppCompatActivity {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
 
             // invites
-            if (notificationManager.getNotificationChannel(Constants.CHANNEL_INVITE_ID) != null) {
+            if (notificationManager.getNotificationChannel(Constants.CHANNEL_INVITE_ID) == null) {
                 NotificationChannel inviteChannel = new NotificationChannel(
                         Constants.CHANNEL_INVITE_ID,
                         getString(R.string.channel_invite_name),
@@ -93,7 +93,7 @@ public class DebugLauncherActivity extends AppCompatActivity {
             }
 
             // edits
-            if (notificationManager.getNotificationChannel(Constants.CHANNEL_EDIT_ID) != null){
+            if (notificationManager.getNotificationChannel(Constants.CHANNEL_EDIT_ID) == null) {
                 NotificationChannel editChannel = new NotificationChannel(
                         Constants.CHANNEL_EDIT_ID,
                         getString(R.string.channel_edit_name),
