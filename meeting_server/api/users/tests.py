@@ -96,3 +96,29 @@ class LoginTests(TestCase):
                                     format='json')
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert json.loads(response.content) == {'non_field_errors': ['Unable to log in with provided credentials.']}
+
+
+class UserViewTests(TestCase):
+    def setUp(self):
+        super(UserViewTests, self).setUp()
+        self.alice = UserProfile.objects.create(django_user=auth_models.User.objects.create(
+            username='alice', first_name='Alice', last_name='Q.', email='alice@example.com'))
+        self.bob = UserProfile.objects.create(django_user=auth_models.User.objects.create(
+            username='bob', first_name='Bob', last_name='Q.', email='bob@example.com'))
+        self.charlie = UserProfile.objects.create(django_user=auth_models.User.objects.create(
+            username='charlie', first_name='Charlie', last_name='Q.', email='charlie@example.com'))
+        self.client = APIClient()
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + create_token(TokenModel, self.alice.django_user, None).key)
+
+    def testSearchUser(self):
+        response = self.client.get("/users/?search=bob")
+        assert response.status_code == status.HTTP_200_OK
+        assert self.bob.pk in {u['pk'] for u in json.loads(response.content)}
+
+    def testGetUser(self):
+        response = self.client.get("/users/{}/".format(self.charlie.pk))
+        assert response.status_code == status.HTTP_200_OK
+        assert json.loads(response.content) == \
+               {'pk': self.charlie.pk, 'username': 'charlie', 'first_name': 'Charlie', 'last_name': 'Q.',
+                'email': 'charlie@example.com', 'phone_number': '', 'profile_picture': None}
