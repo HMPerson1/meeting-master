@@ -140,7 +140,7 @@ public class EventCreation extends AppCompatActivity {
 
 
     public boolean confirmInput(View v) {
-        return (!validateEventName() | !validateStreetAddr() | !validateCity() | !validateStreetAddr()
+        return (!validateEventName() | !validateStreetAddr() | !validateCity()
             | !validateState());
     }
 
