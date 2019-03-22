@@ -28,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'email_outbox')
+MAX_UPLOAD_SIZE = 2 ** 20
 
 
 # Application definition
