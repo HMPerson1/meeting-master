@@ -35,6 +35,7 @@ public class EventDetails extends AppCompatActivity {
     private Button attendeeListButton;
     private Button acceptInviteButton;
     private Button declineInviteButton;
+    MeetingService.EventData eventInfo;
     //TODO disable "View Attachment" button if no attachment exists in document
 
     @Override
@@ -89,7 +90,7 @@ public class EventDetails extends AppCompatActivity {
                 Toast.makeText(EventDetails.this,response.toString() , Toast.LENGTH_LONG).show();
 
 
-                MeetingService.EventData eventInfo =response.body();//store response
+                eventInfo = response.body();//store response
 
                 //display the event details to the user
                 nameInput.setText(eventInfo.getEvent_name());
@@ -295,5 +296,17 @@ public class EventDetails extends AppCompatActivity {
 
     public void exportEvent(){
         //TODO implement
+        CSVExporter csvExporter = new CSVExporter();
+
+        //display the event details to the user
+        String name = eventInfo.getEvent_name();
+        String date = eventInfo.getEvent_date();
+        String time = eventInfo.getEvent_time();
+        String notes = eventInfo.getNotes();
+
+        csvExporter.setEvent(name, date, time, notes);
+        csvExporter.writeToFile("test.csv");
+
+
     }
 }
