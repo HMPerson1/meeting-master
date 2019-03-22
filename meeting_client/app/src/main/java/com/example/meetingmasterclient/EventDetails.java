@@ -187,13 +187,13 @@ public class EventDetails extends AppCompatActivity {
         }
     }
 
-    private int getEventByID(int id){
-        if (id == -1) {
+    private int getEventByID(int eventID){
+        if (eventID== -1) {
             Toast.makeText(getApplicationContext(), "An error has occurred", Toast.LENGTH_SHORT).show();
             return -1;
         }
 
-        Call<MeetingService.EventData> c = Server.getService().getEvent("/events/" + id + "/");
+        Call<MeetingService.EventData> c = Server.getService().getEvent("/events/" + eventID+ "/");
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
                     if (response.isSuccessful()) {
@@ -205,7 +205,7 @@ public class EventDetails extends AppCompatActivity {
                 (call, t) -> t.printStackTrace()
         ));
 
-        return id;
+        return eventID;
     }
 
     public void deleteEvent(){
