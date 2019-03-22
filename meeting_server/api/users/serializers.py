@@ -9,6 +9,7 @@ from rest_framework import serializers
 from rest_framework.fields import empty, get_attribute
 from rest_framework.reverse import reverse
 
+from api import settings
 from api.users.models import UserProfile
 
 
@@ -114,6 +115,11 @@ class ProfilePictureSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ('profile_picture',)
+
+    def validate_profile_picture(self, value):
+        if value.size > settings.MAX_UPLOAD_SIZE:
+            raise serializers.ValidationError("File too large")
+        return value
 
 
 class UserIcalUrlSerializer(serializers.Serializer):
