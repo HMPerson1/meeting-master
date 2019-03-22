@@ -175,9 +175,9 @@ public class Registration extends AppCompatActivity {
                 (call, response) -> {
                     if (response.isSuccessful()) {
                         assert response.body() != null;
-                        if(Server.authenticate(response.body().key)) {
-                            Toast.makeText(Registration.this, "Registration Success", Toast.LENGTH_LONG).show();
-                        }
+                        Server.authenticate(response.body().key);
+                        Toast.makeText(Registration.this, "Registration Success", Toast.LENGTH_LONG).show();
+
                     } else {
                         String error=null;
                         Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, System.out::println, System.out::println);

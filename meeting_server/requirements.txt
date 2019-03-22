@@ -1,3 +1,4 @@
+icalendar
 Django
 djangorestframework
 django-rest-swagger
