@@ -96,7 +96,7 @@ class EventPermissionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ('pk', 'event_admin', 'permissions')
+        fields = ('pk', 'event_admin')  # FIXME: probably broken
 
 
 
@@ -128,5 +128,5 @@ class EventIcalSerializer(serializers.Serializer):
                 'email': att.user_id.django_user.email,
                 'full_name': att.user_id.django_user.get_full_name(),
                 'status': att.status,
-            } for att in instance.event_id.all()],
+            } for att in instance.invitation.all()],
         }

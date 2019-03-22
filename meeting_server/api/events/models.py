@@ -18,7 +18,6 @@ class Event(models.Model):
     file_attachment = models.FileField(null=True, blank=True)
     notes = models.TextField(default=None, help_text="Miscellaneous notes or details you wish to include")
     event_location = models.ForeignKey(Location, related_name='location', on_delete=None)
-    permissions = models.ForeignKey(UserProfile, related_name='permissions', blank=True, null=True, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return u"file_upload {0}".format(self.file_attachment.url)

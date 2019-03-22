@@ -1,22 +1,22 @@
 package com.example.meetingmasterclient;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -72,11 +72,27 @@ public class EventListView extends AppCompatActivity {
                 declinedCheckbox.setChecked(declined);
                 getInvitationByUser();
                 break;
+            case R.id.item_sync_calendar:
+                doSyncCalendar();
             default:
                 break;
         }
 
         return true;
+    }
+
+    private void doSyncCalendar() {
+        Server.getService().getIcalUrl().enqueue(Server.mkCallback((call, response) -> {
+            if (response.isSuccessful()) {
+                assert response.body() != null;
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(response.body().ical_url));
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "sync cal error", Toast.LENGTH_SHORT).show();
+            }
+        }, (call, t) -> t.printStackTrace()));
     }
 
     private void getInvitationByUser() {

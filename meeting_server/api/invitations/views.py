@@ -33,19 +33,11 @@ class InvitationUserView(ListAPIView):
 
 
 # Get the list of invitees for a specific event
-class InvitationEventView(APIView):
-
-    queryset = Invitation.objects.all()
+class InvitationEventView(ListAPIView):
     serializer_class = InvitationModelSerializer
 
     def get_queryset(self):
-        queryset = Invitation.objects.all()
-        event_id = self.kwargs.get('event_id', None)
-        queryset.filter(event_id=event_id)
-        if queryset is []:
-            raise Http404
-        else:
-            return queryset
+        return Invitation.objects.filter(event_id=self.kwargs['event_id'])
 
 
 class InvitationDetailView(APIView):
