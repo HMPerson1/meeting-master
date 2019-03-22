@@ -3,7 +3,7 @@ import firebase_admin.messaging as messaging
 from firebase_admin import credentials
 
 from api.events.models import Event
-from api.invitations.models import inv_status
+from api.invitations.models import Invitation
 from api.users.models import UserProfile
 
 FIREBASE_CREDENTIALS_FILE = 'private/meeting-master-2a1e6-firebase-adminsdk-eivgs-ea5e65b4bc.json'
@@ -35,7 +35,7 @@ def notify_invite(user: UserProfile, event: Event, dry_run=False):
 def notify_edit(event: Event, dry_run=False):
     if not firebase_enabled:
         return
-    for user in UserProfile.objects.filter(user_id__event_id=event, user_id__status=inv_status["ACCEPTED"]):
+    for user in UserProfile.objects.filter(invitation__event_id=event, invitation__status=Invitation.ACCEPTED):
         if user.firebase_reg_token != "":
             messaging.send(messaging.Message(
                 data={
