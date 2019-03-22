@@ -8,7 +8,6 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from .models import UserProfile
-from .views import ProfilePictureView
 
 
 # Create your tests here.
@@ -24,7 +23,6 @@ class ProfilePictureTests(TestCase):
         self.client = APIClient()
         self.client.credentials(
             HTTP_AUTHORIZATION='Token ' + create_token(TokenModel, self.alice.django_user, None).key)
-        self.view = ProfilePictureView.as_view()
 
     def tearDown(self):
         super(ProfilePictureTests, self).tearDown()
