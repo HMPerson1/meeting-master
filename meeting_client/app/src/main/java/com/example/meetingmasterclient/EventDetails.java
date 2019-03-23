@@ -35,6 +35,7 @@ public class EventDetails extends AppCompatActivity {
     private Button attendeeListButton;
     private Button acceptInviteButton;
     private Button declineInviteButton;
+    MeetingService.EventsData eventInfo;
     //TODO disable "View Attachment" button if no attachment exists in document
 
     @Override
@@ -69,17 +70,17 @@ public class EventDetails extends AppCompatActivity {
         eventID = intent.getIntExtra("event_id", -1);
         userID = intent.getStringExtra("user_id");
 
-        eventID =1234; //for testing
+        eventID =1; //for testing
 
         if (eventID<0){
             finish();  //did not pass event_id
         }
 
         //TODO: get event info from backend
-        Call<MeetingService.EventData> call = Server.getService().getEventfromId(String.valueOf(eventID));
-        call.enqueue(new Callback<MeetingService.EventData>() {
+        Call<MeetingService.EventsData> call = Server.getService().getEventfromId(String.valueOf(eventID));
+        call.enqueue(new Callback<MeetingService.EventsData>() {
             @Override
-            public void onResponse(Call<MeetingService.EventData> call, Response<MeetingService.EventData>response) {
+            public void onResponse(Call<MeetingService.EventsData> call, Response<MeetingService.EventsData>response) {
                 if(!response.isSuccessful()){ //404 error?
                     Toast.makeText(EventDetails.this, "Oops, Something is wrong: " +
                             response.code(), Toast.LENGTH_LONG).show();
@@ -89,7 +90,7 @@ public class EventDetails extends AppCompatActivity {
                 Toast.makeText(EventDetails.this,response.toString() , Toast.LENGTH_LONG).show();
 
 
-                MeetingService.EventData eventInfo =response.body();//store response
+                eventInfo = response.body();//store response
 
                 //display the event details to the user
                 nameInput.setText(eventInfo.getEvent_name());
@@ -99,31 +100,13 @@ public class EventDetails extends AppCompatActivity {
 
                 //get location details from server
 
-                int location_id = eventInfo.getEvent_location();
+                MeetingService.LocationData locationInfo= eventInfo.getEvent_location();
 
-                Call<MeetingService.LocationData> c = Server.getService().getLocationDetails(String.valueOf(location_id));
-                c.enqueue(Server.mkCallback(
-                        (call2, response2) -> {
-                            if (response2.isSuccessful()) {
-                                assert response2.body() != null;
-                                MeetingService.LocationData locationInfo =response2.body();//store response
-                                 //display location details to the user
-                                textInputStreetAddr.setText(locationInfo.getStreet_address());
-                                textInputCity.setText(locationInfo.getCity());
-                                textInputState.setText(locationInfo.getState());
-                                //textInputRoomNo.setText(locationInfo.);
 
-                            } else {
-                                try {
-                                    System.out.println("response.error = " + response2.errorBody().string());
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        },
-                        (call2, t) -> t.printStackTrace()
-                ));
-
+                textInputStreetAddr.setText(locationInfo.getStreet_address());
+                textInputCity.setText(locationInfo.getCity());
+                textInputState.setText(locationInfo.getState());
+                //textInputRoomNo.setText(locationInfo.);
 
 
 
@@ -131,7 +114,7 @@ public class EventDetails extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<MeetingService.EventData> call, Throwable t) {//error from server
+            public void onFailure(Call<MeetingService.EventsData> call, Throwable t) {//error from server
 
                 Toast.makeText(EventDetails.this,t.getMessage() , Toast.LENGTH_LONG).show();
 
@@ -159,18 +142,18 @@ public class EventDetails extends AppCompatActivity {
     public void changeInvitationStatus(int eventID, String userID, int newStatus){
         Call<Void> c = Server.getService().setInvitationStatus(eventID, userID, newStatus);
         c.enqueue
-        (Server.mkCallback(
-                (call, response) -> {
-                    if (response.isSuccessful()) {
-                        // TODO: change button to reflect this
-                    } else {
-                        //Server.parseUnsuccessful(response, MeetingService.EventDataError.class,
-                        //        System.out::println, System.out::println);
-                        //TODO: make InvitationData error
-                    }
-                },
-                (call, t) -> t.printStackTrace()
-        ));
+                (Server.mkCallback(
+                        (call, response) -> {
+                            if (response.isSuccessful()) {
+                                // TODO: change button to reflect this
+                            } else {
+                                //Server.parseUnsuccessful(response, MeetingService.EventDataError.class,
+                                //        System.out::println, System.out::println);
+                                //TODO: make InvitationData error
+                            }
+                        },
+                        (call, t) -> t.printStackTrace()
+                ));
 
     }
 
@@ -295,5 +278,17 @@ public class EventDetails extends AppCompatActivity {
 
     public void exportEvent(){
         //TODO implement
+        CSVExporter csvExporter = new CSVExporter();
+
+        //display the event details to the user
+        String name = eventInfo.getEvent_name();
+        String date = eventInfo.getEvent_date();
+        String time = eventInfo.getEvent_time();
+        String notes = eventInfo.getNotes();
+
+        csvExporter.setEvent(name, date, time, notes);
+        csvExporter.writeToFile("test.csv");
+
+        //TODO finish implementation. Needs an intent and sent to calendar apps
     }
 }

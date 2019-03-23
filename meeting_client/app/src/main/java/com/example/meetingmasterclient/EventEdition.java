@@ -44,12 +44,12 @@ public class EventEdition extends AppCompatActivity {
 
 
 
-        eventID =1234; //for testing
+        eventID =1; //for testing
 
         if (eventID<0){
             finish();  //did not pass event_id
         }
-
+/*
         //TODO: get event info from backend
         Call<MeetingService.EventData> call = Server.getService().getEventfromId(String.valueOf(eventID));
         call.enqueue(new Callback<MeetingService.EventData>() {
@@ -110,43 +110,43 @@ public class EventEdition extends AppCompatActivity {
 
         });
 
-
+*/
 
     }
 
     private void configureSaveButton(){
 
 
-                //get new event details
-                String name =nameInput.getEditText().getText().toString();
-                String date =textInputDate.getEditText().getText().toString();
-                String time =textInputTime.getEditText().getText().toString();
-                String duration = textInputDuration.getEditText().getText().toString();
-                String notes =textInputNotes.getEditText().getText().toString();
+        //get new event details
+        String name =nameInput.getEditText().getText().toString();
+        String date =textInputDate.getEditText().getText().toString();
+        String time =textInputTime.getEditText().getText().toString();
+        String duration = textInputDuration.getEditText().getText().toString();
+        String notes =textInputNotes.getEditText().getText().toString();
 
-                //get new location details
-                //display location details to the user
-                String street =textInputStreetAddr.getEditText().getText().toString();
-                String city =textInputCity.getEditText().getText().toString();
-                String state =textInputState.getEditText().getText().toString();
+        //get new location details
+        //display location details to the user
+        String street =textInputStreetAddr.getEditText().getText().toString();
+        String city =textInputCity.getEditText().getText().toString();
+        String state =textInputState.getEditText().getText().toString();
 
-                //post changes
-                Call<MeetingService.EventCreationData> c = Server.getService().createEvent(new MeetingService
-                        .EventCreationData(name,date,time,duration,
+        //post changes
+        Call<MeetingService.EventCreationData> c = Server.getService().createEvent(new MeetingService
+                .EventCreationData(name,date,time,duration,
                 0, notes, null));
 
-                c.enqueue(Server.mkCallback(
-                        (call, response) -> {
-                            if (response.isSuccessful()) {
-                                assert response.body() != null;
-                            } else {
-                                Server.parseUnsuccessful(response, MeetingService.EventCreationData.class, System.out::println, System.out::println);
-                            }
-                        },
-                        (call, t) -> t.printStackTrace()
-                ));
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        assert response.body() != null;
+                    } else {
+                        Server.parseUnsuccessful(response, MeetingService.EventCreationData.class, System.out::println, System.out::println);
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
 
-                finish();//return to Event Details
+        finish();//return to Event Details
 
 
 
