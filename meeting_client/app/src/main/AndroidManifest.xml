@@ -4,6 +4,8 @@
     package="com.example.meetingmasterclient">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE " />
 
     <application
         android:allowBackup="true"
@@ -40,7 +42,7 @@
             android:label="@string/title_activity_event_creation" />
         <activity
             android:name=".EventDetails"
-            android:label="@string/title_activity_event_details"/>
+            android:label="@string/title_activity_event_details" />
         <activity
             android:name=".AddUserstoMeeting"
             android:label="@string/title_activity_add_users_to_meeting" />
