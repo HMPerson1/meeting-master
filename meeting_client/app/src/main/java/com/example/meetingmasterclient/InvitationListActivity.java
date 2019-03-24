@@ -44,6 +44,8 @@ public class InvitationListActivity extends AppCompatActivity {
     private InvitesAdapter adapter;
     private RequestQueue requestQueue;
     int user_id;
+    JSONArray jArray = new JSONArray();
+    List<String> eventIDs = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,43 +57,14 @@ public class InvitationListActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-      /*  adapter = new InvitesAdapter();
+        adapter = new InvitesAdapter();
         recyclerView.setAdapter(adapter);
 
         requestQueue = Volley.newRequestQueue(this, new HurlStack());
         requestQueue.start();
 
-        //get user_id
-        user_id=-1;
-        Call<MeetingService.UserProfile> call3 = Server.getService().getCurrentUser();
-        call3.enqueue(new Callback<MeetingService.UserProfile>() {
-            @Override
-            public void onResponse(Call<MeetingService.UserProfile> call, retrofit2.Response<MeetingService.UserProfile> response) {
-                if (!response.isSuccessful()) { //404 error?
-                    Toast.makeText(InvitationListActivity.this, "Oops, Something is wrong: " + response.code(), Toast.LENGTH_LONG).show();
-                    return;
-                }
-                Toast.makeText(InvitationListActivity.this, "response"+response.body(), Toast.LENGTH_LONG).show();
-                Toast.makeText(InvitationListActivity.this, response.toString(), Toast.LENGTH_LONG).show();
 
 
-                MeetingService.UserProfile currentUser = response.body();//store response
-                user_id =currentUser.getPk();
-
-
-            }
-
-            @Override
-            public void onFailure(Call<MeetingService.UserProfile> call, Throwable t) {//error from server
-
-                Toast.makeText(InvitationListActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
-
-            }
-        });
-
-
-        if (user_id<0) { //user is logged in
-            JSONArray jArray = new JSONArray();
             Call<List<MeetingService.InvitationData>> call = Server.getService().getUsersInvitations();
             call.enqueue(new Callback<List<MeetingService.InvitationData>>() {
                 @Override
@@ -105,49 +78,19 @@ public class InvitationListActivity extends AppCompatActivity {
 
                     //add user to list if successful
                     List<MeetingService.InvitationData> invitations = response.body();//store response
-                    final List<String> list = new ArrayList<>();
+
                     for (MeetingService.InvitationData invitation : invitations) {
                         //get event name
                         String eventId = String.valueOf(invitation.getEvent_id());
-
-                        Call<MeetingService.EventData> call2 = Server.getService().getEventfromId(String.valueOf(eventId));
-                        call2.enqueue(new Callback<MeetingService.EventData>() {
-                            @Override
-                            public void onResponse(Call<MeetingService.EventData> call, retrofit2.Response<MeetingService.EventData> response) {
-                                if (!response.isSuccessful()) { //404 error?
-                                    Toast.makeText(InvitationListActivity.this, "Oops, Something is wrong: " + response.code(), Toast.LENGTH_LONG).show();
-                                    return;
-                                }
-                                Toast.makeText(InvitationListActivity.this, "response"+response.body(), Toast.LENGTH_LONG).show();
-                                Toast.makeText(InvitationListActivity.this, response.toString(), Toast.LENGTH_LONG).show();
+                        eventIDs.add(eventId);
 
 
-                                MeetingService.EventData eventInfo = response.body();//store response
 
-                                try {
-                                    JSONObject jo = new JSONObject();
-                                    jo.put("pk", eventInfo.getId());
-                                    jo.put("name", eventInfo.getEvent_name());
-                                    jArray.put(jo);
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-
-                            }
-
-                            @Override
-                            public void onFailure(Call<MeetingService.EventData> call, Throwable t) {//error from server
-
-                                Toast.makeText(InvitationListActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
-
-                            }
-                        });
 
                     }//end for
+                    getEvents(response.body());
 
-                    adapter.setDataSet(jArray); //display invites
+
 
 
 
@@ -161,19 +104,13 @@ public class InvitationListActivity extends AppCompatActivity {
 
                 }
             });
-
-        }//end if
-
-
-
-*/
-
+/*
         // TODO: for testing
         try {
             JSONObject jo = new JSONObject();
             jo.put("pk", "1");
             jo.put("name", "The First Event");
-            JSONArray jArray = new JSONArray();
+
             jArray.put(jo);
 
             JSONObject jo2 = new JSONObject();
@@ -187,8 +124,48 @@ public class InvitationListActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        */
     }
+    private void getEvents(List<MeetingService.InvitationData> invitations){
+        for (String eventId:eventIDs) {
+            Call<MeetingService.EventsData> call2 = Server.getService().getEventfromId(String.valueOf(eventId));
+            call2.enqueue(new Callback<MeetingService.EventsData>() {
+                @Override
+                public void onResponse(Call<MeetingService.EventsData> call, retrofit2.Response<MeetingService.EventsData> response) {
+                    if (!response.isSuccessful()) { //404 error?
+                        Toast.makeText(InvitationListActivity.this, "Oops, Something is wrong: " + response.code(), Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    Toast.makeText(InvitationListActivity.this, "response" + response.body(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(InvitationListActivity.this, response.toString(), Toast.LENGTH_LONG).show();
 
+
+                    MeetingService.EventsData eventInfo = response.body();//store response
+
+                    try {
+                        JSONObject jo = new JSONObject();
+                        jo.put("pk", eventInfo.getPk());
+                        jo.put("name", eventInfo.getEvent_name());
+                        jArray.put(jo);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    adapter.setDataSet(jArray); //display invites
+
+
+                }
+
+                @Override
+                public void onFailure(Call<MeetingService.EventsData> call, Throwable t) {//error from server
+
+                    Toast.makeText(InvitationListActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+
+                }
+            });
+
+        }
+    }//getEvents
     @Override
     protected void onStart() {
         super.onStart();
