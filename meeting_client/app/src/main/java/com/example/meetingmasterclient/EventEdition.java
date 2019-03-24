@@ -131,7 +131,7 @@ public class EventEdition extends AppCompatActivity {
         String state =textInputState.getEditText().getText().toString();
 
         //post changes
-        Call<MeetingService.EventCreationData> c = Server.getService().createEvent(new MeetingService
+        Call<MeetingService.EventsData> c = Server.getService().createEvent(new MeetingService
                 .EventCreationData(name,date,time,duration,
                 0, notes, null));
 

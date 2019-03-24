@@ -125,8 +125,10 @@ public interface MeetingService {
     );
 */
     @POST("/events/new_event")
-    Call<EventCreationData> createEvent(@Body EventCreationData data);
+    Call<EventsData> createEvent(@Body EventCreationData data);
 
+    @POST("/invitations/")
+    Call<InvitationData> postInvitations(@Body InvitationData data);
     @GET("/invitations/{user_id}/")
     Call<List<InvitationData>> getUserInvitations(@Path("user_id") String user_id);
 
@@ -528,6 +530,7 @@ public interface MeetingService {
             this.notes = null;
             this.file_attachment = null;
         }
+
     }
 
     class EventDataError{
@@ -559,19 +562,19 @@ public interface MeetingService {
     }
 
     class InvitationData {
-        public int user_id;
+        public String user_id;
         public int event_id;
         public int status;
         public boolean edit_permission;
 
-        public InvitationData(int user_id, int event_id, int status, boolean edit_permission) {
+        public InvitationData(String user_id, int event_id, int status, boolean edit_permission) {
             this.user_id = user_id;
             this.event_id = event_id;
             this.status = status;
             this.edit_permission = edit_permission;
         }
 
-        public int getUser_id() {
+        public String getUser_id() {
             return user_id;
         }
 
