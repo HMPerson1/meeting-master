@@ -124,7 +124,7 @@ public interface MeetingService {
         @Part MultipartBody.Part file
     );
 */
-    @POST("/events/")
+    @POST("/events/new_event")
     Call<EventCreationData> createEvent(@Body EventCreationData data);
 
     @GET("/invitations/{user_id}/")

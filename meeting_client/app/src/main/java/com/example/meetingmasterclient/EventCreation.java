@@ -140,23 +140,34 @@ public class EventCreation extends AppCompatActivity {
 
 
     public boolean confirmInput(View v) {
-        return (!validateEventName() | !validateStreetAddr() | !validateCity()
-            | !validateState());
+        return (validateEventName() | validateStreetAddr() | validateCity()
+            | validateState());
     }
 
     public void createMeetingRequest(View v){
         if(!confirmInput(v)) return;
 
+
+
+
+        //File file_attachment
+
+
+
+        postLocationandEvent();
+
+    }
+    public void postEvent(MeetingService.LocationData locationInfo){
+        LocationID= locationInfo.getPk();
+        int locationID =Integer.valueOf(LocationID);
         String event_name = textInputEventName.getEditText().getText().toString().trim();
         String event_date = textInputDate.getEditText().getText().toString().trim();
         String event_time = textInputTime.getEditText().getText().toString().trim();
         String event_duration = textInputDuration.getEditText().getText().toString().trim();
-        int event_location = 0;
         String notes = textInputNotes.getEditText().getText().toString().trim();
-        //File file_attachment
 
         Call<MeetingService.EventCreationData> c = Server.getService().createEvent(new MeetingService
-                .EventCreationData(event_name, 0));
+                .EventCreationData(event_name, locationID));
 
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
@@ -169,11 +180,9 @@ public class EventCreation extends AppCompatActivity {
                 },
                 (call, t) -> t.printStackTrace()
         ));
-
-        postLocation();
     }
 
-    public void postLocation(){
+    public void postLocationandEvent(){
 
         Call<MeetingService.LocationData> c2 = Server.getService().newLocation(new MeetingService.LocationData(textInputStreetAddr.getEditText().getText().toString(),
                 textInputCity.getEditText().getText().toString(),textInputState.getEditText().getText().toString()));
@@ -187,8 +196,7 @@ public class EventCreation extends AppCompatActivity {
 
                 Toast.makeText(EventCreation.this,response.toString() , Toast.LENGTH_LONG).show();
                 MeetingService.LocationData locationInfo =response.body();
-                LocationID= locationInfo.getPk();
-
+                postEvent(response.body());
 
 
             }
