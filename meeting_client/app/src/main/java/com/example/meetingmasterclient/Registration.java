@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
+import com.example.meetingmasterclient.utils.LocalPicture;
 import com.example.meetingmasterclient.utils.Upload;
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -84,29 +85,7 @@ public class Registration extends AppCompatActivity {
             profilePictureUri = resultData.getData();
             hasPicture = true;
 
-            new AsyncTask<Uri, Void, Bitmap>() {
-                @Override
-                protected Bitmap doInBackground(Uri... uri) {
-                    try {
-                        ParcelFileDescriptor pfd = getContentResolver().openFileDescriptor(uri[0], "r");
-                        FileDescriptor fd = pfd.getFileDescriptor();
-                        Bitmap image = BitmapFactory.decodeFileDescriptor(fd);
-                        pfd.close();
-                        return image;
-                    } catch(IOException e) {
-                        return null;
-                    }
-                }
-
-                @Override
-                protected void onPostExecute(Bitmap result) {
-                    if (result != null) {
-                        ((ImageView)findViewById(R.id.imageView)).setImageBitmap(result);
-                    } else {
-                        Toast.makeText(getApplicationContext(), "The picture has been loaded, but cannot be shown", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }.execute(profilePictureUri);
+            new LocalPicture(this).execute(profilePictureUri);
         }
     }
 
