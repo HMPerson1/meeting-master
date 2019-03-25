@@ -74,7 +74,7 @@ class EventDetailView(APIView):
     )
     def put(self, request, pk, format=None):
         event = self.get_object(pk=pk)
-        serializer = EventCreateSerializer(event, data=request.DATA)
+        serializer = EventCreateSerializer(event, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
