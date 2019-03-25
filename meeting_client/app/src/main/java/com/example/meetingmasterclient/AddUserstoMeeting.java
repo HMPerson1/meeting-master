@@ -80,6 +80,12 @@ public class AddUserstoMeeting extends AppCompatActivity {
                 for (int i = listViewInvitedPeople.getAdapter().getCount(); i >=0 ; i--){ //loop in reverse order so that arraylist indexes are not shifted upon removal
                     if (listViewInvitedPeople.isItemChecked(i)){ //check if item in listview position i is checked
                         listViewInvitedPeople.setItemChecked(i,false);
+                        //remove from shared preferences
+                        String userName= list.get(i);
+                        SharedPreferences sharedPref = getSharedPreferences("invited_users_IDs",Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.remove(userName);
+                        editor.commit();
                         list.remove(i);
                     }
 

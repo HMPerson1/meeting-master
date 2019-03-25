@@ -171,6 +171,8 @@ public class EventCreation extends AppCompatActivity {
         for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
             Log.d("map values", entry.getKey() + ": " + entry.getValue());
         }
+        //remove shared preferences for so list is empty for next event
+        sharedPref.edit().clear();
         return allEntries;
     }
     public void postInvites(MeetingService.EventsData event){
