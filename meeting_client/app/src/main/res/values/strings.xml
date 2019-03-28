@@ -17,6 +17,8 @@
     <!--registration/login strings-->
     <string name="name">Name</string>
     <string name="user_name">Username</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="confirm_password">Confirm Password</string>
@@ -51,6 +53,8 @@
 
     <string name="invite_accept">Accept</string>
     <string name="decline">Decline</string>
+
+    <string name="search">Search</string>
 
     <string name="msg_token_fmt">InstanceID Token: %s</string>
     <string name="log_fcm_token">Log FCM Token</string>
