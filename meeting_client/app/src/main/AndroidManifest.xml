@@ -3,7 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.meetingmasterclient">
 
+    <!--
+         The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
+         Google Maps Android API v2, but you must specify either coarse or fine
+         location permissions for the 'MyLocation' functionality.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true"/>
+
 
     <application
         android:allowBackup="true"
@@ -14,6 +25,30 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
+
+        <!--
+             The API key for Google Maps-based APIs is defined as a string resource.
+             (See the file "res/values/google_maps_api.xml").
+             Note that the API key is linked to the encryption key used to sign the APK.
+             You need a different API key for each encryption key, including the release key that is used to
+             sign the APK for publishing.
+             You can define the keys for the debug and release targets in src/debug/ and src/release/.
+        -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_map_api_key" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
+        <activity
+            android:name=".MapsActivity"
+            android:label="@string/title_activity_maps"></activity>
         <activity
             android:name=".DebugLauncherActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -40,7 +75,7 @@
             android:label="@string/title_activity_event_creation" />
         <activity
             android:name=".EventDetails"
-            android:label="@string/title_activity_event_details"/>
+            android:label="@string/title_activity_event_details" />
         <activity
             android:name=".AddUserstoMeeting"
             android:label="@string/title_activity_add_users_to_meeting" />

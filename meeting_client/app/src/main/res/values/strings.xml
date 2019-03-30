@@ -79,5 +79,9 @@
     <string name="delete_event">Delete Event</string>
     <string name="export_event">Export Event</string>
     <string name="sync_calendar">Sync Calendar</string>
+    <string name="title_activity_maps">Map</string>
+
+    <!-- google maps -->
+    <string name="google_map_api_key">AIzaSyDXRxY5Bs0akDeBWYsBRGi8zVExod0HY2w</string>
 
 </resources>
