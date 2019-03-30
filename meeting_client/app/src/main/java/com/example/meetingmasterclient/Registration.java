@@ -204,19 +204,16 @@ public class Registration extends AppCompatActivity {
 
         Call<MeetingService.AuthToken> c = Server.getService().register(new MeetingService
                 .RegistrationData(username,first_name,last_name,email,password1,password2,phone_number));
-
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
+                    Toast.makeText(Registration.this,response.toString(), Toast.LENGTH_LONG).show();
                     if (response.isSuccessful()) {
                         assert response.body() != null;
                         Server.authenticate(response.body().key);
-
                         if (hasPicture) {
                             Upload.uploadPictureToServer(getApplicationContext(), profilePictureUri);
                         }
-
                         Toast.makeText(Registration.this, "Registration Success", Toast.LENGTH_LONG).show();
-
                     } else {
                         String error = null;
                         Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, System.out::println, System.out::println);

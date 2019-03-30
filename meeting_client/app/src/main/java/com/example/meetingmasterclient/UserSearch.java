@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
@@ -53,6 +54,7 @@ public class UserSearch extends AppCompatActivity {
         Call<List<MeetingService.UserProfile>> c = Server.getService().users(inputSearch);
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
+                    Toast.makeText(UserSearch.this,response.toString(), Toast.LENGTH_LONG).show();
                     if (response.isSuccessful()) {
                         assert response.body() != null;
                         System.out.println("response = " + response.body().stream().map(Objects::toString).collect(Collectors.joining(", ")));
