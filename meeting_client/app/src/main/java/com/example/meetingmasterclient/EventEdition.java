@@ -107,39 +107,54 @@ public class EventEdition extends AppCompatActivity {
     }
 
     private void configureSaveButton(){
+        final TextInputEditText nameInput = (TextInputEditText) findViewById(R.id.text_input_event_name);
+        final TextInputEditText textDuration = findViewById(R.id.text_input_duration);
+        final TextInputEditText textInputDate = findViewById(R.id.text_input_date);
+        final TextInputEditText textInputTime = findViewById(R.id.text_input_time);
+        final TextInputEditText textInputNotes = findViewById(R.id.text_input_notes);
+        final TextInputEditText textInputStreetAddr = findViewById(R.id.text_input_street_address);
+        final TextInputEditText textInputCity = findViewById(R.id.text_input_city);
+        final TextInputEditText textInputState = findViewById(R.id.text_input_state);
+        final TextInputEditText textInputRoomNo = findViewById(R.id.text_input_room_no);
 
-/*
-        //get new event details
-        String name =nameInput.getText().toString();
-        String date =textInputDate.getText().toString();
-        String time =textInputTime.getText().toString();
-        String duration = textDuration.getText().toString();
-        String notes =textInputNotes.getText().toString();
+        Button save_button = (Button)findViewById(R.id.save_meeting_button);
+        save_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //get new event details
+                String name =nameInput.getText().toString();
+                String date =textInputDate.getText().toString();
+                String time =textInputTime.getText().toString();
+                String duration = textDuration.getText().toString();
+                String notes =textInputNotes.getText().toString();
 
-        //get new location details
-        //display location details to the user
-        String street =textInputStreetAddr.getText().toString();
-        String city =textInputCity.getText().toString();
-        String state =textInputState.getText().toString();
+                //get new location details
+                //display location details to the user
+                String street =textInputStreetAddr.getText().toString();
+                String city =textInputCity.getText().toString();
+                String state =textInputState.getText().toString();
 
-        //post changes
-        Call<MeetingService.EventsData> c = Server.getService().createEvent(new MeetingService
-                .EventCreationData(name,date,time,duration,
-                0, notes, null));
+                //post changes
+                Call<MeetingService.EventsData> c = Server.getService().createEvent(new MeetingService
+                        .EventCreationData(name,date,time,duration,
+                        0, notes, null));
 
-        c.enqueue(Server.mkCallback(
-                (call, response) -> {
-                    if (response.isSuccessful()) {
-                        assert response.body() != null;
-                    } else {
-                        Server.parseUnsuccessful(response, MeetingService.EventCreationData.class, System.out::println, System.out::println);
-                    }
-                },
-                (call, t) -> t.printStackTrace()
-        ));
+                c.enqueue(Server.mkCallback(
+                        (call, response) -> {
+                            if (response.isSuccessful()) {
+                                assert response.body() != null;
+                            } else {
+                                Server.parseUnsuccessful(response, MeetingService.EventCreationData.class, System.out::println, System.out::println);
+                            }
+                        },
+                        (call, t) -> t.printStackTrace()
+                ));
 
-        finish();//return to Event Details
-*/
+                finish();//return to Event Details
+            }
+        });
+
+
 
 
     }
