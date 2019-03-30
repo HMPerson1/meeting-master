@@ -15,8 +15,9 @@
     <string name="title_activity_add_users_to_meeting">AddUserstoMeeting</string>
 
     <!--registration/login strings-->
+    <string name="name">Name</string>
     <string name="first_name">First Name</string>
-    <string name="last_name">Last Name</string>
+    <string name="last_name">Last_Name</string>
     <string name="user_name">Username</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -79,9 +80,13 @@
     <string name="delete_event">Delete Event</string>
     <string name="export_event">Export Event</string>
     <string name="sync_calendar">Sync Calendar</string>
+
     <string name="title_activity_maps">Map</string>
 
     <!-- google maps -->
     <string name="google_map_api_key">AIzaSyDXRxY5Bs0akDeBWYsBRGi8zVExod0HY2w</string>
+
+    <string name="title_activity_file_upload_experiments">FileUploadExperiments</string>
+
 
 </resources>
