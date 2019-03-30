@@ -6,6 +6,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 import retrofit2.Call;
 
 public class UserSearch extends AppCompatActivity {
+    private TextInputLayout textInputSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,27 +31,40 @@ public class UserSearch extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         Button button = findViewById(R.id.search_users);
-        TextInputLayout textInput = findViewById(R.id.textInputLayout);
-        button.setOnClickListener(v -> {
-                    Call<List<MeetingService.UserProfile>> c = Server.getService().users(textInput.getEditText().getText().toString());
-                    c.enqueue(Server.mkCallback(
-                            (call, response) -> {
-                                if (response.isSuccessful()) {
-                                    assert response.body() != null;
-                                    System.out.println("response = " + response.body().stream().map(Objects::toString).collect(Collectors.joining(", ")));
-                                } else {
-                                    try {
-                                        System.out.println("response.error = " + response.errorBody().string());
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            },
-                            (call, t) -> t.printStackTrace()
-                    ));
-                }
-        );
-
+        textInputSearch = findViewById(R.id.textInputSearch);
     }
 
+    private boolean validateUserSearch(View v){
+        String search = textInputSearch.getEditText().getText().toString().trim();
+        if (search.isEmpty()){
+            textInputSearch.setError("Search field cannot be empty");
+            return false;
+        } else {
+            textInputSearch.setError(null);
+            return true;
+        }
+    }
+
+    public void submitSearchRequest(View v){
+        if (!validateUserSearch(v)) return;
+        String inputSearch = textInputSearch.getEditText().getText().toString();
+        Log.d("UserSearch", "inputSearch = " + inputSearch);
+
+        Call<List<MeetingService.UserProfile>> c = Server.getService().users(inputSearch);
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        assert response.body() != null;
+                        System.out.println("response = " + response.body().stream().map(Objects::toString).collect(Collectors.joining(", ")));
+                    } else {
+                        try {
+                            System.out.println("response.error = " + response.errorBody().string());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
+    }
 }

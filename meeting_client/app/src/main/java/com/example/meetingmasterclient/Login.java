@@ -90,7 +90,6 @@ public class Login extends AppCompatActivity {
         }
     }
 
-
     public boolean confirmInput(View v){
         return (validateEmail() && validatePassword());
     }
@@ -99,9 +98,6 @@ public class Login extends AppCompatActivity {
         if (!confirmInput(v)) return;
 
         //TODO parse information to be sent to server for login
-
-
-
         String username = textInputEmail.getEditText().getText().toString();
         String password = textInputPassword.getEditText().getText().toString();
         Call<MeetingService.AuthToken> c = Server.getService().login(new MeetingService.LoginData(username, password));
