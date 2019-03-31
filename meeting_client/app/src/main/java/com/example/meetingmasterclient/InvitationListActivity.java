@@ -57,7 +57,7 @@ public class InvitationListActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        adapter = new InvitesAdapter();
+      /*  adapter = new InvitesAdapter();
         recyclerView.setAdapter(adapter);
 
         requestQueue = Volley.newRequestQueue(this, new HurlStack());
@@ -84,6 +84,7 @@ public class InvitationListActivity extends AppCompatActivity {
 
             }
         });
+
 
 
 
@@ -129,7 +130,9 @@ public class InvitationListActivity extends AppCompatActivity {
 
                 }
             });
+
 /*
+
         // TODO: for testing
         try {
             JSONObject jo = new JSONObject();

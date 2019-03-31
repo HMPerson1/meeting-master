@@ -567,7 +567,9 @@ public interface MeetingService {
         public int status;
         public boolean edit_permission;
 
+
         public InvitationData(String user_id, int event_id, int status, boolean edit_permission) {
+
             this.user_id = user_id;
             this.event_id = event_id;
             this.status = status;

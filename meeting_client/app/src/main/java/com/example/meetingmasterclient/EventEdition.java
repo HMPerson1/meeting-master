@@ -54,7 +54,7 @@ public class EventEdition extends AppCompatActivity {
         if (eventID<0){
             finish();  //did not pass event_id
         }
-
+/*
         //TODO: get event info from backend
         Call<MeetingService.EventsData> call = Server.getService().getEventfromId(String.valueOf(eventID));
         call.enqueue(new Callback<MeetingService.EventsData>() {
@@ -102,11 +102,12 @@ public class EventEdition extends AppCompatActivity {
 
         });
 
-
+*/
 
     }
 
     private void configureSaveButton(){
+
         final TextInputEditText nameInput = (TextInputEditText) findViewById(R.id.text_input_event_name);
         final TextInputEditText textDuration = findViewById(R.id.text_input_duration);
         final TextInputEditText textInputDate = findViewById(R.id.text_input_date);
@@ -153,6 +154,7 @@ public class EventEdition extends AppCompatActivity {
                 finish();//return to Event Details
             }
         });
+
 
 
 
