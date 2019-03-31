@@ -79,5 +79,6 @@
     <string name="export_event">Export Event</string>
     <string name="sync_calendar">Sync Calendar</string>
     <string name="title_activity_file_upload_experiments">FileUploadExperiments</string>
+    <string name="title_activity_suggestions_list">SuggestionsListActivity</string>
 
 </resources>
