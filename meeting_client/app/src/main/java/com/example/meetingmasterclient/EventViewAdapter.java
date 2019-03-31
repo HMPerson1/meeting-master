@@ -17,9 +17,9 @@ import retrofit2.Call;
 // TODO: Set up adapter to store entire event object
 public class EventViewAdapter extends BaseAdapter {
     Context context;
-    List<MeetingService.EventData> eventInfo;
+    List<MeetingService.EventsData> eventInfo;
 
-    public EventViewAdapter(Context context, List<MeetingService.EventData> eventInfo) {
+    public EventViewAdapter(Context context, List<MeetingService.EventsData> eventInfo) {
         this.context = context;
         this.eventInfo = eventInfo;
     }
@@ -44,7 +44,7 @@ public class EventViewAdapter extends BaseAdapter {
         LayoutInflater inflater = LayoutInflater.from(context);
         View infl = inflater.inflate(R.layout.event_view_item, null);
 
-        TextView from = (TextView)infl.findViewById(R.id.from);
+        /*TextView from = (TextView)infl.findViewById(R.id.from);
         Call<MeetingService.UserProfile> c = Server.getService().getUser("/users/" + eventInfo.get(position).event_admin + "/");
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
@@ -56,7 +56,7 @@ public class EventViewAdapter extends BaseAdapter {
                     }
                 },
                 (call, t) -> t.printStackTrace()
-        ));
+        ));*/
 
         TextView name = (TextView)infl.findViewById(R.id.event_name);
         name.setText(eventInfo.get(position).event_name);
@@ -65,8 +65,7 @@ public class EventViewAdapter extends BaseAdapter {
         date.setText(eventInfo.get(position).event_date);
 
         TextView place = (TextView)infl.findViewById(R.id.event_place);
-        // TODO: Make query to obtain location details
-        place.setText(eventInfo.get(position).event_location);
+        place.setText(String.valueOf(eventInfo.get(position).event_location.getStreet_address()));
 
         return infl;
     }
