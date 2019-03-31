@@ -135,10 +135,7 @@ public class EventCreation extends AppCompatActivity {
             }
         });
     }//configureAttendee
-
-
-
-
+    
     public boolean confirmInput(View v) {
         return (!validateEventName() | !validateStreetAddr() | !validateCity()
             | !validateState());
@@ -174,7 +171,6 @@ public class EventCreation extends AppCompatActivity {
     }
 
     public void postLocation(){
-
         Call<MeetingService.LocationData> c2 = Server.getService().newLocation(new MeetingService.LocationData(textInputStreetAddr.getEditText().getText().toString(),
                 textInputCity.getEditText().getText().toString(),textInputState.getEditText().getText().toString()));
         c2.enqueue(new Callback<MeetingService.LocationData>() {
@@ -188,9 +184,6 @@ public class EventCreation extends AppCompatActivity {
                 Toast.makeText(EventCreation.this,response.toString() , Toast.LENGTH_LONG).show();
                 MeetingService.LocationData locationInfo =response.body();
                 LocationID= locationInfo.getPk();
-
-
-
             }
 
             @Override
@@ -202,11 +195,4 @@ public class EventCreation extends AppCompatActivity {
         });
 
     }
-
-
-
-    }
-
-
-
-
+}
