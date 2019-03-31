@@ -14,16 +14,31 @@ steps:
     extract:
       id: '{response.pk}'
 
-  - description: GET all locations'
+  - description: GET all locations
     request:
       path: locations/
       method: GET
     extract:
       all_locs: '{response}'
-    validate:
-      - actual: '{all_locs}'
-        compate: not equals
-        expect: []
+
+  - description: GET all locations
+    request:
+      path: locations/
+      method: GET
+      params:
+        city: West Lafayette
+      status: [200]
+
+
+  - description: Post a new location and fail
+    request:
+      path: locations/
+      method: POST
+      data:
+        state: Indiana
+        city: West Lafayette
+        street_address: 500 W. Stadium Avenue
+      status: [400]
 
   - description: GET the Location that was just created
     request:
