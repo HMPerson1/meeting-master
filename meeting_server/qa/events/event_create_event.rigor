@@ -2,52 +2,50 @@ name: Tests Event Creation Epts.
 
 steps:
 
-  - description: Login as user
-    request:
-      path: rest-auth/login/
-      method: POST
-      data:
-        username: testCase
-        password: Testing123!
+#  - description: Login as user
+#    request:
+#      path: rest-auth/login/
+#      method: POST
+#      data:
+#        username: testCase
+#        password: Testing123!
 
-  - description: POST a new location for this event
-    request:
-      path: locations/
-      method: POST
-      data:
-        state: TempLoc
-        city: TempLoc
-        street_address: TempLoc
-    extract:
-      lid: '{response.pk}'
+#  - description: POST a new location for this event
+#    request:
+#      path: locations/
+#      method: POST
+#      data:
+#        state: TempLoc
+#        city: TempLoc
+#        street_address: TempLoc
+#    extract:
+#      lid: '{response.pk}'
 #
-  - description: POST new event
-    request:
-      user:
-      path: events/new_event
-      method: POST
-      form:
-        event_name: Sample Event 1
-        event_date: 2019-03-23
-        event_time: 12:00[[]]
-        event_location: '{lid}'
-    extract:
-      eid: '{response.form.pk}'
+#  - description: POST new event
+#    request:
+#      path: events/new_event
+#      method: POST
+#      files:
+#        file_attachment: data\upload.txt
+#      form:
+#        event_name: Sample Event 1
+#        event_date: 2019-03-23
+#        event_time: 12:00[[]]
+#        event_duration: 1:00[[]]
+#        event_location: '{lid}'
+#        notes: Sample Note
+#    extract:
+#      eid: '{response.form.pk}'
 
   - description: GET all events
     request:
       path: events/
       method: GET
-    extract:
-      all_evs: '{response}'
-    validate:
-      - actual: '{all_evs}'
-        compate: not equals
-        expect: []
+      status: [200]
 
   - description: GET the detail of the event we made
     request:
-      path: events/{eid}
+      path: events/2
       method: GET
       status: [200]
 
@@ -57,8 +55,8 @@ steps:
       path: invitations/
       method: POST
       data:
-        user_id: '2'
-        event_id: '{eid}'
+        user_id: 1
+        event_id: 2
         status: 1
       status: [201]
 
@@ -68,38 +66,33 @@ steps:
       method: GET
       status: [200]
 
-#  - description: GET Invitations by eid
-#    request:
-#      path: invitations/{eid}
+  - description: GET Invitations by eid
+    request:
+      path: invitations/event-invitations/2
+
 
   - description: GET Invitation Detail
     request:
-      path: inviations/{eid}/2
+      path: invitations/2/1
       method: GET
       status: [200]
 
 
   - description: DELETE Invitation
     request:
-      path: inviations/{eid}/2
+      path: invitations/1/2
       method: DELETE
-      status: [200]
+      status: [204]
 
 
-  - description: DELETE the event that we made
+#  - description: DELETE the event that we made
+#    request:
+#      path: events/3
+#      method: DELETE
+
+
+  - description: Verify that our event is gone
     request:
-      path: events/{eid}
-      method: DELETE
-
-
-  - description: Verify that our event is kill
-    request:
-      path: events/{eid}
+      path: events/-1
       method: GET
       status: [404]
-
-
-  - description: DELETE the location from earlier to clean dataset
-    request:
-      path: locations/{lid}
-      method: DELETE
