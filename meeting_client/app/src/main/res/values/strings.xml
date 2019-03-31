@@ -16,6 +16,8 @@
 
     <!--registration/login strings-->
     <string name="name">Name</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last_Name</string>
     <string name="user_name">Username</string>
     <string name="first_name">First Name</string>
     <string name="last_name">Last Name</string>
@@ -83,5 +85,12 @@
     <string name="export_event">Export Event</string>
     <string name="sync_calendar">Sync Calendar</string>
     <string name="title_activity_file_upload_experiments">FileUploadExperiments</string>
+    <string name="title_activity_maps">Map</string>
+
+    <!-- google maps -->
+    <string name="google_map_api_key">AIzaSyDXRxY5Bs0akDeBWYsBRGi8zVExod0HY2w</string>
+
+
+
 
 </resources>

@@ -24,58 +24,69 @@
                     android:id="@+id/event_details"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/event_details"
-                    android:layout_marginTop="16dp"/>
+                    android:layout_marginTop="16dp"
+                    android:text="@string/event_details" />
 
                 <android.support.design.widget.TextInputLayout
-                    android:id="@+id/text_input_event_name"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:errorEnabled="true">
 
                     <android.support.design.widget.TextInputEditText
+                        android:id="@+id/text_input_event_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/event_name"
-                        android:inputType="text"/>
+                        android:inputType="text" />
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
-                    android:id="@+id/text_input_date"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:errorEnabled="true">
 
                     <android.support.design.widget.TextInputEditText
+                        android:id="@+id/text_input_date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/date"
-                        android:inputType="date"/>
+                        android:inputType="date" />
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
-                    android:id="@+id/text_input_time"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:errorEnabled="true">
 
                     <android.support.design.widget.TextInputEditText
+                        android:id="@+id/text_input_time"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/time"
-                        android:inputType="time"/>
+                        android:inputType="time" />
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
-                    android:id="@+id/text_input_notes"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/text_input_duration"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/duration" />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:errorEnabled="true">
 
                     <android.support.design.widget.TextInputEditText
+                        android:id="@+id/text_input_notes"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/notes_opt"/>
+                        android:hint="@string/notes_opt" />
                 </android.support.design.widget.TextInputLayout>
 
                 <Button
@@ -92,16 +103,16 @@
                     android:text="@string/location_details"/>
 
                 <android.support.design.widget.TextInputLayout
-                    android:id="@+id/text_input_street_address"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:errorEnabled="true">
 
                     <android.support.design.widget.TextInputEditText
+                        android:id="@+id/text_input_street_address"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/street_address"
-                        android:inputType="textPostalAddress"/>
+                        android:inputType="textPostalAddress" />
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -110,43 +121,43 @@
                     android:layout_height="match_parent">
 
                     <android.support.design.widget.TextInputLayout
-                        android:id="@+id/text_input_city"
                         android:layout_width="272dp"
                         android:layout_height="wrap_content"
                         app:errorEnabled="true">
 
                         <android.support.design.widget.TextInputEditText
+                            android:id="@+id/text_input_city"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/city"
-                            android:inputType="text"/>
+                            android:inputType="text" />
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
-                        android:id="@+id/text_input_state"
                         android:layout_width="117dp"
                         android:layout_height="match_parent"
                         app:errorEnabled="true">
 
                         <android.support.design.widget.TextInputEditText
+                            android:id="@+id/text_input_state"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/state"
-                            android:inputType="text"/>
+                            android:inputType="text" />
                     </android.support.design.widget.TextInputLayout>
                 </TableRow>
 
                 <android.support.design.widget.TextInputLayout
-                    android:id="@+id/text_input_room_no"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:errorEnabled="true">
 
                     <android.support.design.widget.TextInputEditText
+                        android:id="@+id/text_input_room_no"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/room_no_opt"
-                        android:inputType="text"/>
+                        android:inputType="text" />
                 </android.support.design.widget.TextInputLayout>
 
                 <Button

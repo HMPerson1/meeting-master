@@ -47,6 +47,7 @@ public class EventDetails extends AppCompatActivity {
         final TextInputEditText nameInput = (TextInputEditText) findViewById(R.id.meeting_name);
         final TextInputEditText textInputDate = findViewById(R.id.date);
         final TextInputEditText textInputTime = findViewById(R.id.time);
+        final TextInputEditText textDuration = findViewById(R.id.duration);
         final TextInputEditText textInputNotes = findViewById(R.id.notes);
         final TextInputEditText textInputStreetAddr = findViewById(R.id.street);
         final TextInputEditText textInputCity = findViewById(R.id.city);
@@ -70,7 +71,11 @@ public class EventDetails extends AppCompatActivity {
         eventID = intent.getIntExtra("event_id", -1);
         userID = intent.getStringExtra("user_id");
 
-        eventID =1; //for testing
+
+        eventID =3; //for testing
+        userID="1";
+
+
 
         if (eventID<0){
             finish();  //did not pass event_id
@@ -94,18 +99,20 @@ public class EventDetails extends AppCompatActivity {
 
                 //display the event details to the user
                 nameInput.setText(eventInfo.getEvent_name());
-                textInputDate.setText(eventInfo.getEvent_date());
-                textInputTime.setText(eventInfo.getEvent_time());
-                textInputNotes.setText(eventInfo.getNotes());
+                textInputDate.setText(textInputDate.getText()+ "    "+eventInfo.getEvent_date());
+                textInputTime.setText(textInputTime.getText()+"    "+eventInfo.getEvent_time());
+                textDuration.setText(textDuration.getText()+"    "+eventInfo.getEvent_duration());
+                textInputNotes.setText(textInputNotes.getText()+"    "+eventInfo.getNotes());
 
                 //get location details from server
 
                 MeetingService.LocationData locationInfo= eventInfo.getEvent_location();
 
 
-                textInputStreetAddr.setText(locationInfo.getStreet_address());
-                textInputCity.setText(locationInfo.getCity());
-                textInputState.setText(locationInfo.getState());
+                textInputStreetAddr.setText(textInputStreetAddr.getText()+ "    "+locationInfo.getStreet_address());
+                textInputCity.setText(textInputCity.getText()+ "    "+locationInfo.getCity());
+                textInputState.setText(textInputState.getText()+ "    "+locationInfo.getState());
+
                 //textInputRoomNo.setText(locationInfo.);
 
 
@@ -140,7 +147,7 @@ public class EventDetails extends AppCompatActivity {
     }
 
     public void changeInvitationStatus(int eventID, String userID, int newStatus){
-        Call<Void> c = Server.getService().setInvitationStatus(eventID, userID, newStatus);
+        Call<Void> c = Server.getService().setInvitationStatus(String.valueOf(eventID), userID, newStatus);
         c.enqueue
                 (Server.mkCallback(
                         (call, response) -> {
