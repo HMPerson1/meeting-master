@@ -81,6 +81,11 @@
             android:label="@string/title_activity_profile_details"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <activity
+            android:name=".LocationSuggestion"
+            android:label="@string/title_activity_location_suggestion"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <service
             android:name=".MyFirebaseMessagingService"
             android:permission="signature">
