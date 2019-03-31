@@ -62,9 +62,6 @@ public class EventCreation extends AppCompatActivity {
         textInputCity = findViewById(R.id.text_input_city);
         textInputState = findViewById(R.id.text_input_state);
         textInputRoomNo = findViewById(R.id.text_input_room_no);
-
-
-
     }
 
     /* input validation */
@@ -174,7 +171,7 @@ public class EventCreation extends AppCompatActivity {
     }
     public void postInvites(MeetingService.EventsData event){
         int eventID = event.getPk();
-        eventID=1;//for testing
+        eventID = 1;//for testing
         Map<String, ?> invitedUsers = getInvitedUsers();
         //send invites to invited users
         for (Map.Entry<String, ?> entry : invitedUsers.entrySet()) {
@@ -182,9 +179,7 @@ public class EventCreation extends AppCompatActivity {
             c.enqueue(Server.mkCallback(
                     (call, response) -> {
                         if (response.isSuccessful()) {
-
                             Toast.makeText(EventCreation.this, "Invitation Sent", Toast.LENGTH_LONG).show();
-
                         } else {
                             String error=null;
                             Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, System.out::println, System.out::println);
@@ -193,12 +188,10 @@ public class EventCreation extends AppCompatActivity {
                     (call, t) -> t.printStackTrace()
             ));
         }
-
-
     }
     public void postEvent(MeetingService.LocationData locationInfo){
-        LocationID= locationInfo.getPk();
-        int locationID =Integer.valueOf(LocationID);
+        LocationID = locationInfo.getPk();
+        int locationID = LocationID;
         String event_name = textInputEventName.getEditText().getText().toString().trim();
         String event_date = textInputDate.getEditText().getText().toString().trim();
         String event_time = textInputTime.getEditText().getText().toString().trim();
@@ -206,7 +199,7 @@ public class EventCreation extends AppCompatActivity {
         String notes = textInputNotes.getEditText().getText().toString().trim();
 
         Call<MeetingService.EventsData> c = Server.getService().createEvent(new MeetingService
-                .EventCreationData(event_name, locationID));
+                .EventCreationData(event_name, event_date, event_time, event_duration, locationID, notes));
 
         c.enqueue(Server.mkCallback(
                 (call, response) -> {

@@ -508,17 +508,15 @@ public interface MeetingService {
         public String event_duration;
         public int event_location;
         public String notes;
-        public File file_attachment;
 
         public EventCreationData(String event_name, String event_date, String event_time, String event_duration,
-                                 int event_location, String notes, File file_attachment){
+                                 int event_location, String notes){
             this.event_name = event_name;
             this.event_date = event_date;
             this.event_time = event_time;
             this.event_duration = event_duration;
             this.event_location = event_location;
             this.notes = notes;
-            this.file_attachment = file_attachment;
         }
 
         public EventCreationData(String event_name, int event_location){
@@ -528,9 +526,7 @@ public interface MeetingService {
             this.event_duration = null;
             this.event_location = event_location;
             this.notes = null;
-            this.file_attachment = null;
         }
-
     }
 
     class EventDataError{
