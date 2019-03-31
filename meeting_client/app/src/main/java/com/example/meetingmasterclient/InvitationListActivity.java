@@ -63,6 +63,28 @@ public class InvitationListActivity extends AppCompatActivity {
         requestQueue = Volley.newRequestQueue(this, new HurlStack());
         requestQueue.start();
 
+        Call<MeetingService.UserProfile> c = Server.getService().getCurrentUser();
+        c.enqueue(new Callback<MeetingService.UserProfile>() {
+            @Override
+            public void onResponse(Call<MeetingService.UserProfile> call, retrofit2.Response<MeetingService.UserProfile> response) {
+                if(!response.isSuccessful()){ //404 error?
+                    Toast.makeText(InvitationListActivity.this, "Oops, Something is wrong: "+response.code() , Toast.LENGTH_LONG).show();
+                    return;
+                }
+                //get user id
+                MeetingService.UserProfile userProf =response.body();//store response
+                user_id=userProf.getPk();
+
+            }
+
+            @Override
+            public void onFailure(Call<MeetingService.UserProfile> call, Throwable t) {//error from server
+
+                Toast.makeText(InvitationListActivity.this,t.getMessage() , Toast.LENGTH_LONG).show();
+
+            }
+        });
+
 
 
             Call<List<MeetingService.InvitationData>> call = Server.getService().getUsersInvitations();
@@ -81,6 +103,9 @@ public class InvitationListActivity extends AppCompatActivity {
 
                     for (MeetingService.InvitationData invitation : invitations) {
                         //get event name
+                        if (invitation.getStatus()!=1){ //do not display if invitation not pending
+                            continue;
+                        }
                         String eventId = String.valueOf(invitation.getEvent_id());
                         eventIDs.add(eventId);
 
@@ -193,30 +218,15 @@ public class InvitationListActivity extends AppCompatActivity {
         });
     }
 
-    private void performInviteResponse(int eventId, String action) {
-        String url = "https://localhost:8000/user/0/invitations/" + eventId + "/" + action; // TODO
-        requestQueue.add(new JsonArrayRequest(
-                Request.Method.POST, url, null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        Log.d(TAG, "onResponse: " + response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.w(TAG, "onErrorResponse: perform invite response", error);
-                        Toast.makeText(InvitationListActivity.this, "Could not perform action", Toast.LENGTH_SHORT).show();
-                    }
-                }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> ret = new HashMap<>(super.getHeaders());
-                ret.put("Authorization", "Token " + authToken);
-                return ret;
-            }
-        });
+    private void performInviteResponse(int eventId, String action,int position) {
+        if (action.equals("accept")) {
+            changeInvitationStatus(eventId,String.valueOf(user_id),2);
+        }else{
+            changeInvitationStatus(eventId,String.valueOf(user_id),3);
+        }
+        //remove from display
+        jArray.remove(position);
+        adapter.setDataSet(jArray);
     }
 
     private class InvitesAdapter extends RecyclerView.Adapter<InvitesAdapter.ViewHolder> {
@@ -242,6 +252,7 @@ public class InvitationListActivity extends AppCompatActivity {
                 JSONObject event = dataSet.getJSONObject(position);
                 holder.eventId = event.getInt("pk");
                 holder.eventNameView.setText(event.getString("name"));
+                holder.position = position;
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -261,6 +272,7 @@ public class InvitationListActivity extends AppCompatActivity {
         private class ViewHolder extends RecyclerView.ViewHolder {
             int eventId = -1;
             TextView eventNameView;
+            int position;
 
             ViewHolder(@NonNull View view) {
                 super(view);
@@ -269,18 +281,38 @@ public class InvitationListActivity extends AppCompatActivity {
                 acceptButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        performInviteResponse(eventId, "accept");
+                        performInviteResponse(eventId, "accept",position);
                     }
                 });
                 Button declineButton = view.findViewById(R.id.button_decline);
                 declineButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        performInviteResponse(eventId, "decline");
+                        performInviteResponse(eventId, "decline",position);
                     }
                 });
             }
         }
+
+
+    }
+
+
+    public void changeInvitationStatus(int eventID, String userID, int newStatus){//1=pend 2=accept 3=declined
+        Call<Void> c = Server.getService().setInvitationStatus(String.valueOf(eventID), userID, newStatus);
+        c.enqueue
+                (Server.mkCallback(
+                        (call, response) -> {
+                            if (response.isSuccessful()) {
+                                // TODO: change button to reflect this
+                            } else {
+                                //Server.parseUnsuccessful(response, MeetingService.EventDataError.class,
+                                //        System.out::println, System.out::println);
+                                //TODO: make InvitationData error
+                            }
+                        },
+                        (call, t) -> t.printStackTrace()
+                ));
 
     }
 }
