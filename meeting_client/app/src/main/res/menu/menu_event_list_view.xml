@@ -21,4 +21,8 @@
         android:checkable="true"
         android:checked="false"
         app:actionViewClass="android.widget.CheckBox" />
+    <item
+        android:id="@+id/item_sync_calendar"
+        android:title="@string/sync_calendar"
+        app:showAsAction="never" />
 </menu>

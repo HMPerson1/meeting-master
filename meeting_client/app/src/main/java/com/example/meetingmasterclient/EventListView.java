@@ -23,7 +23,6 @@ import java.util.List;
 import retrofit2.Call;
 
 public class EventListView extends AppCompatActivity {
-    private int user_id;
     private Menu optionsMenu;
     private byte timePeriod;
     private ListView eventData;
@@ -37,7 +36,6 @@ public class EventListView extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         eventData = findViewById(R.id.event_data);
-        user_id = getIntent().getIntExtra("user_id", -1);
         declined = false;
         getInvitationByUser();
     }
@@ -96,12 +94,7 @@ public class EventListView extends AppCompatActivity {
     }
 
     private void getInvitationByUser() {
-        if (user_id == -1) {
-            Toast.makeText(getApplicationContext(), "An error has occurred", Toast.LENGTH_SHORT);
-            return;
-        }
-
-        Call<List<MeetingService.InvitationData>> c = Server.getService().getInvitations("/invitations/" + user_id + "/");
+        Call<List<MeetingService.InvitationData>> c = Server.getService().getUsersInvitations();
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
                     if (response.isSuccessful()) {

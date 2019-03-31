@@ -105,8 +105,8 @@ public interface MeetingService {
     @POST("/locations/")
     Call<LocationData> newLocation(@Body LocationData data);
 
-    @GET("/events/{id}/")
-    Call<EventData> getEventfromId(@Path("id") String id);
+    @GET("/events/{id}")
+    Call<EventsData> getEventfromId(@Path("id") String id);
 
     @PUT("/events/{id}/")
     Call<Void> updateEvent(@Body EventData data);
@@ -139,8 +139,8 @@ public interface MeetingService {
                                    @Path("user_id") String user_id,
                                    int status);     //TODO this probs needs fixing, event_id to string
 
-    @GET
-    Call<List<InvitationData>> getInvitations(@Url String url);
+    @GET("/invitations/user-invitations")
+    Call<List<InvitationData>> getUsersInvitations();
 
     @GET
     Call<EventData> getEvent(@Url String url);
@@ -396,6 +396,48 @@ public interface MeetingService {
         }
 
     }
+    class EventsData {
+        public int pk;
+        public String event_name;
+        public String event_date;
+        public String event_time;
+        public String event_duration;
+        public LocationData event_location;
+        public String notes;
+        public String file_attachment;
+
+        public int getPk() {
+            return pk;
+        }
+
+        public String getEvent_name() {
+            return event_name;
+        }
+
+        public String getEvent_date() {
+            return event_date;
+        }
+
+        public String getEvent_time() {
+            return event_time;
+        }
+
+        public String getEvent_duration() {
+            return event_duration;
+        }
+
+        public LocationData getEvent_location() {
+            return event_location;
+        }
+
+        public String getNotes() {
+            return notes;
+        }
+
+        public String getFile_attachment() {
+            return file_attachment;
+        }
+    }
 
     class EventData {
         public int id;
@@ -467,7 +509,7 @@ public interface MeetingService {
         public File file_attachment;
 
         public EventCreationData(String event_name, String event_date, String event_time, String event_duration,
-            int event_location, String notes, File file_attachment){
+                                 int event_location, String notes, File file_attachment){
             this.event_name = event_name;
             this.event_date = event_date;
             this.event_time = event_time;
@@ -520,11 +562,13 @@ public interface MeetingService {
         public int user_id;
         public int event_id;
         public int status;
+        public boolean edit_permission;
 
-        public InvitationData(int user_id, int event_id, int status) {
+        public InvitationData(int user_id, int event_id, int status, boolean edit_permission) {
             this.user_id = user_id;
             this.event_id = event_id;
             this.status = status;
+            this.edit_permission = edit_permission;
         }
 
         public int getUser_id() {

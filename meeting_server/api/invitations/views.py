@@ -19,17 +19,13 @@ class InvitationCreationView(ListCreateAPIView):
 
 # Get the list of event ids for which you have been invited
 class InvitationUserView(ListAPIView):
-    queryset = Invitation.objects.all()
+    """
+    List of invitations for the current user
+    """
     serializer_class = InvitationModelSerializer
 
     def get_queryset(self):
-        queryset = Invitation.objects.all()
-        user_id = self.kwargs.get('user_id', None)
-        queryset.filter(user_id=user_id)
-        if queryset is []:
-            raise Http404
-        else:
-            return queryset
+        return Invitation.objects.filter(user_id=self.request.user.userprofile)
 
 
 # Get the list of invitees for a specific event

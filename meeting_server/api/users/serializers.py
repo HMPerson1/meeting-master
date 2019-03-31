@@ -41,6 +41,11 @@ class UserProfileSerializer(UserDetailsSerializer):
             profile.save()
         return instance
 
+    def to_representation(self, instance: Union[UserProfile, auth_models.User]):
+        if isinstance(instance, UserProfile):
+            instance = instance.django_user
+        return super().to_representation(instance)
+
 
 class SuperUserSerializer(UserDetailsSerializer):
     class Meta:
