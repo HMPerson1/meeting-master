@@ -87,7 +87,7 @@
     <!-- google maps -->
     <string name="google_map_api_key">AIzaSyDXRxY5Bs0akDeBWYsBRGi8zVExod0HY2w</string>
 
-    <string name="title_activity_file_upload_experiments">FileUploadExperiments</string>
+
 
 
 </resources>
