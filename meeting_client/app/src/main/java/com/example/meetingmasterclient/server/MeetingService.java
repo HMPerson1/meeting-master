@@ -137,8 +137,8 @@ public interface MeetingService {
                                                  @Path("user_id") String user_id);
 
     @PUT("/invitations/{event_id}/{user_id}/update_status")
-    Call<Void> setInvitationStatus(@Query("event_id") int event_id,
-                                   @Query("user_id") String user_id,
+    Call<Void> setInvitationStatus(@Path("event_id") String event_id,
+                                   @Path("user_id") String user_id,
                                    @Query("status") int status);     //TODO this probs needs fixing, event_id to string
 
     @GET("/invitations/user-invitations")

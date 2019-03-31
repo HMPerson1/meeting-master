@@ -71,7 +71,8 @@ public class EventDetails extends AppCompatActivity {
         eventID = intent.getIntExtra("event_id", -1);
         userID = intent.getStringExtra("user_id");
 
-        eventID =1; //for testing
+        eventID =3; //for testing
+        userID="1";
 
         if (eventID<0){
             finish();  //did not pass event_id
@@ -142,7 +143,7 @@ public class EventDetails extends AppCompatActivity {
     }
 
     public void changeInvitationStatus(int eventID, String userID, int newStatus){
-        Call<Void> c = Server.getService().setInvitationStatus(eventID, userID, newStatus);
+        Call<Void> c = Server.getService().setInvitationStatus(String.valueOf(eventID), userID, newStatus);
         c.enqueue
                 (Server.mkCallback(
                         (call, response) -> {
