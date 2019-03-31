@@ -1,7 +1,9 @@
+from django.http import Http404
 from rest_framework import serializers
 from api.users.models import UserProfile
 from api.events.models import Event
 # from api.users.serializers import UserDetailsSerializer
+from django.core.exceptions import ObjectDoesNotExist
 import api.fcm as fcm
 
 
@@ -14,7 +16,7 @@ class InvitationModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Invitation
-        fields = ('user_id', 'event_id', 'status', 'edit_permission')
+        fields = ('event_id', 'user_id', 'status', 'edit_permission')
 
     def create(self, validated_data):
         uid = validated_data.pop('user_id')
@@ -35,8 +37,7 @@ class InvitationListEventSerializer(serializers.ModelSerializer):
 class InvitationStatusUpdateSerializer(serializers.ModelSerializer):
     user_id = serializers.PrimaryKeyRelatedField(many=False, queryset=UserProfile.objects.all())
     event_id = serializers.PrimaryKeyRelatedField(many=False, queryset=Event.objects.all())
-    status = serializers.ChoiceField(required=True, choices=[(1, "PENDING"), (2, "ACCEPTED"), (3, "DECLINED")])
 
     class Meta:
         model = Invitation
-        fields = ('user_id', 'event_id', 'status')
+        fields = ('event_id', 'user_id', 'status')

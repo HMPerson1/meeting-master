@@ -4,8 +4,11 @@ host: http://127.0.0.1:8000
 #    swagger: /swagger/?format=openapi
 #
 #
-#globals:
-#    # tokens: Auth thokes can go here
+globals:
+  tokens:
+    admin: a20ca19e95d04d5f8631908633e8d02ebe0fccc6
+
+    # tokens: Auth thokes can go here
 #
 #
 #headers:
