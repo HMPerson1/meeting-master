@@ -22,16 +22,6 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/from_label"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="From"
-            android:focusable="true"/>
-
-        <TextView
             android:id="@+id/name_label"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

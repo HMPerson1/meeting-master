@@ -44,20 +44,6 @@ public class EventViewAdapter extends BaseAdapter {
         LayoutInflater inflater = LayoutInflater.from(context);
         View infl = inflater.inflate(R.layout.event_view_item, null);
 
-        /*TextView from = (TextView)infl.findViewById(R.id.from);
-        Call<MeetingService.UserProfile> c = Server.getService().getUser("/users/" + eventInfo.get(position).event_admin + "/");
-        c.enqueue(Server.mkCallback(
-                (call, response) -> {
-                    if (response.isSuccessful()) {
-                        from.setText(response.body().username);
-                    } else {
-                        // TODO: Parse error
-                        //Server.parseUnsuccessful(response, MeetingService.EventDetailsError.class(), System.out::println, System.out::println);
-                    }
-                },
-                (call, t) -> t.printStackTrace()
-        ));*/
-
         TextView name = (TextView)infl.findViewById(R.id.event_name);
         name.setText(eventInfo.get(position).event_name);
 
@@ -65,7 +51,9 @@ public class EventViewAdapter extends BaseAdapter {
         date.setText(eventInfo.get(position).event_date);
 
         TextView place = (TextView)infl.findViewById(R.id.event_place);
-        place.setText(String.valueOf(eventInfo.get(position).event_location.getStreet_address()));
+        place.setText(eventInfo.get(position).event_location.getStreet_address() + ", "
+                + eventInfo.get(position).event_location.getCity() + ", "
+                + eventInfo.get(position).event_location.getState());
 
         return infl;
     }
