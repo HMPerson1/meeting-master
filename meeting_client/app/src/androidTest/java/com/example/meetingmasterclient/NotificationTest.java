@@ -3,6 +3,8 @@ package com.example.meetingmasterclient;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.example.meetingmasterclient.utils.Notifications;
+
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -28,6 +30,7 @@ public class NotificationTest {
         uiDevice.openNotification();
 
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Notifications.ensureNotificationChannels(appContext);
         Notifier notifier = new Notifier(appContext);
 
         String event_name = "Alice's Party!";
@@ -48,6 +51,7 @@ public class NotificationTest {
         uiDevice.openNotification();
 
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Notifications.ensureNotificationChannels(appContext);
         Notifier notifier = new Notifier(appContext);
 
         String event_name = "Alice's Party!";
@@ -69,6 +73,7 @@ public class NotificationTest {
         uiDevice.openNotification();
 
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Notifications.ensureNotificationChannels(appContext);
         Notifier notifier = new Notifier(appContext);
 
         String event_name = "Alice's Party!";
@@ -89,6 +94,7 @@ public class NotificationTest {
         uiDevice.openNotification();
 
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Notifications.ensureNotificationChannels(appContext);
         Notifier notifier = new Notifier(appContext);
 
         String event_name = "Alice's Party!";
@@ -110,6 +116,7 @@ public class NotificationTest {
         uiDevice.openNotification();
 
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Notifications.ensureNotificationChannels(appContext);
         Notifier notifier = new Notifier(appContext);
 
         String event_name = "Alice's Party!";
@@ -130,6 +137,50 @@ public class NotificationTest {
             editor.remove("3355checkStatus");
             editor.commit();
         }
+
+        clearAllNotifications();
+    }
+
+    @Test
+    public void notifArrivedHomeHasName() {
+        UiDevice uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        uiDevice.openNotification();
+
+        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Notifications.ensureNotificationChannels(appContext);
+        Notifier notifier = new Notifier(appContext);
+
+        String user_full_name = "Alice Fourier";
+
+        notifier.onMessageRecieved(makeNotifyArrivedHomeData(user_full_name));
+        // wait for notification
+        assertTrue(uiDevice.wait(Until.hasObject(By.text(appContext.getString(R.string.app_name))), TIMEOUT));
+        assertTrue(uiDevice.wait(Until.hasObject(By.text(appContext.getString(R.string.notification_arrived_home_title))), TIMEOUT));
+        // check notification content
+        assertNotNull(uiDevice.findObject(By.textContains(user_full_name)));
+
+        clearAllNotifications();
+    }
+
+    @Test
+    public void notifArrivedHomeAutoCancels() {
+        UiDevice uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        uiDevice.openNotification();
+
+        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Notifications.ensureNotificationChannels(appContext);
+        Notifier notifier = new Notifier(appContext);
+
+        String user_full_name = "Alice Fourier";
+
+        notifier.onMessageRecieved(makeNotifyArrivedHomeData(user_full_name));
+        // wait for notification
+        assertTrue(uiDevice.wait(Until.hasObject(By.text(appContext.getString(R.string.app_name))), TIMEOUT));
+        assertTrue(uiDevice.wait(Until.hasObject(By.text(appContext.getString(R.string.notification_arrived_home_title))), TIMEOUT));
+        uiDevice.findObject(By.textContains(user_full_name)).click();
+        // check dismissed
+        uiDevice.openNotification();
+        assertFalse(uiDevice.wait(Until.hasObject(By.text(appContext.getString(R.string.notification_arrived_home_title))), TIMEOUT));
 
         clearAllNotifications();
     }
@@ -159,6 +210,13 @@ public class NotificationTest {
         ret.put("kind", "edit");
         ret.put("event_id", event_id);
         ret.put("event_name", event_name);
+        return ret;
+    }
+
+    private Map<String, String> makeNotifyArrivedHomeData(String user_full_name) {
+        Map<String, String> ret = new HashMap<>();
+        ret.put("kind", "arrived_home");
+        ret.put("user_full_name", user_full_name);
         return ret;
     }
 }
