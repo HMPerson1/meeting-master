@@ -240,8 +240,9 @@ public class Registration extends AppCompatActivity {
                         Toast.makeText(Registration.this, "Registration Success", Toast.LENGTH_LONG).show();
                     } else {
                         String error = null;
-                        Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, System.out::println, System.out::println);
-                        Toast.makeText(Registration.this, "Registration Failed", Toast.LENGTH_LONG).show();
+                        Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, registrationError -> {
+                            Toast.makeText(Registration.this, registrationError.toString(), Toast.LENGTH_LONG).show();
+                        }, System.out::println);
                     }
                 },
                 (call, t) -> t.printStackTrace()
