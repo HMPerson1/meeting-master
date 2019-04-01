@@ -1,45 +1,33 @@
 package com.example.meetingmasterclient;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
+import com.example.meetingmasterclient.utils.LocalPicture;
+import com.example.meetingmasterclient.utils.Upload;
 import java.io.FileDescriptor;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.http.Multipart;
-import retrofit2.http.OPTIONS;
 
 public class Registration extends AppCompatActivity {
     private static final int READ_REQUEST_CODE = 42;
+    private static final int FILE_PERMISSION = 10;
     private Uri profilePictureUri;
     private boolean hasPicture;
     private TextInputLayout textInputFirstName;
@@ -49,7 +37,6 @@ public class Registration extends AppCompatActivity {
     private TextInputLayout textInputPassword;
     private TextInputLayout textInputConfirmPassword;
     private TextInputLayout textInputPhoneNumber;
-    private Button buttonUploadProfilePicture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,16 +64,37 @@ public class Registration extends AppCompatActivity {
         textInputConfirmPassword = findViewById(R.id.text_input_confirm_password);
 
         hasPicture = false;
-        buttonUploadProfilePicture = (Button)findViewById(R.id.upload_profile_picture_button);
-        buttonUploadProfilePicture.setOnClickListener(new View.OnClickListener() {
+
+        ((Button)findViewById(R.id.upload_profile_picture_button)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                uploadPicture();
+                if (Upload.checkFilePermissions(getApplicationContext())) {
+                    uploadPicture();
+                } else {
+                    ActivityCompat.requestPermissions(Registration.this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            FILE_PERMISSION);
+                }
             }
         });
     }
 
-    // methods for picture uploading
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch(requestCode) {
+            case FILE_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    uploadPicture();
+                } else {
+                    Toast.makeText(getApplicationContext(),
+                            "You cannot upload a profile picture without these permissions",
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                break;
+        }
+    }
 
     private void uploadPicture() {
         Intent fileIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
@@ -102,33 +110,7 @@ public class Registration extends AppCompatActivity {
             profilePictureUri = resultData.getData();
             hasPicture = true;
 
-            new AsyncTask<Uri, Void, Bitmap>() {
-                @Override
-                protected Bitmap doInBackground(Uri... uri) {
-                    return getBitmap(uri[0]);
-                }
-
-                @Override
-                protected void onPostExecute(Bitmap result) {
-                    if (result != null) {
-                        ((ImageView)findViewById(R.id.imageView)).setImageBitmap(result);
-                    } else {
-                        Toast.makeText(getApplicationContext(), "The picture has been loaded, but cannot be shown", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                private Bitmap getBitmap(Uri uri) {
-                    try {
-                        ParcelFileDescriptor pfd = getContentResolver().openFileDescriptor(uri, "r");
-                        FileDescriptor fd = pfd.getFileDescriptor();
-                        Bitmap image = BitmapFactory.decodeFileDescriptor(fd);
-                        pfd.close();
-                        return image;
-                    } catch(IOException e) {
-                        return null;
-                    }
-                }
-            }.execute(profilePictureUri);
+            new LocalPicture(this).execute(profilePictureUri);
         }
     }
 
@@ -252,37 +234,17 @@ public class Registration extends AppCompatActivity {
                 (call, response) -> {
                     if (response.isSuccessful()) {
                         assert response.body() != null;
-                        if (hasPicture) {
-                            uploadPictureToServer();
-                        }
                         Server.authenticate(response.body().key);
+
+                        if (hasPicture) {
+                            Upload.uploadPictureToServer(getApplicationContext(), profilePictureUri);
+                        }
+
                         Toast.makeText(Registration.this, "Registration Success", Toast.LENGTH_LONG).show();
 
                     } else {
-                        String error=null;
+                        String error = null;
                         Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, System.out::println, System.out::println);
-                    }
-                },
-                (call, t) -> t.printStackTrace()
-        ));
-    }
-
-    private void uploadPictureToServer() {
-        File picture = new File(profilePictureUri.getPath());
-        boolean success = false;
-
-        Call<ResponseBody> c = Server.getService().uploadProfilePicture(MultipartBody.Part.createFormData(
-                "profile_picture",
-                picture.getName(),
-                RequestBody.create(MediaType.parse(getContentResolver().getType(profilePictureUri)), picture)
-        ));
-
-        c.enqueue(Server.mkCallback(
-                (call, response) -> {
-                    if (response.isSuccessful()) {
-                        Toast.makeText(Registration.this, "Profile picture saved successfully", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(Registration.this, "An error has occurred while saving the profile picture", Toast.LENGTH_SHORT).show();
                     }
                 },
                 (call, t) -> t.printStackTrace()

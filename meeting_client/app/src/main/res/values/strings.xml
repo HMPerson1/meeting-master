@@ -17,6 +17,7 @@
     <!--registration/login strings-->
     <string name="first_name">First Name</string>
     <string name="last_name">Last Name</string>
+    <string name="name">Name</string>
     <string name="user_name">Username</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -79,5 +80,7 @@
     <string name="delete_event">Delete Event</string>
     <string name="export_event">Export Event</string>
     <string name="sync_calendar">Sync Calendar</string>
+    <string name="title_activity_file_upload_experiments">FileUploadExperiments</string>
+    <string name="title_activity_location_suggestion">LocationSuggestion</string>
 
 </resources>

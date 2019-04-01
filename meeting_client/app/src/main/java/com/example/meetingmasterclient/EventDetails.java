@@ -1,8 +1,10 @@
 package com.example.meetingmasterclient;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -35,6 +37,7 @@ public class EventDetails extends AppCompatActivity {
     private Button attendeeListButton;
     private Button acceptInviteButton;
     private Button declineInviteButton;
+    private Button suggestLocationButton;
     MeetingService.EventsData eventInfo;
     //TODO disable "View Attachment" button if no attachment exists in document
 
@@ -135,6 +138,15 @@ public class EventDetails extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 changeInvitationStatus(eventID, userID, 3);
+            }
+        });
+
+        suggestLocationButton = (Button) findViewById(R.id.suggest_location_button);
+        suggestLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent suggest = new Intent(getApplicationContext(), LocationSuggestion.class);
+                startActivity(suggest);
             }
         });
     }

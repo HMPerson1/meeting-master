@@ -5,8 +5,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.generics import ListCreateAPIView, ListAPIView
-
+from rest_framework.generics import ListCreateAPIView, ListAPIView, UpdateAPIView
+from rest_framework.parsers import FormParser
 from api.invitations.models import Invitation
 from api.invitations.serializers import InvitationModelSerializer, InvitationStatusUpdateSerializer
 
@@ -58,21 +58,44 @@ class InvitationDetailView(APIView):
 
 class InvitationStatusChangeView(APIView):
 
+    # queryset = Invitation.objects.all()
+    # /serializer_class = InvitationStatusUpdateSerializer
+    # parser_classes = FormParser
+
     def get_object(self, event_id, user_id):
         try:
             return Invitation.objects.get(event_id=event_id, user_id=user_id)
         except ObjectDoesNotExist:
             raise Http404
 
+    # @swagger_auto_schema(
+    #     query_serializer=InvitationStatusUpdateSerializer,
+    #     responses={201: openapi.Response('Invitation status successfuly updated', InvitationModelSerializer)},
+    # )
     @swagger_auto_schema(
-        query_serializer=InvitationStatusUpdateSerializer,
-        responses={201: openapi.Response('Invitation status successfuly updated', InvitationModelSerializer)},
+        manual_parameters=[
+            openapi.Parameter('status', openapi.IN_QUERY, type=openapi.TYPE_INTEGER, required=True)
+        ],
+        responses={
+            201: openapi.Response('Event successfuly updated', InvitationModelSerializer)
+        }
     )
     def put(self, request, event_id, user_id, format=None):
-        event = self.get_object(event_id, user_id)
-        serializer = InvitationStatusUpdateSerializer(event, data=request.DATA)
+        invite = self.get_object(event_id, user_id)
+        data = {
+            "event_id": event_id,
+            "user_id": user_id,
+            "status": request.query_params.get("status"),
+            "edit_permission": invite.edit_permission
+        }
+        serializer = InvitationModelSerializer(invite, data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    # def put(self, request, *args, **kwargs):
+        # uid = self.kwargs.get('user_id')
+        # eid = self.kwargs.get('event_id')
+        # resp = super().put(*args, **kwargs)
+        # return resp

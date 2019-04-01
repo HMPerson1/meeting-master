@@ -36,32 +36,12 @@
             tools:layout_editor_absoluteY="86dp" />
 
         <TextView
-            android:id="@+id/profile_details_first_name"
+            android:id="@+id/profile_details_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="30dp"
-            android:text="@string/first_name"
-            android:textSize="20dp"
-            android:gravity="center" />
-
-        <TextView
-            android:id="@+id/profile_details_last_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="20dp"
-            android:text="@string/last_name"
-            android:textSize="20dp"
-            android:gravity="center" />
-
-        <TextView
-            android:id="@+id/profile_details_username"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="20dp"
-            android:text="@string/user_name"
+            android:text="@string/name"
             android:textSize="20dp"
             android:gravity="center" />
 
