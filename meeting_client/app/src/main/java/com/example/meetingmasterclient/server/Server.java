@@ -22,7 +22,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class Server {
     private static final String TAG = "Server";
 
-    private static final String BASE_URL = "http:/192.168.1.12:8000";
+    private static final String BASE_URL = "http:/0.0.0.0:8000";
 
     private static Server instance;
     private @NonNull
