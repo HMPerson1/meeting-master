@@ -44,7 +44,7 @@ class Notifier extends ContextWrapper {
                     contentTitle = getString(R.string.notification_invite_title);
                     contentText = getString(R.string.notification_invite_body, eventName);
                     activityToStart = EventDetails.class;
-                    intentExtras.putString("event_id", eventId);
+                    intentExtras.putInt("event_id", Integer.parseInt(eventId));
                     break;
                 }
                 case "edit": {
@@ -57,7 +57,7 @@ class Notifier extends ContextWrapper {
                     contentTitle = getString(R.string.notification_edit_title);
                     contentText = getString(R.string.notification_edit_body, eventName);
                     activityToStart = EventDetails.class;
-                    intentExtras.putString("event_id", eventId);
+                    intentExtras.putInt("event_id", Integer.parseInt(eventId));
                     break;
                 }
                 case "arrived_home": {
@@ -96,7 +96,7 @@ class Notifier extends ContextWrapper {
 
             // our notifications are "fire-and-forget" so we don't keep track of ids
             NotificationManagerCompat.from(this).notify(nextNotificationId(), notification.build());
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | NumberFormatException e) {
             Log.w(TAG, "onMessageReceived: ", e);
         }
     }
