@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -35,6 +36,8 @@ public class DebugLauncherActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         LinearLayout linearLayout = findViewById(R.id.activities_list);
+        TextInputLayout inputEventId = findViewById(R.id.debug_input_event_id);
+        TextInputLayout inputUserId = findViewById(R.id.debug_input_user_id);
 
         ActivityInfo[] activityInfos = new ActivityInfo[0];
         try {
@@ -52,7 +55,18 @@ public class DebugLauncherActivity extends AppCompatActivity {
         }).filter(Objects::nonNull).forEach(activityClass -> {
             Button button = new Button(DebugLauncherActivity.this);
             button.setText(activityClass.getSimpleName());
-            button.setOnClickListener(v -> startActivity(new Intent(DebugLauncherActivity.this, activityClass)));
+            button.setOnClickListener(v -> {
+                Intent intent = new Intent(DebugLauncherActivity.this, activityClass);
+                String event_id_str = inputEventId.getEditText().getText().toString();
+                if (!event_id_str.isEmpty()) {
+                    intent.putExtra("event_id", Integer.parseInt(event_id_str));
+                }
+                String user_id_str = inputUserId.getEditText().getText().toString();
+                if (!user_id_str.isEmpty()) {
+                    intent.putExtra("user_id", Integer.parseInt(user_id_str));
+                }
+                startActivity(intent);
+            });
             linearLayout.addView(button);
         });
 
