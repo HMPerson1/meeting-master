@@ -1,8 +1,11 @@
 package com.example.meetingmasterclient.utils;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
@@ -22,6 +25,11 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 
 public abstract class Upload {
+    public static boolean checkFilePermissions(Context context) {
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED;
+    }
+
     private static File getFileFromUri(Context context, Uri uri) {
         ContentResolver cr = context.getContentResolver();
 
@@ -74,7 +82,9 @@ public abstract class Upload {
                     if (response.isSuccessful()) {
                         Toast.makeText(context, "Profile Picture Success", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(context, "An error has occurred while saving the profile picture", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context,
+                                "An error has occurred while saving the profile picture",
+                                Toast.LENGTH_SHORT).show();
                     }
                 },
                 (call, t) -> t.printStackTrace()

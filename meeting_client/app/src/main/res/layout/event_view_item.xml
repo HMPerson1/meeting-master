@@ -22,16 +22,6 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/from"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="TextView"
-            android:textSize="20dp" />
-
-        <TextView
             android:id="@+id/event_name"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

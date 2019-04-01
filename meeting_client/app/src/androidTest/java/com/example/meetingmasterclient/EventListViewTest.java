@@ -35,14 +35,12 @@ public class EventListViewTest {
         Espresso.onView(withId(R.id.show_declined_events)).perform(click());
 
         DataInteraction data1 = Espresso.onData(anything()).inAdapterView(withId(R.id.event_data)).atPosition(0);
-        data1.onChildView(withId(R.id.from)).check(matches(withText("masternasu")));
         data1.onChildView(withId(R.id.event_name)).check(matches(withText("Autographs From Nasu")));
         data1.onChildView(withId(R.id.event_date)).check(matches(withText("2019-03-22")));
         // TODO: Check location
         //data1.onChildView(withId(R.id.event_place)).check(matches(withText("2019-03-30")));
 
         DataInteraction data2 = Espresso.onData(anything()).inAdapterView(withId(R.id.event_data)).atPosition(1);
-        data2.onChildView(withId(R.id.from)).check(matches(withText("prof307")));
         data2.onChildView(withId(R.id.event_name)).check(matches(withText("CS 307 Review")));
         data2.onChildView(withId(R.id.event_date)).check(matches(withText("2019-03-22")));
         // TODO: Check location
@@ -57,14 +55,12 @@ public class EventListViewTest {
         Espresso.onView(withId(R.id.show_declined_events)).perform(click());
 
         DataInteraction data1 = Espresso.onData(anything()).inAdapterView(withId(R.id.event_data)).atPosition(0);
-        data1.onChildView(withId(R.id.from)).check(matches(withText("masternasu")));
         data1.onChildView(withId(R.id.event_name)).check(matches(withText("Autographs From Nasu")));
         data1.onChildView(withId(R.id.event_date)).check(matches(withText("2019-03-22")));
         // TODO: Check location
         //data1.onChildView(withId(R.id.event_place)).check(matches(withText("2019-03-30")));
 
         DataInteraction data2 = Espresso.onData(anything()).inAdapterView(withId(R.id.event_data)).atPosition(1);
-        data2.onChildView(withId(R.id.from)).check(matches(withText("prof307")));
         data2.onChildView(withId(R.id.event_name)).check(matches(withText("CS 307 Review")));
         data2.onChildView(withId(R.id.event_date)).check(matches(withText("2019-03-22")));
         // TODO: Check location
