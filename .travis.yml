@@ -6,6 +6,7 @@ matrix:
   include:
     - language: python
       python: 3.7
+      cache: pip
       before_install:
         - cd meeting_server
       script:
