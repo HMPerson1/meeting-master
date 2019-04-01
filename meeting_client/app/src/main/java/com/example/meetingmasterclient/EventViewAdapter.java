@@ -17,9 +17,9 @@ import retrofit2.Call;
 // TODO: Set up adapter to store entire event object
 public class EventViewAdapter extends BaseAdapter {
     Context context;
-    List<MeetingService.EventData> eventInfo;
+    List<MeetingService.EventsData> eventInfo;
 
-    public EventViewAdapter(Context context, List<MeetingService.EventData> eventInfo) {
+    public EventViewAdapter(Context context, List<MeetingService.EventsData> eventInfo) {
         this.context = context;
         this.eventInfo = eventInfo;
     }
@@ -44,20 +44,6 @@ public class EventViewAdapter extends BaseAdapter {
         LayoutInflater inflater = LayoutInflater.from(context);
         View infl = inflater.inflate(R.layout.event_view_item, null);
 
-        TextView from = (TextView)infl.findViewById(R.id.from);
-        Call<MeetingService.UserProfile> c = Server.getService().getUser("/users/" + eventInfo.get(position).event_admin + "/");
-        c.enqueue(Server.mkCallback(
-                (call, response) -> {
-                    if (response.isSuccessful()) {
-                        from.setText(response.body().username);
-                    } else {
-                        // TODO: Parse error
-                        //Server.parseUnsuccessful(response, MeetingService.EventDetailsError.class(), System.out::println, System.out::println);
-                    }
-                },
-                (call, t) -> t.printStackTrace()
-        ));
-
         TextView name = (TextView)infl.findViewById(R.id.event_name);
         name.setText(eventInfo.get(position).event_name);
 
@@ -65,8 +51,9 @@ public class EventViewAdapter extends BaseAdapter {
         date.setText(eventInfo.get(position).event_date);
 
         TextView place = (TextView)infl.findViewById(R.id.event_place);
-        // TODO: Make query to obtain location details
-        place.setText(eventInfo.get(position).event_location);
+        place.setText(eventInfo.get(position).event_location.getStreet_address() + ", "
+                + eventInfo.get(position).event_location.getCity() + ", "
+                + eventInfo.get(position).event_location.getState());
 
         return infl;
     }

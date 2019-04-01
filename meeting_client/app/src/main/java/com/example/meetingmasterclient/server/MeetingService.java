@@ -147,6 +147,9 @@ public interface MeetingService {
     @GET
     Call<EventData> getEvent(@Url String url);
 
+    @GET
+    Call<EventsData> getEvents(@Url String url);
+
     /**
      * needs authentication <br>
      * never fails (if authenticated)

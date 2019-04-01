@@ -1,7 +1,9 @@
 package com.example.meetingmasterclient;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -9,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -24,6 +27,7 @@ import retrofit2.Call;
 
 public class Registration extends AppCompatActivity {
     private static final int READ_REQUEST_CODE = 42;
+    private static final int FILE_PERMISSION = 10;
     private Uri profilePictureUri;
     private boolean hasPicture;
     private TextInputLayout textInputFirstName;
@@ -64,12 +68,33 @@ public class Registration extends AppCompatActivity {
         ((Button)findViewById(R.id.upload_profile_picture_button)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                uploadPicture();
+                if (Upload.checkFilePermissions(getApplicationContext())) {
+                    uploadPicture();
+                } else {
+                    ActivityCompat.requestPermissions(Registration.this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            FILE_PERMISSION);
+                }
             }
         });
     }
 
-    // methods for picture uploading
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch(requestCode) {
+            case FILE_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    uploadPicture();
+                } else {
+                    Toast.makeText(getApplicationContext(),
+                            "You cannot upload a profile picture without these permissions",
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                break;
+        }
+    }
 
     private void uploadPicture() {
         Intent fileIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);

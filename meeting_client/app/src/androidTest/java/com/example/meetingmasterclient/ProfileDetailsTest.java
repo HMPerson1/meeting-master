@@ -32,14 +32,8 @@ public class ProfileDetailsTest {
 
         // TODO: Check profile picture
 
-        Espresso.onView(withId(R.id.profile_details_first_name))
-                .check(matches(withText("Daniel")));
-
-        Espresso.onView(withId(R.id.profile_details_last_name))
-                .check(matches(withText("Sanchez")));
-
-        Espresso.onView(withId(R.id.profile_details_username))
-                .check(matches(withText("sanch232")));
+        Espresso.onView(withId(R.id.profile_details_name))
+                .check(matches(withText("Daniel Sanchez (sanch232)")));
 
         Espresso.onView(withId(R.id.profile_details_email))
                 .check(matches(withText("sanch232@purdue.edu")));
@@ -54,14 +48,8 @@ public class ProfileDetailsTest {
 
         // TODO: Check profile picture
 
-        Espresso.onView(withId(R.id.profile_details_first_name))
-                .check(matches(withText("Kinoko")));
-
-        Espresso.onView(withId(R.id.profile_details_last_name))
-                .check(matches(withText("Nasu")));
-
-        Espresso.onView(withId(R.id.profile_details_username))
-                .check(matches(withText("masternasu")));
+        Espresso.onView(withId(R.id.profile_details_name))
+                .check(matches(withText("Kinoko Nasu (masternasu)")));
 
         Espresso.onView(withId(R.id.profile_details_email))
                 .check(matches(withText("nasufate@gmail.com")));

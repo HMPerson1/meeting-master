@@ -11,7 +11,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE " />
 
 
     <uses-feature
@@ -116,6 +115,11 @@
         <activity
             android:name=".ProfileDetails"
             android:label="@string/title_activity_profile_details"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".LocationSuggestion"
+            android:label="@string/title_activity_location_suggestion"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service
