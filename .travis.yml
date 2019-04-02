@@ -15,8 +15,7 @@ matrix:
 
     # based on https://github.com/msand/test_emulators/blob/master/.travis.yml
     - language: generic
-      dist: trusty
-      jdk: oraclejdk8
+      jdk: oraclejdk10
       before_install:
         - cd meeting_client
       install:
@@ -40,3 +39,10 @@ matrix:
       script:
         - ./gradlew --init-script ../ci-utils/init.gradle build check
         # TODO: firebase test lab?
+      before_cache:
+        - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+        - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+      cache:
+        directories:
+          - $HOME/.gradle/caches/
+          - $HOME/.gradle/wrapper/
