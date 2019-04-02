@@ -138,27 +138,21 @@ public class EventCreation extends AppCompatActivity {
     }//configureAttendee
     
     public boolean confirmInput(View v) {
-        return (validateEventName() | validateStreetAddr() | validateCity()
-            | validateState());
+        return (validateEventName() | validateStreetAddr() | validateCity() | validateState());
     }
 
     public void createMeetingRequest(View v){
         if(!confirmInput(v)) return;
 
-
-
-
         //File file_attachment
-
-
 
         postLocationandEvent();
         //testing postInvites
         MeetingService.EventsData eventsData = new MeetingService.EventsData();
         postInvites(eventsData);
 
-
     }
+
     public Map<String, ?> getInvitedUsers() {
         SharedPreferences sharedPref = getSharedPreferences("invited_users_IDs", Context.MODE_PRIVATE);
         Map<String, ?> allEntries = sharedPref.getAll();
@@ -189,6 +183,7 @@ public class EventCreation extends AppCompatActivity {
             ));
         }
     }
+
     public void postEvent(MeetingService.LocationData locationInfo){
         LocationID = locationInfo.getPk();
         int locationID = LocationID;

@@ -13,6 +13,7 @@ import android.os.ParcelFileDescriptor;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -231,6 +232,7 @@ public class Registration extends AppCompatActivity {
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
                     Toast.makeText(Registration.this,response.toString(), Toast.LENGTH_LONG).show();
+                    Log.d("Registration response", response.toString());
                     if (response.isSuccessful()) {
                         assert response.body() != null;
                         Server.authenticate(response.body().key);
@@ -242,6 +244,8 @@ public class Registration extends AppCompatActivity {
                         String error = null;
                         Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, registrationError -> {
                             Toast.makeText(Registration.this, registrationError.toString(), Toast.LENGTH_LONG).show();
+                            Log.d("Registration error", registrationError.toString());
+                            System.out.println(registrationError.toString());
                         }, System.out::println);
                     }
                 },
