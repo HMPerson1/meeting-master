@@ -28,7 +28,7 @@ public class ProfileEdition extends AppCompatActivity {
         textInputPhoneNumber = findViewById(R.id.text_edit_phone_number);
     }
 
-    public void sendProfileEditionRequest(){
+    public void sendProfileEditionRequest(View view){
 
     }
 
