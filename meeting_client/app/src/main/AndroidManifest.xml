@@ -5,7 +5,6 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE " />
 
     <application
         android:allowBackup="true"
@@ -16,6 +15,10 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity
+            android:name=".SuggestionsListActivity"
+            android:label="@string/title_activity_suggestions_list"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".DebugLauncherActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -80,6 +83,11 @@
         <activity
             android:name=".ProfileDetails"
             android:label="@string/title_activity_profile_details"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".LocationSuggestion"
+            android:label="@string/title_activity_location_suggestion"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service
