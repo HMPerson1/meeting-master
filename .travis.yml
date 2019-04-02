@@ -1,0 +1,52 @@
+branches:
+  only:
+    - master
+    - client
+dist: xenial
+sudo: yes
+git:
+  depth: 3
+matrix:
+  include:
+    - language: python
+      python: 3.7
+      cache: pip
+      before_install:
+        - cd meeting_server
+      script:
+        - python manage.py makemigrations allauth events invitations locations users
+        - python manage.py test
+
+    # based on https://github.com/msand/test_emulators/blob/master/.travis.yml
+    - language: java
+      jdk: openjdk8
+      before_install:
+        - cd meeting_client
+      install:
+        # Install android tools
+        - ANDROID_TOOLS=4333796 # android-28
+        - export ANDROID_HOME=~/android-sdk
+        - wget -q "https://dl.google.com/android/repository/sdk-tools-linux-$ANDROID_TOOLS.zip" -O android-sdk-tools.zip
+        - unzip -q android-sdk-tools.zip -d ${ANDROID_HOME}
+        - rm android-sdk-tools.zip
+        - PATH=${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools:${PATH}
+        # Silence warning.
+        - mkdir -p ~/.android
+        - touch ~/.android/repositories.cfg
+        # Accept licenses before installing components, no need to echo y for each component
+        - yes | sdkmanager --licenses
+        # Platform tools
+        - sdkmanager "tools" > /dev/null
+        - sdkmanager --list | head -15
+      before_script:
+        - export TERM=dumb
+      script:
+        - ./gradlew --init-script ../ci-utils/init.gradle build check
+        # TODO: firebase test lab?
+      before_cache:
+        - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+        - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+      cache:
+        directories:
+          - $HOME/.gradle/caches/
+          - $HOME/.gradle/wrapper/

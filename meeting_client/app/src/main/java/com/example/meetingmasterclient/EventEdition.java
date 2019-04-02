@@ -152,4 +152,8 @@ public class EventEdition extends AppCompatActivity {
 
     }
 
+    public void submitInvitation(View view) {
+        // TODO
+    }
+
 }
