@@ -14,8 +14,8 @@ matrix:
         - python manage.py test
 
     # based on https://github.com/msand/test_emulators/blob/master/.travis.yml
-    - language: generic
-      jdk: oraclejdk10
+    - language: java
+      jdk: openjdk8
       before_install:
         - cd meeting_client
       install:
@@ -25,7 +25,7 @@ matrix:
         - wget -q "https://dl.google.com/android/repository/sdk-tools-linux-$ANDROID_TOOLS.zip" -O android-sdk-tools.zip
         - unzip -q android-sdk-tools.zip -d ${ANDROID_HOME}
         - rm android-sdk-tools.zip
-        - PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools
+        - PATH=${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools:${PATH}
         # Silence warning.
         - mkdir -p ~/.android
         - touch ~/.android/repositories.cfg
