@@ -1,3 +1,7 @@
+branches:
+  only:
+    - master
+    - client
 dist: xenial
 sudo: yes
 git:
