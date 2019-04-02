@@ -60,10 +60,14 @@
     <string name="channel_invite_description">When you are invited to an event</string>
     <string name="channel_edit_name">Edits</string>
     <string name="channel_edit_description">When another user edits an event</string>
+    <string name="channel_arrived_home_name">Home Arrival</string>
+    <string name="channel_arrived_home_description">When another user has arrived home safely</string>
     <string name="notification_invite_title">Event Invitation</string>
     <string name="notification_invite_body">You have been invited to attend %s</string>
     <string name="notification_edit_title">Event Edited</string>
     <string name="notification_edit_body">%s has been edited</string>
+    <string name="notification_arrived_home_title">Arrived Home</string>
+    <string name="notification_arrived_home_body">%s has arrived home safely</string>
 
     <string name="create_event_button">Create Event</string>
     <string name="title_activity_profile_details">ProfileDetails</string>
@@ -82,5 +86,6 @@
     <string name="sync_calendar">Sync Calendar</string>
     <string name="title_activity_file_upload_experiments">FileUploadExperiments</string>
     <string name="title_activity_location_suggestion">LocationSuggestion</string>
+    <string name="title_activity_suggestions_list">SuggestionsListActivity</string>
 
 </resources>
