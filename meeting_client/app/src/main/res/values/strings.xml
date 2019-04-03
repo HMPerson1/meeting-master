@@ -38,6 +38,11 @@
     <string name="location_details">Location Details</string>
     <string name="add_file">Add File</string>
 
+
+    <string name="suggested">Suggested Locations</string>
+    <string name="map">Map</string>
+
+
     <string name="event_name">Event Name</string>
     <string name="date">Date</string>
     <string name="time">Time</string>

@@ -106,6 +106,17 @@ public class EventEdition extends AppCompatActivity {
 
     }
 
+    private void configureSuggestedLocationsButtion(){
+        Button suggestedButton = (Button) findViewById(R.id.map_button);
+        suggestedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Intent suggested = new Intent(getApplicationContext(), .class);
+                //startActivity(suggested);
+            }
+        });
+    }
+
     private void configureSaveButton(){
 
         final TextInputEditText nameInput = (TextInputEditText) findViewById(R.id.text_input_event_name);
