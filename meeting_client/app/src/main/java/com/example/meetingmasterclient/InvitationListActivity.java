@@ -57,7 +57,7 @@ public class InvitationListActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-      /*  adapter = new InvitesAdapter();
+        adapter = new InvitesAdapter();
         recyclerView.setAdapter(adapter);
 
         requestQueue = Volley.newRequestQueue(this, new HurlStack());
@@ -87,67 +87,60 @@ public class InvitationListActivity extends AppCompatActivity {
 
 
 
+        Call<List<MeetingService.InvitationData>> call = Server.getService().getUsersInvitations();
+        call.enqueue(new Callback<List<MeetingService.InvitationData>>() {
+            @Override
+            public void onResponse(Call<List<MeetingService.InvitationData>> call, retrofit2.Response<List<MeetingService.InvitationData>> response) {
+                if (!response.isSuccessful()) { //404 error?
+                    Toast.makeText(InvitationListActivity.this, "Oops, Something is wrong: " + response.code(), Toast.LENGTH_LONG).show();
+                    return;
+                }
+                Toast.makeText(InvitationListActivity.this, "response"+response.body(), Toast.LENGTH_LONG).show();
+                Toast.makeText(InvitationListActivity.this, response.toString(), Toast.LENGTH_LONG).show();
 
-            Call<List<MeetingService.InvitationData>> call = Server.getService().getUsersInvitations();
-            call.enqueue(new Callback<List<MeetingService.InvitationData>>() {
-                @Override
-                public void onResponse(Call<List<MeetingService.InvitationData>> call, retrofit2.Response<List<MeetingService.InvitationData>> response) {
-                    if (!response.isSuccessful()) { //404 error?
-                        Toast.makeText(InvitationListActivity.this, "Oops, Something is wrong: " + response.code(), Toast.LENGTH_LONG).show();
-                        return;
+                //add user to list if successful
+                List<MeetingService.InvitationData> invitations = response.body();//store response
+
+                for (MeetingService.InvitationData invitation : invitations) {
+                    //get event name
+                    if (invitation.getStatus()!=1){ //do not display if invitation not pending
+                        continue;
                     }
-                    Toast.makeText(InvitationListActivity.this, "response"+response.body(), Toast.LENGTH_LONG).show();
-                    Toast.makeText(InvitationListActivity.this, response.toString(), Toast.LENGTH_LONG).show();
-
-                    //add user to list if successful
-                    List<MeetingService.InvitationData> invitations = response.body();//store response
-
-                    for (MeetingService.InvitationData invitation : invitations) {
-                        //get event name
-                        if (invitation.getStatus()!=1){ //do not display if invitation not pending
-                            continue;
-                        }
-                        String eventId = String.valueOf(invitation.getEvent_id());
-                        eventIDs.add(eventId);
+                    String eventId = String.valueOf(invitation.getEvent_id());
+                    eventIDs.add(eventId);
 
 
 
 
-                    }//end for
-                    getEvents(response.body());
+                }//end for
+                getEvents(response.body());
 
 
 
 
 
-                }
+            }
 
 
-                @Override
-                public void onFailure(Call<List<MeetingService.InvitationData>> call, Throwable t) {//error from server
+            @Override
+            public void onFailure(Call<List<MeetingService.InvitationData>> call, Throwable t) {//error from server
 
-                    Toast.makeText(InvitationListActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(InvitationListActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
 
-                }
-            });
-
+            }
+        });
 /*
-
         // TODO: for testing
         try {
             JSONObject jo = new JSONObject();
             jo.put("pk", "1");
             jo.put("name", "The First Event");
-
             jArray.put(jo);
-
             JSONObject jo2 = new JSONObject();
             jo2.put("pk", "2");
             jo2.put("name", "Event 2: Electric Boogaloo");
-
             jArray.put(jo2);
             adapter.setDataSet(jArray);
-
             //adapter.setDataSet(new JSONArray("[{\"pk\": 1, \"name\": \"The First Event\"},{\"pk\": 2, \"name\": \"Event 2: Electric Boogaloo\"}]"));
         } catch (JSONException e) {
             e.printStackTrace();
