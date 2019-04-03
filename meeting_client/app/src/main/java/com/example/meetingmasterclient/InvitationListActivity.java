@@ -248,7 +248,7 @@ public class InvitationListActivity extends AppCompatActivity {
                 JSONObject event = dataSet.getJSONObject(position);
                 holder.eventId = event.getInt("pk");
                 holder.eventNameView.setText(event.getString("name"));
-                holder.position = position;
+                holder.position = holder.getAdapterPosition();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
