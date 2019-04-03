@@ -44,6 +44,8 @@ public class InvitationListActivity extends AppCompatActivity {
     private InvitesAdapter adapter;
     private RequestQueue requestQueue;
     int user_id;
+    JSONArray jArray = new JSONArray();
+    List<String> eventIDs = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,18 +57,40 @@ public class InvitationListActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-      /*  adapter = new InvitesAdapter();
+        adapter = new InvitesAdapter();
         recyclerView.setAdapter(adapter);
 
         requestQueue = Volley.newRequestQueue(this, new HurlStack());
         requestQueue.start();
 
-        //get user_id
-        user_id=-1;
-        Call<MeetingService.UserProfile> call3 = Server.getService().getCurrentUser();
-        call3.enqueue(new Callback<MeetingService.UserProfile>() {
+        Call<MeetingService.UserProfile> c = Server.getService().getCurrentUser();
+        c.enqueue(new Callback<MeetingService.UserProfile>() {
             @Override
             public void onResponse(Call<MeetingService.UserProfile> call, retrofit2.Response<MeetingService.UserProfile> response) {
+                if(!response.isSuccessful()){ //404 error?
+                    Toast.makeText(InvitationListActivity.this, "Oops, Something is wrong: "+response.code() , Toast.LENGTH_LONG).show();
+                    return;
+                }
+                //get user id
+                MeetingService.UserProfile userProf =response.body();//store response
+                user_id=userProf.getPk();
+
+            }
+
+            @Override
+            public void onFailure(Call<MeetingService.UserProfile> call, Throwable t) {//error from server
+
+                Toast.makeText(InvitationListActivity.this,t.getMessage() , Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+
+
+        Call<List<MeetingService.InvitationData>> call = Server.getService().getUsersInvitations();
+        call.enqueue(new Callback<List<MeetingService.InvitationData>>() {
+            @Override
+            public void onResponse(Call<List<MeetingService.InvitationData>> call, retrofit2.Response<List<MeetingService.InvitationData>> response) {
                 if (!response.isSuccessful()) { //404 error?
                     Toast.makeText(InvitationListActivity.this, "Oops, Something is wrong: " + response.code(), Toast.LENGTH_LONG).show();
                     return;
@@ -74,121 +98,95 @@ public class InvitationListActivity extends AppCompatActivity {
                 Toast.makeText(InvitationListActivity.this, "response"+response.body(), Toast.LENGTH_LONG).show();
                 Toast.makeText(InvitationListActivity.this, response.toString(), Toast.LENGTH_LONG).show();
 
+                //add user to list if successful
+                List<MeetingService.InvitationData> invitations = response.body();//store response
 
-                MeetingService.UserProfile currentUser = response.body();//store response
-                user_id =currentUser.getPk();
+                for (MeetingService.InvitationData invitation : invitations) {
+                    //get event name
+                    if (invitation.getStatus()!=1){ //do not display if invitation not pending
+                        continue;
+                    }
+                    String eventId = String.valueOf(invitation.getEvent_id());
+                    eventIDs.add(eventId);
+
+
+
+
+                }//end for
+                getEvents(response.body());
+
+
+
 
 
             }
 
+
             @Override
-            public void onFailure(Call<MeetingService.UserProfile> call, Throwable t) {//error from server
+            public void onFailure(Call<List<MeetingService.InvitationData>> call, Throwable t) {//error from server
 
                 Toast.makeText(InvitationListActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
 
             }
         });
-
-
-        if (user_id<0) { //user is logged in
-            JSONArray jArray = new JSONArray();
-            Call<List<MeetingService.InvitationData>> call = Server.getService().getUsersInvitations();
-            call.enqueue(new Callback<List<MeetingService.InvitationData>>() {
+/*
+        // TODO: for testing
+        try {
+            JSONObject jo = new JSONObject();
+            jo.put("pk", "1");
+            jo.put("name", "The First Event");
+            jArray.put(jo);
+            JSONObject jo2 = new JSONObject();
+            jo2.put("pk", "2");
+            jo2.put("name", "Event 2: Electric Boogaloo");
+            jArray.put(jo2);
+            adapter.setDataSet(jArray);
+            //adapter.setDataSet(new JSONArray("[{\"pk\": 1, \"name\": \"The First Event\"},{\"pk\": 2, \"name\": \"Event 2: Electric Boogaloo\"}]"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        */
+    }
+    private void getEvents(List<MeetingService.InvitationData> invitations){
+        for (String eventId:eventIDs) {
+            Call<MeetingService.EventsData> call2 = Server.getService().getEventfromId(String.valueOf(eventId));
+            call2.enqueue(new Callback<MeetingService.EventsData>() {
                 @Override
-                public void onResponse(Call<List<MeetingService.InvitationData>> call, retrofit2.Response<List<MeetingService.InvitationData>> response) {
+                public void onResponse(Call<MeetingService.EventsData> call, retrofit2.Response<MeetingService.EventsData> response) {
                     if (!response.isSuccessful()) { //404 error?
                         Toast.makeText(InvitationListActivity.this, "Oops, Something is wrong: " + response.code(), Toast.LENGTH_LONG).show();
                         return;
                     }
-                    Toast.makeText(InvitationListActivity.this, "response"+response.body(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(InvitationListActivity.this, "response" + response.body(), Toast.LENGTH_LONG).show();
                     Toast.makeText(InvitationListActivity.this, response.toString(), Toast.LENGTH_LONG).show();
 
-                    //add user to list if successful
-                    List<MeetingService.InvitationData> invitations = response.body();//store response
-                    final List<String> list = new ArrayList<>();
-                    for (MeetingService.InvitationData invitation : invitations) {
-                        //get event name
-                        String eventId = String.valueOf(invitation.getEvent_id());
 
-                        Call<MeetingService.EventData> call2 = Server.getService().getEventfromId(String.valueOf(eventId));
-                        call2.enqueue(new Callback<MeetingService.EventData>() {
-                            @Override
-                            public void onResponse(Call<MeetingService.EventData> call, retrofit2.Response<MeetingService.EventData> response) {
-                                if (!response.isSuccessful()) { //404 error?
-                                    Toast.makeText(InvitationListActivity.this, "Oops, Something is wrong: " + response.code(), Toast.LENGTH_LONG).show();
-                                    return;
-                                }
-                                Toast.makeText(InvitationListActivity.this, "response"+response.body(), Toast.LENGTH_LONG).show();
-                                Toast.makeText(InvitationListActivity.this, response.toString(), Toast.LENGTH_LONG).show();
+                    MeetingService.EventsData eventInfo = response.body();//store response
 
+                    try {
+                        JSONObject jo = new JSONObject();
+                        jo.put("pk", eventInfo.getPk());
+                        jo.put("name", eventInfo.getEvent_name());
+                        jArray.put(jo);
 
-                                MeetingService.EventData eventInfo = response.body();//store response
-
-                                try {
-                                    JSONObject jo = new JSONObject();
-                                    jo.put("pk", eventInfo.getId());
-                                    jo.put("name", eventInfo.getEvent_name());
-                                    jArray.put(jo);
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-
-                            }
-
-                            @Override
-                            public void onFailure(Call<MeetingService.EventData> call, Throwable t) {//error from server
-
-                                Toast.makeText(InvitationListActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
-
-                            }
-                        });
-
-                    }//end for
-
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     adapter.setDataSet(jArray); //display invites
-
 
 
                 }
 
-
                 @Override
-                public void onFailure(Call<List<MeetingService.InvitationData>> call, Throwable t) {//error from server
+                public void onFailure(Call<MeetingService.EventsData> call, Throwable t) {//error from server
 
                     Toast.makeText(InvitationListActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
 
                 }
             });
 
-        }//end if
-
-
-
-*/
-
-        // TODO: for testing
-        try {
-            JSONObject jo = new JSONObject();
-            jo.put("pk", "1");
-            jo.put("name", "The First Event");
-            JSONArray jArray = new JSONArray();
-            jArray.put(jo);
-
-            JSONObject jo2 = new JSONObject();
-            jo2.put("pk", "2");
-            jo2.put("name", "Event 2: Electric Boogaloo");
-
-            jArray.put(jo2);
-            adapter.setDataSet(jArray);
-
-            //adapter.setDataSet(new JSONArray("[{\"pk\": 1, \"name\": \"The First Event\"},{\"pk\": 2, \"name\": \"Event 2: Electric Boogaloo\"}]"));
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
-    }
-
+    }//getEvents
     @Override
     protected void onStart() {
         super.onStart();
@@ -216,30 +214,15 @@ public class InvitationListActivity extends AppCompatActivity {
         });
     }
 
-    private void performInviteResponse(int eventId, String action) {
-        String url = "https://localhost:8000/user/0/invitations/" + eventId + "/" + action; // TODO
-        requestQueue.add(new JsonArrayRequest(
-                Request.Method.POST, url, null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        Log.d(TAG, "onResponse: " + response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.w(TAG, "onErrorResponse: perform invite response", error);
-                        Toast.makeText(InvitationListActivity.this, "Could not perform action", Toast.LENGTH_SHORT).show();
-                    }
-                }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> ret = new HashMap<>(super.getHeaders());
-                ret.put("Authorization", "Token " + authToken);
-                return ret;
-            }
-        });
+    private void performInviteResponse(int eventId, String action,int position) {
+        if (action.equals("accept")) {
+            changeInvitationStatus(eventId,String.valueOf(user_id),2);
+        }else{
+            changeInvitationStatus(eventId,String.valueOf(user_id),3);
+        }
+        //remove from display
+        jArray.remove(position);
+        adapter.setDataSet(jArray);
     }
 
     private class InvitesAdapter extends RecyclerView.Adapter<InvitesAdapter.ViewHolder> {
@@ -265,6 +248,7 @@ public class InvitationListActivity extends AppCompatActivity {
                 JSONObject event = dataSet.getJSONObject(position);
                 holder.eventId = event.getInt("pk");
                 holder.eventNameView.setText(event.getString("name"));
+                holder.position = holder.getAdapterPosition();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -284,6 +268,7 @@ public class InvitationListActivity extends AppCompatActivity {
         private class ViewHolder extends RecyclerView.ViewHolder {
             int eventId = -1;
             TextView eventNameView;
+            int position;
 
             ViewHolder(@NonNull View view) {
                 super(view);
@@ -292,18 +277,38 @@ public class InvitationListActivity extends AppCompatActivity {
                 acceptButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        performInviteResponse(eventId, "accept");
+                        performInviteResponse(eventId, "accept",position);
                     }
                 });
                 Button declineButton = view.findViewById(R.id.button_decline);
                 declineButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        performInviteResponse(eventId, "decline");
+                        performInviteResponse(eventId, "decline",position);
                     }
                 });
             }
         }
+
+
+    }
+
+
+    public void changeInvitationStatus(int eventID, String userID, int newStatus){//1=pend 2=accept 3=declined
+        Call<Void> c = Server.getService().setInvitationStatus(String.valueOf(eventID), userID, newStatus);
+        c.enqueue
+                (Server.mkCallback(
+                        (call, response) -> {
+                            if (response.isSuccessful()) {
+                                // TODO: change button to reflect this
+                            } else {
+                                //Server.parseUnsuccessful(response, MeetingService.EventDataError.class,
+                                //        System.out::println, System.out::println);
+                                //TODO: make InvitationData error
+                            }
+                        },
+                        (call, t) -> t.printStackTrace()
+                ));
 
     }
 }

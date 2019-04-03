@@ -1,5 +1,7 @@
 import datetime
+from typing import Any
 
+from django.db.models import Model
 from django.http import Http404
 
 from .models import Event
@@ -29,11 +31,6 @@ class EventModelSerializer(serializers.ModelSerializer):
             "notes",
             "file_attachment"
         )
-
-    def update(self, instance, validated_data):
-        ret = super().update(instance, validated_data)
-        fcm.notify_edit(ret)
-        return ret
 
     def to_representation(self, instance):
         response = super().to_representation(instance)
@@ -71,6 +68,11 @@ class EventCreateSerializer(serializers.ModelSerializer):
             "notes",
             "file_attachment"
         )
+
+    def update(self, instance: Model, validated_data: Any) -> Any:
+        ret = super().update(instance, validated_data)
+        fcm.notify_edit(ret)
+        return ret
 
     # Converts pk values of invitation and location into actual objs
     def to_representation(self, instance):
