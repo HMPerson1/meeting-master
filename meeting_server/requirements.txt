@@ -8,3 +8,5 @@ django-rest-auth
 django-allauth
 Pillow
 rigor
+drf-yasg
+firebase-admin

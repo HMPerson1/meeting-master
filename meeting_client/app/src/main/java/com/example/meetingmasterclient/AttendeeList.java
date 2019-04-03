@@ -111,7 +111,6 @@ public class AttendeeList extends AppCompatActivity {
         public void onBindViewHolder(@NonNull AttendeeAdapter.ViewHolder holder, int position) {
             String name =dataSet.get(position).getFirst_name()+" "+ dataSet.get(position).getLast_name();
             holder.personName.setText(name);
-            holder.index=position;
         }
 
         @Override
@@ -125,7 +124,6 @@ public class AttendeeList extends AppCompatActivity {
         }
 
         private class ViewHolder extends RecyclerView.ViewHolder {
-            int index=-1;
             TextView personName;
 
             ViewHolder(@NonNull View view) {
@@ -139,9 +137,9 @@ public class AttendeeList extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         if (permissions.getText()==permissions.getTextOn()) {
-                            editingPermit.set(index,true);
+                            editingPermit.set(getAdapterPosition(),true);
                         } else {
-                            editingPermit.set(index,false);
+                            editingPermit.set(getAdapterPosition(),false);
                         }
                     }
                 });
