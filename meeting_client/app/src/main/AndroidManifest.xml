@@ -53,6 +53,10 @@
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"></activity>
         <activity
+            android:name=".SuggestionsListActivity"
+            android:label="@string/title_activity_suggestions_list"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".DebugLauncherActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
