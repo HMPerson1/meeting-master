@@ -15,11 +15,10 @@
     <string name="title_activity_add_users_to_meeting">AddUserstoMeeting</string>
 
     <!--registration/login strings-->
-    <string name="first_name">First Name</string>
-    <string name="last_name">Last Name</string>
+
     <string name="name">Name</string>
     <string name="first_name">First Name</string>
-    <string name="last_name">Last Name</string>
+    <string name="last_name">Last_Name</string>
     <string name="user_name">Username</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -39,6 +38,11 @@
     <string name="event_details">Event Details</string>
     <string name="location_details">Location Details</string>
     <string name="add_file">Add File</string>
+
+
+    <string name="suggested">Suggested Locations</string>
+    <string name="map">Map</string>
+
 
     <string name="event_name">Event Name</string>
     <string name="date">Date</string>
@@ -87,7 +91,18 @@
     <string name="export_event">Export Event</string>
     <string name="sync_calendar">Sync Calendar</string>
     <string name="title_activity_file_upload_experiments">FileUploadExperiments</string>
-    <string name="title_activity_location_suggestion">LocationSuggestion</string>
+
     <string name="title_activity_suggestions_list">SuggestionsListActivity</string>
+
+    <string name="title_activity_maps">Map</string>
+
+    <!-- google maps -->
+
+
+
+
+    <string name="title_activity_location_suggestion">LocationSuggestion</string>
+
+
 
 </resources>
