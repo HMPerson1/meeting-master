@@ -68,12 +68,16 @@
     <string name="channel_edit_description">When another user edits an event</string>
     <string name="channel_arrived_home_name">Home Arrival</string>
     <string name="channel_arrived_home_description">When another user has arrived home safely</string>
+    <string name="channel_live_location_name">Location Tracking</string>
+    <string name="channel_live_location_description">When your location is being tracked</string>
     <string name="notification_invite_title">Event Invitation</string>
     <string name="notification_invite_body">You have been invited to attend %s</string>
     <string name="notification_edit_title">Event Edited</string>
     <string name="notification_edit_body">%s has been edited</string>
     <string name="notification_arrived_home_title">Arrived Home</string>
     <string name="notification_arrived_home_body">%s has arrived home safely</string>
+    <string name="notif_service_tracking_location_title">Tracking Location</string>
+    <string name="notif_service_tracking_location_body">Other event attendees can see where you are</string>
 
     <string name="create_event_button">Create Event</string>
     <string name="title_activity_profile_details">ProfileDetails</string>
@@ -105,4 +109,7 @@
 
 
 
+    <string name="desc_service_location_update">Sends your current location to other event attendees</string>
+    <string name="start_locationupdateservice">Start LocationUpdateService</string>
+    <string name="stop_locationupdateservice">Stop LocationUpdateService</string>
 </resources>
