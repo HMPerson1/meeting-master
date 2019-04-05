@@ -1,11 +1,14 @@
 package com.example.meetingmasterclient.utils;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.renderscript.ScriptGroup;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.example.meetingmasterclient.MapsActivity;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -24,13 +27,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class Route extends AsyncTask<Void, Void, JSONObject> {
-    private static final String TAG = "Route";
+    private Context context;
     private GoogleMap mMap;
     private LatLng origin;
     private LatLng destination;
 
-    public Route(GoogleMap mMap, LatLng origin, LatLng destination) {
+    public Route(Context context, GoogleMap mMap, LatLng origin, LatLng destination) {
         super();
+        this.context = context;
         this.mMap = mMap;
         this.origin = origin;
         this.destination = destination;
@@ -55,15 +59,17 @@ public class Route extends AsyncTask<Void, Void, JSONObject> {
             }
             reader.close();
 
+            connection.disconnect();
+
             return new JSONObject(builder.toString());
         } catch(MalformedURLException ue) {
-            Log.v(TAG, "URL error");
+            Toast.makeText(context, "URL error", Toast.LENGTH_SHORT).show();
             return null;
         } catch(IOException ioe) {
-            Log.v(TAG, "Input stream error");
+            Toast.makeText(context, "Input stream error", Toast.LENGTH_SHORT).show();
             return null;
         } catch(JSONException je) {
-            Log.v(TAG, "JSON error");
+            Toast.makeText(context, "JSON error", Toast.LENGTH_SHORT).show();
             return null;
         }
     }
@@ -85,9 +91,11 @@ public class Route extends AsyncTask<Void, Void, JSONObject> {
                 options.addAll(PolyUtil.decode(arr.getJSONObject(i).getJSONObject("polyline").getString("points")));
 
                 mMap.addPolyline(options);
+
+                Toast.makeText(context, "DONE", Toast.LENGTH_SHORT).show();
             }
         } catch(JSONException je) {
-            Log.v(TAG, "JSON error");
+            System.err.println(route.toString());
         }
     }
 }

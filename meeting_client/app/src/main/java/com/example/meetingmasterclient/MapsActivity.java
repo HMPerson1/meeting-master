@@ -1,6 +1,8 @@
 package com.example.meetingmasterclient;
 
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -8,6 +10,8 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
+
+import com.example.meetingmasterclient.utils.Route;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -19,11 +23,15 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private boolean mLocationPermissionGranted;
     private FusedLocationProviderClient mFusedLocationProviderClient;
+    private LatLng currentLocation;
     private static final int LOCATION_PERMISSION = 10;
 
     @Override
@@ -92,12 +100,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
 
         updateLocationUI();
+        getCurrentLocation();
 
         // Mock user location
         LatLng pmu = new LatLng(40.4263, -86.9105);
         mMap.addMarker(new MarkerOptions().position(pmu).title("Daniel is here"));
 
-        getCurrentLocation();
+        // Test route
+        Geocoder coder = new Geocoder(getApplicationContext());
+        try {
+            ArrayList<Address> orig = (ArrayList<Address>) coder.getFromLocationName("Ford Dining Court, West Lafayette", 1);
+            ArrayList<Address> dest = (ArrayList<Address>) coder.getFromLocationName("Purdue Memorial Union, West Lafayette", 1);
+            LatLng origin = new LatLng(orig.get(0).getLatitude(), orig.get(0).getLongitude());
+            LatLng destination = new LatLng(dest.get(0).getLatitude(), dest.get(0).getLongitude());
+            new Route(getApplicationContext(), mMap, origin, destination).execute();
+        } catch(IOException e) {
+            Toast.makeText(getApplicationContext(), "ERROR", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void updateLocationUI() {
@@ -124,8 +143,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 public void onComplete(@NonNull Task task) {
                     if (task.isSuccessful()) {
                         Location current = (Location)task.getResult();
-                        LatLng here = new LatLng(current.getLatitude(), current.getLongitude());
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(here, 15f));
+                        currentLocation = new LatLng(current.getLatitude(), current.getLongitude());
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15f));
                     } else {
                         Toast.makeText(getApplicationContext(), "ERROR", Toast.LENGTH_SHORT).show();
                     }
