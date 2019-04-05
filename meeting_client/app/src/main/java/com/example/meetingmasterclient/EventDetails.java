@@ -38,6 +38,9 @@ public class EventDetails extends AppCompatActivity {
     private Button acceptInviteButton;
     private Button declineInviteButton;
     private Button suggestLocationButton;
+
+    private Button mapButton;
+
     MeetingService.EventsData eventInfo;
     //TODO disable "View Attachment" button if no attachment exists in document
 
@@ -156,6 +159,18 @@ public class EventDetails extends AppCompatActivity {
                 startActivity(suggest);
             }
         });
+
+
+
+        mapButton = (Button) findViewById(R.id.map_button);
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent map = new Intent(getApplicationContext(), MapsActivity.class);
+                startActivity(map);
+            }
+        });
+
     }
 
     public void changeInvitationStatus(int eventID, String userID, int newStatus){

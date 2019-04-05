@@ -35,6 +35,7 @@ public class EventEdition extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         configureSaveButton();
+        configureSuggestedLocationsButton();
 
         final TextInputEditText nameInput = (TextInputEditText) findViewById(R.id.text_input_event_name);
         final TextInputEditText textDuration = findViewById(R.id.text_input_duration);
@@ -54,7 +55,7 @@ public class EventEdition extends AppCompatActivity {
         if (eventID<0){
             finish();  //did not pass event_id
         }
-/*
+
         //TODO: get event info from backend
         Call<MeetingService.EventsData> call = Server.getService().getEventfromId(String.valueOf(eventID));
         call.enqueue(new Callback<MeetingService.EventsData>() {
@@ -102,8 +103,19 @@ public class EventEdition extends AppCompatActivity {
 
         });
 
-*/
 
+
+    }
+
+    private void configureSuggestedLocationsButton(){
+        Button suggestedButton = (Button) findViewById(R.id.suggested_locations_button);
+        suggestedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent suggested = new Intent(getApplicationContext(), SuggestionsListActivity.class);
+                startActivity(suggested);
+            }
+        });
     }
 
     private void configureSaveButton(){
