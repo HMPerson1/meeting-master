@@ -6,4 +6,10 @@
         android:id="@+id/log_fcm_token"
         android:title="@string/log_fcm_token"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/locserv_start"
+        android:title="@string/start_locationupdateservice" />
+    <item
+        android:id="@+id/locserv_stop"
+        android:title="@string/stop_locationupdateservice" />
 </menu>
