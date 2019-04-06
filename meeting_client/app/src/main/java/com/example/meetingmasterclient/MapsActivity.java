@@ -107,7 +107,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(new MarkerOptions().position(pmu).title("Daniel is here"));
 
         // Test route
-        Geocoder coder = new Geocoder(getApplicationContext());
+        /*Geocoder coder = new Geocoder(getApplicationContext());
         try {
             ArrayList<Address> orig = (ArrayList<Address>) coder.getFromLocationName("Ford Dining Court, West Lafayette", 1);
             ArrayList<Address> dest = (ArrayList<Address>) coder.getFromLocationName("Purdue Memorial Union, West Lafayette", 1);
@@ -116,7 +116,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             new Route(getApplicationContext(), mMap, origin, destination).execute();
         } catch(IOException e) {
             Toast.makeText(getApplicationContext(), "ERROR", Toast.LENGTH_SHORT).show();
-        }
+        }*/
     }
 
     private void updateLocationUI() {

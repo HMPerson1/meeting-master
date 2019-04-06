@@ -16,6 +16,8 @@ public final class Notifications {
     public static final String CHANNEL_EDIT_ID = "edit";
     public static final String CHANNEL_ARRIVED_HOME_ID = "arrived_home";
     public static final String CHANNEL_LIVE_LOCATION_ID = "live_location";
+    public static final String CHANNEL_EVENT_STARTING_SOON = "event_starting_soon";
+    public static final String CHANNEL_LEAVE_NOW = "leave_now";
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private static NotificationChannel mkNotificationChannel(String id, CharSequence name, @Importance int importance, String description) {
@@ -52,7 +54,12 @@ public final class Notifications {
                             CHANNEL_LIVE_LOCATION_ID,
                             context.getString(R.string.channel_live_location_name),
                             NotificationManager.IMPORTANCE_LOW,
-                            context.getString(R.string.channel_live_location_description))
+                            context.getString(R.string.channel_live_location_description)),
+                    mkNotificationChannel(
+                            CHANNEL_LEAVE_NOW,
+                            context.getString(R.string.channel_leave_now_name),
+                            NotificationManager.IMPORTANCE_DEFAULT,
+                            context.getString(R.string.channel_leave_now_description))
             };
             context.getSystemService(NotificationManager.class)
                     .createNotificationChannels(Arrays.asList(channels));
