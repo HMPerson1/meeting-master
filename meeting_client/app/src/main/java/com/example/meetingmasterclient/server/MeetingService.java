@@ -170,6 +170,9 @@ public interface MeetingService {
     @GET("/current_user/ical_url")
     Call<IcalUrlData> getIcalUrl();
 
+    @POST("/TODO/") // TODO
+    Call<Void> putCurrentLocation(@Body CurrentLocationData data);
+
     /* ******************** *
      * Dumb data containers *
      * ******************** */
@@ -640,5 +643,14 @@ public interface MeetingService {
         public String ical_url;
     }
 
+    class CurrentLocationData {
+        double lat;
+        double lon;
+
+        public CurrentLocationData(double lat, double lon) {
+            this.lat = lat;
+            this.lon = lon;
+        }
+    }
 }
 
