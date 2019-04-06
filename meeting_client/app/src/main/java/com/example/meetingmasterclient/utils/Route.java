@@ -6,12 +6,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.renderscript.ScriptGroup;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.meetingmasterclient.MapsActivity;
+import com.example.meetingmasterclient.server.MeetingService;
+import com.example.meetingmasterclient.server.Server;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -32,13 +35,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import retrofit2.Call;
+
 public class Route extends AsyncTask<Void, Void, JSONObject> {
     private Context context;
     private GoogleMap mMap;
     private LatLng origin;
     private LatLng destination;
-    private String eventDate;
-    private String eventTime;
+    private int eventId;
 
     public Route(Context context, GoogleMap mMap, LatLng origin, LatLng destination) {
         super();
@@ -48,13 +52,12 @@ public class Route extends AsyncTask<Void, Void, JSONObject> {
         this.destination = destination;
     }
 
-    public Route(Context context, LatLng origin, LatLng destination, String eventDate, String eventTime) {
+    public Route(Context context, LatLng origin, LatLng destination, int event) {
         super();
         this.context = context;
         this.origin = origin;
         this.destination = destination;
-        this.eventDate = eventDate;
-        this.eventTime = eventTime;
+        this.eventId = event;
     }
 
     @Override
@@ -101,29 +104,35 @@ public class Route extends AsyncTask<Void, Void, JSONObject> {
                     .getJSONObject(0);
 
             // The map is null if the alarm is being scheduled
-            if (mMap == null && eventDate != null && eventTime != null) {
+            if (mMap == null) {
                 int duration = leg.getJSONObject("duration").getInt("value");
 
-                try {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(eventDate));
-                    calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(eventTime.substring(0, 2)));
-                    calendar.set(Calendar.MINUTE, Integer.parseInt(eventTime.substring(3, 5)));
-                    calendar.add(Calendar.SECOND, (-1) * duration);
+                Call<MeetingService.EventsData> c = Server.getService().getEvents("/events/" + eventId);
+                c.enqueue(Server.mkCallback(
+                        (call, response) -> {
+                            MeetingService.EventsData event = response.body();
 
-                    Intent activate = new Intent(context, LeaveNowAlarm.class);
-                    activate.putExtra("origin_lat", origin.latitude);
-                    activate.putExtra("origin_long", origin.longitude);
-                    activate.putExtra("dest_lat", destination.latitude);
-                    activate.putExtra("dest_long", destination.longitude);
-                    PendingIntent pActivate = PendingIntent.getBroadcast(context, 0, activate, 0);
-                    AlarmManager alarms = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-                    alarms.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pActivate);
-                } catch(ParseException e) {
-                    e.printStackTrace();
-                }
+                            try {
+                                Calendar calendar = Calendar.getInstance();
+                                calendar.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(event.event_date));
 
-            } else if (mMap != null && eventDate == null && eventTime == null) {
+                                String eventTime = event.event_time;
+                                calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(eventTime.substring(0, 2)));
+                                calendar.set(Calendar.MINUTE, Integer.parseInt(eventTime.substring(3, 5)));
+                                calendar.add(Calendar.SECOND, (-1) * duration);
+
+                                Intent activate = new Intent(context, LeaveNowAlarm.class);
+                                activate.putExtra("event_id", event.getPk());
+                                PendingIntent pActivate = PendingIntent.getBroadcast(context, 0, activate, 0);
+                                AlarmManager alarms = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+                                alarms.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pActivate);
+                            } catch(ParseException e) {
+                                e.printStackTrace();
+                            }
+                        },
+                        (call, t) -> t.printStackTrace()
+                ));
+            } else {
                 JSONArray arr = leg.getJSONArray("steps");
 
                 for (int i = 0; i < arr.length(); i++) {
@@ -133,8 +142,6 @@ public class Route extends AsyncTask<Void, Void, JSONObject> {
                     options.addAll(PolyUtil.decode(arr.getJSONObject(i).getJSONObject("polyline").getString("points")));
                     mMap.addPolyline(options);
                 }
-            } else {
-                System.out.println("Error: Inconsistent values");
             }
         } catch(JSONException je) {
             System.err.println(route.toString());
