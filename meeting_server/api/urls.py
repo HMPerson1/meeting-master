@@ -26,6 +26,7 @@ from api.events import urls as events_urls
 from api.invitations import urls as invitations_urls
 from api.locations import urls as locations_urls
 from api.users import urls as users_urls
+from api.suggestions import urls as suggestions_urls
 from api.users.views import UserViewSet
 
 router = routers.DefaultRouter()
@@ -51,6 +52,7 @@ urlpatterns = [
     url(r'^events/', include(events_urls)),
     url(r'^locations/', include(locations_urls)),
     url(r'^invitations/', include(invitations_urls)),
+    url(r'^suggestions/', include(suggestions_urls)),
     url(r'^current_user/', include(users_urls)),
     url(r'^', include(router.urls))
 ]
