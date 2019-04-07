@@ -22,6 +22,7 @@ class Notifier extends ContextWrapper {
     private static final String PREF_KEY_LAST_ID = "last_id";
     private static final String PREF_NAME = "notifications";
     private static final String TAG = "Notifier";
+    private static final String NOTIF_TAG = "fcm_notif";
 
     public Notifier(Context base) {
         super(base);
@@ -95,7 +96,7 @@ class Notifier extends ContextWrapper {
                     .setContentIntent(pendingIntent);
 
             // our notifications are "fire-and-forget" so we don't keep track of ids
-            NotificationManagerCompat.from(this).notify(nextNotificationId(), notification.build());
+            NotificationManagerCompat.from(this).notify(NOTIF_TAG, nextNotificationId(), notification.build());
         } catch (NullPointerException | NumberFormatException e) {
             Log.w(TAG, "onMessageReceived: ", e);
         }
