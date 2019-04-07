@@ -27,6 +27,8 @@ import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import retrofit2.Call;
 
@@ -99,7 +101,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         updateLocationUI();
-        getCurrentLocation();
+        Timer timer = new Timer();
+        timer.schedule(new Locate(), 0, 5000);
+        //getCurrentLocation();
 
         // Mock user location
         LatLng pmu = new LatLng(40.4263, -86.9105);
@@ -170,6 +174,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     },
                     (call, t) -> t.printStackTrace()
             ));
+        }
+    }
+
+    class Locate extends TimerTask {
+        @Override
+        public void run() {
+            getCurrentLocation();
         }
     }
 }

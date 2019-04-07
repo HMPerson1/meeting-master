@@ -6,17 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.renderscript.ScriptGroup;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
 
-import com.example.meetingmasterclient.MapsActivity;
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 
@@ -26,7 +22,6 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -34,10 +29,12 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.LinkedList;
 
 import retrofit2.Call;
 
 public class Route extends AsyncTask<Void, Void, JSONObject> {
+    public static LinkedList<Polyline> polylines = new LinkedList<>();
     private Context context;
     private GoogleMap mMap;
     private LatLng origin;
@@ -133,6 +130,13 @@ public class Route extends AsyncTask<Void, Void, JSONObject> {
                         (call, t) -> t.printStackTrace()
                 ));
             } else {
+                if (!polylines.isEmpty()) {
+                    for (int i = 0; i < polylines.size(); i++) {
+                        Polyline pol = polylines.remove();
+                        pol.remove();
+                    }
+                }
+
                 JSONArray arr = leg.getJSONArray("steps");
 
                 for (int i = 0; i < arr.length(); i++) {
@@ -140,7 +144,7 @@ public class Route extends AsyncTask<Void, Void, JSONObject> {
                     options.color(Color.BLUE);
                     options.width(10);
                     options.addAll(PolyUtil.decode(arr.getJSONObject(i).getJSONObject("polyline").getString("points")));
-                    mMap.addPolyline(options);
+                    polylines.add(mMap.addPolyline(options));
                 }
             }
         } catch(JSONException je) {
