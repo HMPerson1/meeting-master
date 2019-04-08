@@ -1,6 +1,7 @@
 package com.example.meetingmasterclient;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,11 +44,18 @@ public class ETAAdapter extends ArrayAdapter<ETA> {
     public View getView(int position, View convertView, ViewGroup parents){
         convertView= inflater.inflate(viewResourceID,null);
         ETA eta = etas.get(position);
+
         TextView attendee = (TextView) convertView.findViewById(R.id.attendee);
         TextView etaTextView = (TextView) convertView.findViewById(R.id.eta);
 
         attendee.setText(eta.getAttendee());
         etaTextView.setText(eta.getEta());
+        if (position==0){
+            attendee.setTypeface(null, Typeface.BOLD);
+            attendee.setTextSize(16);
+            etaTextView.setTypeface(null, Typeface.BOLD);
+            etaTextView.setTextSize(16);
+        }
 
         return convertView;
     }
