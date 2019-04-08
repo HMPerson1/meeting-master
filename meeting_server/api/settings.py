@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'api.events.apps.EventsConfig',
     'api.invitations.apps.InvitationsConfig',
     'api.locations.apps.LocationsConfig',
+    'api.suggestions.apps.SuggestionsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
