@@ -5,10 +5,14 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.meetingmasterclient.utils.Route;
@@ -25,6 +29,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -78,6 +83,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        View eta_bottomSheet = findViewById(R.id.eta_bottom_sheet);
+        BottomSheetBehavior bottomsheetBehavior = BottomSheetBehavior.from(eta_bottomSheet);
+        bottomsheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+        final ListView listViewInvitedPeople = (ListView) findViewById(R.id.eta_list);
+       ArrayList<ETA> list = new ArrayList<>(); //used for testing functionality of list
+        ETA eta = new ETA("Attendee", "est. time of Arrival");
+        list.add(eta);
+        for (int i = 0; i < 20; i++) { //testing
+            eta = new ETA("Person" + i, String.valueOf(i+10));
+            list.add(eta);
+
+        }
+        final ETAAdapter adapter = new ETAAdapter(MapsActivity.this, R.layout.eta_two_column_view, list);
+        listViewInvitedPeople.setAdapter(adapter);
+
     }
 
 
