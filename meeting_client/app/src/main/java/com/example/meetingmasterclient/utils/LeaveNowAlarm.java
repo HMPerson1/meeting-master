@@ -23,24 +23,29 @@ public class LeaveNowAlarm extends BroadcastReceiver {
             c.enqueue(Server.mkCallback(
                     (call, response) -> {
                         MeetingService.EventsData event = response.body();
-
-                        Intent notifier = new Intent(context, MapsActivity.class);
-                        notifier.putExtra("event_id", event.getPk());
-                        PendingIntent pending = PendingIntent.getActivity(context, 0, notifier, 0);
-
-                        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, Notifications.CHANNEL_LEAVE_NOW)
-                                .setSmallIcon(R.drawable.ic_notification)
-                                .setContentTitle(event.event_name)
-                                .setContentText("You should leave now to arrive on time")
-                                .setStyle(new NotificationCompat.BigTextStyle().bigText(""))
-                                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                                .setAutoCancel(true)
-                                .setContentIntent(pending);
-
-                        NotificationManagerCompat.from(context).notify(100, builder.build());
+                        setNotification(context, event);
                     },
                     (call, t) -> t.printStackTrace()
             ));
         }
+    }
+
+    public static void setNotification(Context context, MeetingService.EventsData event) {
+        Intent notifier = new Intent(context, MapsActivity.class);
+        notifier.putExtra("event_id", event.getPk());
+        PendingIntent pending = PendingIntent.getActivity(context, 0, notifier, 0);
+
+        String content = context.getString(R.string.notification_leave_now_body);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, Notifications.CHANNEL_LEAVE_NOW)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle(event.event_name)
+                .setContentText(content)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(content))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true)
+                .setContentIntent(pending);
+
+        NotificationManagerCompat.from(context).notify(100, builder.build());
     }
 }

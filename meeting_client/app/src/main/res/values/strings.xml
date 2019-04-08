@@ -80,6 +80,7 @@
     <string name="notification_arrived_home_body">%s has arrived home safely</string>
     <string name="notif_service_tracking_location_title">Tracking Location</string>
     <string name="notif_service_tracking_location_body">Other event attendees can see where you are</string>
+    <string name="notification_leave_now_body">You should leave now to arrive on time</string>
 
     <string name="create_event_button">Create Event</string>
     <string name="title_activity_profile_details">ProfileDetails</string>

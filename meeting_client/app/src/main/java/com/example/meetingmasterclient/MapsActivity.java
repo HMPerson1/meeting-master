@@ -35,7 +35,6 @@ import retrofit2.Call;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private boolean mLocationPermissionGranted;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private LatLng currentLocation;
     private static final int LOCATION_PERMISSION = 10;
@@ -78,8 +77,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void mapInit() {
-        mLocationPermissionGranted = true;
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
