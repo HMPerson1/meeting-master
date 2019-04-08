@@ -4,7 +4,7 @@ from typing import Any
 from django.db.models import Model
 from django.http import Http404
 
-from .models import Event
+from .models import Event, ActiveEvent
 from rest_framework.response import Response
 
 from rest_framework import status
@@ -36,6 +36,7 @@ class EventModelSerializer(serializers.ModelSerializer):
         response = super().to_representation(instance)
         response['event_location'] = LocationModelSerializer(instance.event_location).data
         # response['event_admin'] = UserProfileSerializer(instance.event_admin).data
+        response['current_overall_state'] = instance.current_overall_state().value
         return response
 
     # def to_representation(self, instance):
@@ -105,6 +106,12 @@ class EventPermissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = ('pk', 'event_admin')  # FIXME: probably broken
+
+
+class ActiveEventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ActiveEvent
+        fields = ('event', 'state')
 
 
 # only for use with IcalRenderer
