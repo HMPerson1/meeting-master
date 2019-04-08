@@ -31,6 +31,6 @@ class SuggestionModelSerializer(serializers.ModelSerializer):
         suggestion = Suggestion.objects.create(
             location_id=lid,
             event_id=eid,
-            created_by=self.context['request'].user.userprofile
+            suggested_by=self.context['request'].user.userprofile
         )
         return suggestion

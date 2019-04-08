@@ -37,8 +37,5 @@ class LocationModelSerializer(serializers.ModelSerializer):
             street_address=validated_data['street_address'],
             city=validated_data['city'],
             state=validated_data['state'],
-            defaults={
-                'number_of_uses': validated_data['number_of_uses']
-            }
         )
         return location
