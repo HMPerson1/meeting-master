@@ -184,7 +184,8 @@ public class EventCreation extends AppCompatActivity {
         String notes = textInputNotes.getEditText().getText().toString().trim();
 
         Call<MeetingService.EventsData> c = Server.getService().createEvent(new MeetingService
-                .EventCreationData(event_name, event_date, event_time, event_duration, locationID, notes));
+                .EventCreationData(event_name, event_date, event_time, event_duration, locationID, notes, "")); //TODO FILE NAME RIGHT HERE));
+        Toast.makeText(EventCreation.this, "call: " + c.toString(), Toast.LENGTH_LONG).show();
 
         c.enqueue(Server.mkCallback(
                 (call, response) -> {

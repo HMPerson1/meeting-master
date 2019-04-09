@@ -151,7 +151,7 @@ public class EventEdition extends AppCompatActivity {
                 //post changes
                 Call<MeetingService.EventsData> c = Server.getService().createEvent(new MeetingService
                         .EventCreationData(name,date,time,duration,
-                        0, notes));
+                        0, notes, "")); //TODO fix file attachment field here
 
                 //new MeetingService
                 //                .EventCreationData(event_name, event_date, event_time, event_duration, locationID, notes));
