@@ -66,7 +66,7 @@ class EventDetailView(APIView):
         openapi.Parameter('event_duration', openapi.IN_FORM, "Optional duration field - HH:MM", type=openapi.TYPE_STRING),
         openapi.Parameter('event_location', openapi.IN_FORM, "ID of your Event's Location", type=openapi.TYPE_INTEGER, required=True),
         openapi.Parameter('notes', openapi.IN_FORM, "Miscellaneous notes about event", type=openapi.TYPE_STRING),
-        openapi.Parameter('file_attachment', openapi.IN_FORM, "Optional file upload", type=openapi.TYPE_FILE)
+        openapi.Parameter('file_attachment', openapi.IN_FORM, "Optional file upload", type=openapi.TYPE_FILE, required=False)
         ],
         responses={
             201: openapi.Response('Event successfuly updated', EventCreateSerializer)

@@ -1,3 +1,5 @@
+from copy import copy
+
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
@@ -15,12 +17,25 @@ class LocationModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Location
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Location.objects.all(),
-                fields=('street_address', 'city', 'state'),
-                message="This location already exists"
-            )
-        ]
+        # validators = [
+        #     UniqueTogetherValidator(
+        #         queryset=Location.objects.all(),
+        #         fields=('street_address', 'city', 'state'),
+        #         message="This location already exists"
+        #     )
+        # ]
         fields = ('pk', 'street_address', 'city', 'state', 'number_of_uses')
 
+    def run_validators(self, value):
+        for validator in copy(self.validators):
+            if isinstance(validator, UniqueTogetherValidator):
+                self.validators.remove(validator)
+            super(LocationModelSerializer, self).run_validators(value)
+
+    def create(self, validated_data):
+        location, created = Location.objects.get_or_create(
+            street_address=validated_data['street_address'],
+            city=validated_data['city'],
+            state=validated_data['state'],
+        )
+        return location

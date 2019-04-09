@@ -1,5 +1,6 @@
 from django.http import Http404
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 from api.users.models import UserProfile
 from api.events.models import Event
 # from api.users.serializers import UserDetailsSerializer
@@ -16,6 +17,13 @@ class InvitationModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Invitation
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Invitation.objects.all(),
+                fields=('user_id', 'event_id'),
+                message="This user has already been invited to this event!"
+            )
+        ]
         fields = ('event_id', 'user_id', 'status', 'edit_permission')
 
     def create(self, validated_data):
