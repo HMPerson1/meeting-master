@@ -192,8 +192,14 @@ public class EventCreation extends AppCompatActivity {
                 (call, response) -> {
                     if (response.isSuccessful()) {
                         assert response.body() != null;
+                        Toast.makeText(EventCreation.this, "EventCreation success: " +
+                                response.toString(), Toast.LENGTH_LONG).show();
+                        Log.d("EventCreation success", response.toString());
                         //Server.authenticate(response.body().key); TODO check this
                     } else {
+                        Toast.makeText(EventCreation.this, "EventCreation unsuccessful: " + response.toString(),
+                                Toast.LENGTH_LONG).show();
+                        Log.d("EventCreation error", response.toString());
                         Server.parseUnsuccessful(response, MeetingService.EventsData.class, System.out::println, System.out::println);
                     }
                 },
@@ -207,19 +213,22 @@ public class EventCreation extends AppCompatActivity {
                     textInputStreetAddr.getEditText().getText().toString(),
                     textInputCity.getEditText().getText().toString(),
                     textInputState.getEditText().getText().toString()));
-
+        
         c2.enqueue(new Callback<MeetingService.LocationData>() {
             @Override
             public void onResponse(Call<MeetingService.LocationData> call, Response<MeetingService.LocationData> response) {
                 if(!response.isSuccessful()){ //404 error?
-                    Toast.makeText(EventCreation.this, "Oops, Something is wrong: "
+                    Toast.makeText(EventCreation.this, "LocationCreation error: "
                             + response.toString(), Toast.LENGTH_LONG).show();
+                    Log.d("LocationCreation error", response.toString());
                     return;
                 } else {
-                    Toast.makeText(EventCreation.this, response.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(EventCreation.this, "LocationCreation success: " + response.toString(),
+                            Toast.LENGTH_LONG).show();
+                    Log.i("LocationCreation success", response.toString());
                 }
                 MeetingService.LocationData locationInfo = response.body();
-                postEvent(response.body());
+                postEvent(locationInfo);
             }
 
             @Override
