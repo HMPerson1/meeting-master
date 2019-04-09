@@ -1,5 +1,6 @@
 package com.example.meetingmasterclient;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
+import com.example.meetingmasterclient.utils.Upload;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -26,6 +28,13 @@ public class ProfileEdition extends AppCompatActivity {
     private TextInputEditText textInputEmailAddress;
     private TextInputEditText textInputPhoneNumber;
     private Button confirmButton;
+    private String firstName;
+    private String lastName;
+    private String username;
+    private String email;
+    private String phoneNum;
+    private int userID;
+    private String profPic;
 
     MeetingService.UserProfile currentUser;
 
@@ -56,17 +65,22 @@ public class ProfileEdition extends AppCompatActivity {
                     Log.d("Current user success", response.toString());
                 }
 
+                //autofill
                 currentUser = response.body();
-                String firstName = currentUser.getFirst_name();
-                String lastName = currentUser.getLast_name();
-                String username= currentUser.getUsername();
-                String email = currentUser.getEmail();
-                String phoneNum = currentUser.getPhone_number();
+                userID = currentUser.getPk();
+                firstName = currentUser.getFirst_name();
+                lastName = currentUser.getLast_name();
+                username= currentUser.getUsername();
+                email = currentUser.getEmail();
+                phoneNum = currentUser.getPhone_number();
+                profPic = currentUser.getProfile_picture();
+
                 textInputFirstName.setText(firstName);
                 textInputLastName.setText(lastName);
                 textInputUsername.setText(username);
                 textInputEmailAddress.setText(email);
                 textInputPhoneNumber.setText(phoneNum);
+                //TODO autopopulate profPic
             }
 
             @Override
@@ -86,8 +100,36 @@ public class ProfileEdition extends AppCompatActivity {
     }
 
     public void sendProfileEditionRequest(View view){
-        //TODO after autopopulation, figure out how to send the edit request to the server
+        username = textInputUsername.getText().toString().trim();
+        firstName = textInputFirstName.getText().toString().trim();
+        lastName = textInputLastName.getText().toString().trim();
+        email = textInputEmailAddress.getText().toString().trim();
+        phoneNum = textInputPhoneNumber.getText().toString().trim();
+        //TODO deal with profile pic here too
 
+        Call<MeetingService.UserProfile> c = Server.getService().putCurrentUser(new MeetingService.UserProfile(
+                userID, username, firstName, lastName, email, phoneNum, profPic));
+
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    Toast.makeText(ProfileEdition.this, response.toString(), Toast.LENGTH_LONG).show();
+                    Log.d("Profile edition response", response.toString());
+                    if (response.isSuccessful()){
+                        assert response.body() != null;
+                        Toast.makeText(ProfileEdition.this, "Success", Toast.LENGTH_LONG).show();
+                    } else {
+                        Server.parseUnsuccessful(response, MeetingService.UserProfileError.class, userProfileError -> {
+                            Toast.makeText(ProfileEdition.this, userProfileError.toString(), Toast.LENGTH_LONG).show();
+                            Log.d("Error", userProfileError.toString());
+                            System.out.println(userProfileError.toString());
+                        }, System.out::println);
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
+
+        Intent profDetails = new Intent(getApplicationContext(), ProfileDetails.class);
+        startActivity(profDetails);
     }
 
 }

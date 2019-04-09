@@ -251,5 +251,6 @@ public class Registration extends AppCompatActivity {
                 },
                 (call, t) -> t.printStackTrace()
         ));
+
     }
 }
