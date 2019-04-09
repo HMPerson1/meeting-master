@@ -17,6 +17,8 @@
     <!--registration/login strings-->
 
     <string name="name">Name</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
     <string name="user_name">Username</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -44,6 +46,9 @@
 
     <string name="event_name">Event Name</string>
     <string name="date">Date</string>
+    <string name="date_format">Date (YYYY-MM-DD)</string>
+    <string name="time_format">Time (HH:MM)</string>
+    <string name="duration_format">Duration (in HH:MM)</string>
     <string name="time">Time</string>
     <string name="notes_opt">Event Notes (Optional)</string>
     <string name="street_address">Street Address</string>
@@ -96,7 +101,6 @@
     <string name="sync_calendar">Sync Calendar</string>
     <string name="title_activity_file_upload_experiments">FileUploadExperiments</string>
     <string name="title_activity_location_suggestion">LocationSuggestion</string>
-    <string name="title_activity_suggestions_list">SuggestionsListActivity</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_suggestions_list">SuggestionsListActivity</string>
 

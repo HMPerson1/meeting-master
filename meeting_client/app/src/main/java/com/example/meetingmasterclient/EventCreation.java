@@ -41,9 +41,6 @@ public class EventCreation extends AppCompatActivity {
     private TextInputLayout textInputState;
     private TextInputLayout textInputRoomNo;
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +64,6 @@ public class EventCreation extends AppCompatActivity {
     /* input validation */
 
     private boolean validateEventName(){
-
         String eventName = textInputEventName.getEditText().getText().toString();
 
         if (eventName.isEmpty()){
@@ -78,10 +74,6 @@ public class EventCreation extends AppCompatActivity {
             return true;
         }
     }
-
-    //TODO validate date
-
-    //TODO validate time
 
     private boolean validateStreetAddr(){
         String streetAddr = textInputStreetAddr.getEditText().getText().toString();
@@ -210,28 +202,29 @@ public class EventCreation extends AppCompatActivity {
     }
 
     public void postLocationandEvent(){
-        Call<MeetingService.LocationData> c2 = Server.getService().newLocation(new MeetingService.LocationData(textInputStreetAddr.getEditText().getText().toString(),
-                textInputCity.getEditText().getText().toString(),textInputState.getEditText().getText().toString()));
+        Call<MeetingService.LocationData> c2 = Server.getService().newLocation(
+                new MeetingService.LocationData(
+                    textInputStreetAddr.getEditText().getText().toString(),
+                    textInputCity.getEditText().getText().toString(),
+                    textInputState.getEditText().getText().toString()));
+
         c2.enqueue(new Callback<MeetingService.LocationData>() {
             @Override
             public void onResponse(Call<MeetingService.LocationData> call, Response<MeetingService.LocationData> response) {
                 if(!response.isSuccessful()){ //404 error?
-                    Toast.makeText(EventCreation.this, "Oops, Something is wrong: "+response.code() , Toast.LENGTH_LONG).show();
+                    Toast.makeText(EventCreation.this, "Oops, Something is wrong: "
+                            + response.toString(), Toast.LENGTH_LONG).show();
                     return;
+                } else {
+                    Toast.makeText(EventCreation.this, response.toString(), Toast.LENGTH_LONG).show();
                 }
-
-                Toast.makeText(EventCreation.this,response.toString() , Toast.LENGTH_LONG).show();
-                MeetingService.LocationData locationInfo =response.body();
+                MeetingService.LocationData locationInfo = response.body();
                 postEvent(response.body());
-
-
             }
 
             @Override
             public void onFailure(Call<MeetingService.LocationData> call, Throwable t) {//error from server
-
                 Toast.makeText(EventCreation.this,t.getMessage() , Toast.LENGTH_LONG).show();
-
             }
         });
 
