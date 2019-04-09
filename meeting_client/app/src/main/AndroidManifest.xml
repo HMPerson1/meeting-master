@@ -114,8 +114,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ProfileEdition"
-            android:label="My Profile"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="My Profile" />
         <activity
             android:name=".PasswordReset"
             android:label="Password Reset"
