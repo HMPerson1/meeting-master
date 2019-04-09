@@ -176,9 +176,7 @@ public class EventCreation extends AppCompatActivity {
         }
     }
 
-    public void postEvent(MeetingService.LocationData locationInfo){
-        LocationID = locationInfo.getPk();
-        int locationID = LocationID;
+    public void postEvent(MeetingService.LocationData locationInfo, int locationID){
         String event_name = textInputEventName.getEditText().getText().toString().trim();
         String event_date = textInputDate.getEditText().getText().toString().trim();
         String event_time = textInputTime.getEditText().getText().toString().trim();
@@ -228,7 +226,8 @@ public class EventCreation extends AppCompatActivity {
                     Log.i("LocationCreation success", response.toString());
                 }
                 MeetingService.LocationData locationInfo = response.body();
-                postEvent(locationInfo);
+                int locationID = locationInfo.getPk();
+                postEvent(locationInfo, locationID);
             }
 
             @Override

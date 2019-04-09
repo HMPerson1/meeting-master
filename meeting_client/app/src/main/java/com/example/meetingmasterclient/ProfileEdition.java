@@ -86,6 +86,7 @@ public class ProfileEdition extends AppCompatActivity {
     }
 
     public void sendProfileEditionRequest(View view){
+        //TODO after autopopulation, figure out how to send the edit request to the server
 
     }
 
