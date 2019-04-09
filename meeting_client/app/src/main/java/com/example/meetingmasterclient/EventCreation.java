@@ -213,7 +213,7 @@ public class EventCreation extends AppCompatActivity {
                     textInputStreetAddr.getEditText().getText().toString(),
                     textInputCity.getEditText().getText().toString(),
                     textInputState.getEditText().getText().toString()));
-        
+
         c2.enqueue(new Callback<MeetingService.LocationData>() {
             @Override
             public void onResponse(Call<MeetingService.LocationData> call, Response<MeetingService.LocationData> response) {
