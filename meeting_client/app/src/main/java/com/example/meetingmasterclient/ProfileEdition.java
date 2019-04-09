@@ -16,6 +16,8 @@ import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
 
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProfileEdition extends AppCompatActivity {
     private TextInputEditText textInputFirstName;
@@ -24,6 +26,8 @@ public class ProfileEdition extends AppCompatActivity {
     private TextInputEditText textInputEmailAddress;
     private TextInputEditText textInputPhoneNumber;
     private Button confirmButton;
+
+    MeetingService.UserProfile currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +41,40 @@ public class ProfileEdition extends AppCompatActivity {
         textInputEmailAddress = findViewById(R.id.text_input_edit_email);
         textInputPhoneNumber = findViewById(R.id.text_input_edit_phone_number);
 
-        getCurrentProfile(textInputFirstName, textInputLastName, textInputUsername, textInputEmailAddress,
-                textInputPhoneNumber);
-        //TODO remove next two lines of code whenever getCurrentProfile() is fixed
-        String name = "name";
-        textInputFirstName.setText(name);
+        Call<MeetingService.UserProfile> c = Server.getService().getCurrentUser();
+        c.enqueue(new Callback<MeetingService.UserProfile>() {
+            @Override
+            public void onResponse(Call<MeetingService.UserProfile> call, Response<MeetingService.UserProfile> response) {
+                if (!response.isSuccessful()){
+                    Toast.makeText(ProfileEdition.this, "Error: " + response.toString(),
+                            Toast.LENGTH_LONG).show();
+                    Log.d("Current user error", response.toString());
+                    return;
+                } else {
+                    Toast.makeText(ProfileEdition.this, "Current user success",
+                            Toast.LENGTH_LONG).show();
+                    Log.d("Current user success", response.toString());
+                }
+
+                currentUser = response.body();
+                String firstName = currentUser.getFirst_name();
+                String lastName = currentUser.getLast_name();
+                String username= currentUser.getUsername();
+                String email = currentUser.getEmail();
+                String phoneNum = currentUser.getPhone_number();
+                textInputFirstName.setText(firstName);
+                textInputLastName.setText(lastName);
+                textInputUsername.setText(username);
+                textInputEmailAddress.setText(email);
+                textInputPhoneNumber.setText(phoneNum);
+            }
+
+            @Override
+            public void onFailure(Call<MeetingService.UserProfile> call, Throwable t) {
+                Toast.makeText(ProfileEdition.this, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
 
         confirmButton = findViewById(R.id.confirm_profile_changes_button);
         confirmButton.setOnClickListener(new View.OnClickListener() {
@@ -52,29 +85,8 @@ public class ProfileEdition extends AppCompatActivity {
         });
     }
 
-    public void getCurrentProfile(TextInputEditText first, TextInputEditText last,
-                                  TextInputEditText username, TextInputEditText email,
-                                  TextInputEditText phone){
-        Call<MeetingService.UserProfile> c = Server.getService().getCurrentUser();
-        c.enqueue(Server.mkCallback(
-                (call, response) -> {
-                    if (response.isSuccessful()){
-                        assert response.body() != null;
-                        Toast.makeText(ProfileEdition.this, "Successful current user response: "
-                                + response.toString(), Toast.LENGTH_LONG).show();
-                        Log.d("Current user response", response.toString());
-                    } else {
-                        Toast.makeText(ProfileEdition.this, "Error: " + response.toString(),
-                                Toast.LENGTH_LONG).show();
-                        Log.d("Current user error", response.toString());
-                    }
-                },
-        (call, t) -> t.printStackTrace()
-        ));
-    }
-
     public void sendProfileEditionRequest(View view){
 
     }
-    
+
 }
