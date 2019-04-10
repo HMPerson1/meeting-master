@@ -23,6 +23,7 @@ import retrofit2.Call;
 
 public class UserSearch extends AppCompatActivity {
     private TextInputLayout textInputSearch;
+    List<MeetingService.UserProfile> userResults;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,12 @@ public class UserSearch extends AppCompatActivity {
 
         Button button = findViewById(R.id.search_users);
         textInputSearch = findViewById(R.id.textInputSearch);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                submitSearchRequest(view);
+            }
+        });
     }
 
     private boolean validateUserSearch(View v){
@@ -58,15 +65,27 @@ public class UserSearch extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         assert response.body() != null;
                         System.out.println("response = " + response.body().stream().map(Objects::toString).collect(Collectors.joining(", ")));
+                        userResults = response.body();
+                        Toast.makeText(UserSearch.this, "UserResults: " + userResults,
+                                Toast.LENGTH_LONG).show();
                     } else {
                         try {
                             System.out.println("response.error = " + response.errorBody().string());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                        return;
                     }
                 },
                 (call, t) -> t.printStackTrace()
         ));
+
+        if (userResults == null){
+            textInputSearch.setError("Search field returned no results");
+        } else {
+            textInputSearch.setError(null);
+        }
+
+        //TODO display correct results
     }
 }
