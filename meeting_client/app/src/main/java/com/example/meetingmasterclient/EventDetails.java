@@ -78,7 +78,7 @@ public class EventDetails extends AppCompatActivity {
         userID = intent.getStringExtra("user_id");
 
 
-        eventID =3; //for testing
+
         userID="1";
 
 
@@ -237,9 +237,6 @@ public class EventDetails extends AppCompatActivity {
                 intent.putExtra("event_id", eventID);
                 startActivity(intent);
 
-
-
-                startActivity(new Intent(EventDetails.this, EventEdition.class));
 
                 return false;
             }

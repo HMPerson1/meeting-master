@@ -8,8 +8,10 @@ import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.meetingmasterclient.server.MeetingService;
@@ -28,29 +30,39 @@ public class EventEdition extends AppCompatActivity {
 
     int eventID;
 
+    EditText nameInput;
+    EditText textDuration;
+    EditText textInputDate;
+    EditText textInputTime;
+    EditText textInputNotes;
+    EditText textInputStreetAddr;
+    EditText textInputCity;
+    EditText textInputState;
+    EditText textInputRoomNo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_edition);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        configureAddUserButton();
         configureSaveButton();
         configureSuggestedLocationsButton();
 
-        final TextInputEditText nameInput = (TextInputEditText) findViewById(R.id.text_input_event_name);
-        final TextInputEditText textDuration = findViewById(R.id.text_input_duration);
-        final TextInputEditText textInputDate = findViewById(R.id.text_input_date);
-        final TextInputEditText textInputTime = findViewById(R.id.text_input_time);
-        final TextInputEditText textInputNotes = findViewById(R.id.text_input_notes);
-        final TextInputEditText textInputStreetAddr = findViewById(R.id.text_input_street_address);
-        final TextInputEditText textInputCity = findViewById(R.id.text_input_city);
-        final TextInputEditText textInputState = findViewById(R.id.text_input_state);
-        final TextInputEditText textInputRoomNo = findViewById(R.id.text_input_room_no);
+        nameInput = (TextInputEditText) findViewById(R.id.text_input_event_name);
+        textDuration = findViewById(R.id.text_input_duration);
+        textInputDate = findViewById(R.id.text_input_date);
+        textInputTime = findViewById(R.id.text_input_time);
+        textInputNotes = findViewById(R.id.text_input_notes);
+        textInputStreetAddr = findViewById(R.id.text_input_street_address);
+        textInputCity = findViewById(R.id.text_input_city);
+        textInputState = findViewById(R.id.text_input_state);
+        textInputRoomNo = findViewById(R.id.text_input_room_no);
 
 
-
-
-        eventID =1; //for testing
+        Intent intent = getIntent();
+        eventID = intent.getIntExtra("event_id", -1);
 
         if (eventID<0){
             finish();  //did not pass event_id
@@ -103,9 +115,7 @@ public class EventEdition extends AppCompatActivity {
 
         });
 
-
-
-    }
+    }//on create
 
     private void configureSuggestedLocationsButton(){
         Button suggestedButton = (Button) findViewById(R.id.suggested_locations_button);
@@ -120,15 +130,6 @@ public class EventEdition extends AppCompatActivity {
 
     private void configureSaveButton(){
 
-        final TextInputEditText nameInput = (TextInputEditText) findViewById(R.id.text_input_event_name);
-        final TextInputEditText textDuration = findViewById(R.id.text_input_duration);
-        final TextInputEditText textInputDate = findViewById(R.id.text_input_date);
-        final TextInputEditText textInputTime = findViewById(R.id.text_input_time);
-        final TextInputEditText textInputNotes = findViewById(R.id.text_input_notes);
-        final TextInputEditText textInputStreetAddr = findViewById(R.id.text_input_street_address);
-        final TextInputEditText textInputCity = findViewById(R.id.text_input_city);
-        final TextInputEditText textInputState = findViewById(R.id.text_input_state);
-        final TextInputEditText textInputRoomNo = findViewById(R.id.text_input_room_no);
 
         Button save_button = (Button)findViewById(R.id.save_meeting_button);
         save_button.setOnClickListener(new View.OnClickListener() {
@@ -142,26 +143,11 @@ public class EventEdition extends AppCompatActivity {
                 String notes =textInputNotes.getText().toString();
 
                 //get new location details
-                //display location details to the user
                 String street =textInputStreetAddr.getText().toString();
                 String city =textInputCity.getText().toString();
                 String state =textInputState.getText().toString();
 
-                //post changes
-                Call<MeetingService.EventsData> c = Server.getService().createEvent(new MeetingService
-                        .EventCreationData(name,date,time,duration,
-                        0, notes, null));
-
-                c.enqueue(Server.mkCallback(
-                        (call, response) -> {
-                            if (response.isSuccessful()) {
-                                assert response.body() != null;
-                            } else {
-                                Server.parseUnsuccessful(response, MeetingService.EventCreationData.class, System.out::println, System.out::println);
-                            }
-                        },
-                        (call, t) -> t.printStackTrace()
-                ));
+                putLocationandEvent();
 
                 finish();//return to Event Details
             }
@@ -175,6 +161,84 @@ public class EventEdition extends AppCompatActivity {
 
     public void submitInvitation(View view) {
         // TODO
+    }
+
+    private void configureAddUserButton(){
+        Button add_button = (Button)findViewById(R.id.add_users_button);
+        add_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(EventEdition.this, AddUserstoMeeting.class));
+            }
+        });
+    }
+
+    public void putEvent(MeetingService.LocationData locationInfo){
+        int locationID= locationInfo.getPk();
+
+        nameInput = (TextInputEditText) findViewById(R.id.text_input_event_name);
+        textDuration = findViewById(R.id.text_input_duration);
+        textInputDate = findViewById(R.id.text_input_date);
+        textInputTime = findViewById(R.id.text_input_time);
+        textInputNotes = findViewById(R.id.text_input_notes);
+
+        String event_name = nameInput.getText().toString().trim();
+        String event_date = textInputDate.getText().toString().trim();
+        String event_time = textInputTime.getText().toString().trim();
+        String event_duration = textDuration.getText().toString().trim();
+        String notes = textInputNotes.getText().toString().trim();
+
+        //post changes
+        Call<MeetingService.EventsData> c = Server.getService().createEvent(new MeetingService
+                .EventCreationData(event_name,event_date,event_time,event_duration,
+                locationID, notes, new File("")));
+
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        assert response.body() != null;
+                    } else {
+                        Server.parseUnsuccessful(response, MeetingService.EventCreationData.class, System.out::println, System.out::println);
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
+    }
+
+    public void putLocationandEvent(){
+
+        textInputStreetAddr = findViewById(R.id.text_input_street_address);
+        textInputCity = findViewById(R.id.text_input_city);
+        textInputState = findViewById(R.id.text_input_state);
+        textInputRoomNo = findViewById(R.id.text_input_room_no);
+
+        Call<MeetingService.LocationData> c2 = Server.getService().newLocation(new MeetingService.LocationData(textInputStreetAddr.getText().toString(),
+                textInputCity.getText().toString(),textInputState.getText().toString()));
+
+        c2.enqueue(new Callback<MeetingService.LocationData>() {
+            @Override
+            public void onResponse(Call<MeetingService.LocationData> call, Response<MeetingService.LocationData> response) {
+                if(!response.isSuccessful()){ //404 error?
+                    Log.e("idkwh",textInputState.getText().toString());
+                    Toast.makeText(EventEdition.this, "Oops, Something is wrong: "+response.code() , Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                Toast.makeText(EventEdition.this,response.toString() , Toast.LENGTH_LONG).show();
+                MeetingService.LocationData locationInfo =response.body();
+                putEvent(response.body());
+
+
+            }
+
+            @Override
+            public void onFailure(Call<MeetingService.LocationData> call, Throwable t) {//error from server
+
+                Toast.makeText(EventEdition.this,t.getMessage() , Toast.LENGTH_LONG).show();
+
+            }
+        });
+
     }
 
 }
