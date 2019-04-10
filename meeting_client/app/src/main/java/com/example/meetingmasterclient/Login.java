@@ -90,7 +90,6 @@ public class Login extends AppCompatActivity {
         }
     }
 
-
     public boolean confirmInput(View v){
         return (validateEmail() && validatePassword());
     }
@@ -98,20 +97,13 @@ public class Login extends AppCompatActivity {
     public void submitLoginRequest(View v){
         if (!confirmInput(v)) return;
 
-        //TODO parse information to be sent to server for login
-
-
-
         String username = textInputEmail.getEditText().getText().toString();
         String password = textInputPassword.getEditText().getText().toString();
         Call<MeetingService.AuthToken> c = Server.getService().login(new MeetingService.LoginData(username, password));
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
-
                     Toast.makeText(Login.this,response.toString() , Toast.LENGTH_LONG).show();
                     if (response.isSuccessful()) {
-
-
                         assert response.body() != null;
                         Server.authenticate(response.body().key);
                     } else {
@@ -127,8 +119,5 @@ public class Login extends AppCompatActivity {
                 },
                 (call, t) -> t.printStackTrace()
         ));
-
-
-
     }
 }

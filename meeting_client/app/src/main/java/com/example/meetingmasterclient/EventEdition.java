@@ -135,14 +135,15 @@ public class EventEdition extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //get new event details
-                String name =nameInput.getText().toString();
-                String date =textInputDate.getText().toString();
-                String time =textInputTime.getText().toString();
+                String name = nameInput.getText().toString();
+                String date = textInputDate.getText().toString();
+                String time = textInputTime.getText().toString();
                 String duration = textDuration.getText().toString();
                 String notes =textInputNotes.getText().toString();
 
                 //get new location details
                 //display location details to the user
+                //TODO post location here
                 String street =textInputStreetAddr.getText().toString();
                 String city =textInputCity.getText().toString();
                 String state =textInputState.getText().toString();
@@ -150,7 +151,10 @@ public class EventEdition extends AppCompatActivity {
                 //post changes
                 Call<MeetingService.EventsData> c = Server.getService().createEvent(new MeetingService
                         .EventCreationData(name,date,time,duration,
-                        0, notes, null));
+                        0, notes, "")); //TODO fix file attachment field here
+
+                //new MeetingService
+                //                .EventCreationData(event_name, event_date, event_time, event_duration, locationID, notes));
 
                 c.enqueue(Server.mkCallback(
                         (call, response) -> {

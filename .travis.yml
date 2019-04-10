@@ -14,7 +14,7 @@ matrix:
       before_install:
         - cd meeting_server
       script:
-        - python manage.py makemigrations allauth events invitations locations users
+        - python manage.py makemigrations allauth events invitations locations suggestions users
         - python manage.py test
 
     # based on https://github.com/msand/test_emulators/blob/master/.travis.yml
