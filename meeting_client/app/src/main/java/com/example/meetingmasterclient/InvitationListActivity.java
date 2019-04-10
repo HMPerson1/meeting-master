@@ -25,6 +25,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
+import com.example.meetingmasterclient.utils.StartingSoonAlarm;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -217,6 +218,7 @@ public class InvitationListActivity extends AppCompatActivity {
     private void performInviteResponse(int eventId, String action,int position) {
         if (action.equals("accept")) {
             changeInvitationStatus(eventId,String.valueOf(user_id),2);
+            StartingSoonAlarm.scheduleStartingSoonAlarm(getApplicationContext(), eventId);
         }else{
             changeInvitationStatus(eventId,String.valueOf(user_id),3);
         }

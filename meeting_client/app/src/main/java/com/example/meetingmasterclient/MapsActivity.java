@@ -15,6 +15,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.meetingmasterclient.server.MeetingService;
+import com.example.meetingmasterclient.server.Server;
 import com.example.meetingmasterclient.utils.Route;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -29,12 +31,15 @@ import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.List;
+
+import retrofit2.Call;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private boolean mLocationPermissionGranted;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private LatLng currentLocation;
     private static final int LOCATION_PERMISSION = 10;
@@ -77,8 +82,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void mapInit() {
-        mLocationPermissionGranted = true;
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -115,29 +118,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        /*LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
-
         updateLocationUI();
-        getCurrentLocation();
+        Timer timer = new Timer();
+        timer.schedule(new Locate(), 0, 5000);
+        //getCurrentLocation();
 
         // Mock user location
         LatLng pmu = new LatLng(40.4263, -86.9105);
         mMap.addMarker(new MarkerOptions().position(pmu).title("Daniel is here"));
-
-        // Test route
-        Geocoder coder = new Geocoder(getApplicationContext());
-        try {
-            ArrayList<Address> orig = (ArrayList<Address>) coder.getFromLocationName("Ford Dining Court, West Lafayette", 1);
-            ArrayList<Address> dest = (ArrayList<Address>) coder.getFromLocationName("Purdue Memorial Union, West Lafayette", 1);
-            LatLng origin = new LatLng(orig.get(0).getLatitude(), orig.get(0).getLongitude());
-            LatLng destination = new LatLng(dest.get(0).getLatitude(), dest.get(0).getLongitude());
-            new Route(getApplicationContext(), mMap, origin, destination).execute();
-        } catch(IOException e) {
-            Toast.makeText(getApplicationContext(), "ERROR", Toast.LENGTH_SHORT).show();
-        }
     }
 
     private void updateLocationUI() {
@@ -166,6 +154,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Location current = (Location)task.getResult();
                         currentLocation = new LatLng(current.getLatitude(), current.getLongitude());
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15f));
+                        getRoute();
                     } else {
                         Toast.makeText(getApplicationContext(), "ERROR", Toast.LENGTH_SHORT).show();
                     }
@@ -173,6 +162,43 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             });
         } catch(SecurityException e) {
             Toast.makeText(getApplicationContext(), "An error has occurred", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void getRoute() {
+        Geocoder geocoder = new Geocoder(getApplicationContext());
+        int eventId = getIntent().getIntExtra("event_id", 0);
+        if (eventId != 0) {
+            Call<MeetingService.EventsData> c = Server.getService().getEvents("/events/" + eventId);
+            c.enqueue(Server.mkCallback(
+                    (call, response) -> {
+                        MeetingService.EventsData event = response.body();
+                        MeetingService.LocationData location = event.event_location;
+
+                        try {
+                            ArrayList<Address> dest = (ArrayList<Address>)geocoder
+                                    .getFromLocationName(
+                                            location.getStreet_address()
+                                                    + ", "
+                                                    + location.getCity() + ", "
+                                                    + location.getState(),1);
+
+                            LatLng destination = new LatLng(dest.get(0).getLatitude(), dest.get(0).getLongitude());
+
+                            (new Route(getApplicationContext(), mMap, currentLocation, destination)).execute();
+                        } catch(IOException e) {
+                            System.err.println("IO ERROR MAPS");
+                        }
+                    },
+                    (call, t) -> t.printStackTrace()
+            ));
+        }
+    }
+
+    class Locate extends TimerTask {
+        @Override
+        public void run() {
+            getCurrentLocation();
         }
     }
 }
