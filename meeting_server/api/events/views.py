@@ -1,14 +1,16 @@
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework import generics as drf_generics
 
+from api import fcm
 from api.events.renderers import IcalRenderer
-from .models import Event
-from .serializers import EventModelSerializer, EventCreateSerializer, EventListQuerySerializer, EventIcalSerializer
+from .models import Event, ActiveEvent
+from .serializers import EventModelSerializer, EventCreateSerializer, EventListQuerySerializer, EventIcalSerializer, \
+    ActiveEventSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -86,11 +88,39 @@ class EventDetailView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class EventActive(drf_generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve or update the current user's state for an event.
+    1: going to event
+    2: currently at event
+    3: leaving from event
+    (null): not yet going to event/already arrived home from event
+    """
+
+    serializer_class = ActiveEventSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self) -> ActiveEvent:
+        u = self.request.user.userprofile
+        if hasattr(u, 'activeevent'):
+            return u.activeevent
+        else:
+            # kinda jank but works well enough
+            return ActiveEvent()
+
+    def get_queryset(self):
+        return ActiveEvent.objects.none()
+
+    def perform_destroy(self, instance: ActiveEvent):
+        fcm.notify_arrived_home(instance.event, instance.user)
+        super().perform_destroy(instance)
+
+
 class IcalView(drf_generics.ListAPIView):
     serializer_class = EventIcalSerializer
     pagination_class = None
     renderer_classes = (IcalRenderer,)
-    permission_classes = ()
+    permission_classes = (AllowAny,)
 
     def get_queryset(self):
         return Event.objects.filter(invitation__user_id__ical_key=self.kwargs['ical_key'])

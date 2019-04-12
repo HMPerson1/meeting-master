@@ -55,3 +55,13 @@ class FcmTests(TestCase):
         self.charlie.firebase_reg_token = ''
         self.charlie.save()
         fcm.notify_edit(self.alice_party, dry_run=True)
+
+    def test_notif_arrived_home(self):
+        self.bob.firebase_reg_token = _TEST_DEVICE_TOKEN
+        self.bob.save()
+        fcm.notify_arrived_home(self.alice_party, self.alice, dry_run=True)
+
+    def test_notif_arrived_home_notoken(self):
+        self.charlie.firebase_reg_token = ''
+        self.charlie.save()
+        fcm.notify_arrived_home(self.alice_party, self.alice, dry_run=True)
