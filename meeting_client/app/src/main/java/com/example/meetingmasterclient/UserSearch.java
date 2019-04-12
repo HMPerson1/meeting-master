@@ -5,6 +5,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +22,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import retrofit2.Call;
+import retrofit2.Response;
 
 public class UserSearch extends AppCompatActivity {
     private TextInputLayout textInputSearch;
@@ -32,6 +35,7 @@ public class UserSearch extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //init button
         Button button = findViewById(R.id.search_users);
         textInputSearch = findViewById(R.id.textInputSearch);
         button.setOnClickListener(new View.OnClickListener() {
@@ -40,6 +44,15 @@ public class UserSearch extends AppCompatActivity {
                 submitSearchRequest(view);
             }
         });
+
+        //init RecyclerView
+        /*RecyclerView recyclerView = findViewById(R.id.search_results);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+*/
+        /*
+        adapter = new AttendeeList.AttendeeAdapter();
+        recyclerView.setAdapter(adapter);*/
     }
 
     private boolean validateUserSearch(View v){
@@ -64,10 +77,8 @@ public class UserSearch extends AppCompatActivity {
                     Toast.makeText(UserSearch.this,response.toString(), Toast.LENGTH_LONG).show();
                     if (response.isSuccessful()) {
                         assert response.body() != null;
-                        System.out.println("response = " + response.body().stream().map(Objects::toString).collect(Collectors.joining(", ")));
-                        userResults = response.body();
-                        Toast.makeText(UserSearch.this, "UserResults: " + userResults,
-                                Toast.LENGTH_LONG).show();
+                        printResults(response);
+                        populateList(response);
                     } else {
                         try {
                             System.out.println("response.error = " + response.errorBody().string());
@@ -79,13 +90,29 @@ public class UserSearch extends AppCompatActivity {
                 },
                 (call, t) -> t.printStackTrace()
         ));
+    }
+
+    public void printResults(Response<List<MeetingService.UserProfile>> response){
+        System.out.println("response = " + response.body().stream().map(Objects::toString).collect(Collectors.joining(", ")));
+        userResults = response.body();
 
         if (userResults == null){
             textInputSearch.setError("Search field returned no results");
+            return;
         } else {
             textInputSearch.setError(null);
         }
 
-        //TODO display correct results
+        Toast.makeText(UserSearch.this, "UserResults: " + userResults,
+                Toast.LENGTH_LONG).show();
+
+        for (int i = 0; i < userResults.size(); i++){
+            String user = userResults.get(i).getUsername();
+            Toast.makeText(UserSearch.this, "User " + (i+1) + ": " + user, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void populateList(Response<List<MeetingService.UserProfile>> response){
+
     }
 }
