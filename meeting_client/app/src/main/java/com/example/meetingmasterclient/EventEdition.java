@@ -22,17 +22,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+
+
 public class EventEdition extends AppCompatActivity {
+
     int eventID;
-    final TextInputLayout nameInput = findViewById(R.id.text_input_event_name);
-    final TextInputLayout textInputDate = findViewById(R.id.text_input_date);
-    final TextInputLayout textInputDuration = findViewById(R.id.text_input_duration);
-    final TextInputLayout textInputTime = findViewById(R.id.text_input_time);
-    final TextInputLayout textInputNotes = findViewById(R.id.text_input_notes);
-    final TextInputLayout textInputStreetAddr = findViewById(R.id.text_input_street_address);
-    final TextInputLayout textInputCity = findViewById(R.id.text_input_city);
-    final TextInputLayout textInputState = findViewById(R.id.text_input_state);
-    final TextInputLayout textInputRoomNo = findViewById(R.id.text_input_room_no);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +35,17 @@ public class EventEdition extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         configureSaveButton();
+        configureSuggestedLocationsButton();
+
+        final TextInputEditText nameInput = (TextInputEditText) findViewById(R.id.text_input_event_name);
+        final TextInputEditText textDuration = findViewById(R.id.text_input_duration);
+        final TextInputEditText textInputDate = findViewById(R.id.text_input_date);
+        final TextInputEditText textInputTime = findViewById(R.id.text_input_time);
+        final TextInputEditText textInputNotes = findViewById(R.id.text_input_notes);
+        final TextInputEditText textInputStreetAddr = findViewById(R.id.text_input_street_address);
+        final TextInputEditText textInputCity = findViewById(R.id.text_input_city);
+        final TextInputEditText textInputState = findViewById(R.id.text_input_state);
+        final TextInputEditText textInputRoomNo = findViewById(R.id.text_input_room_no);
 
 
 
@@ -49,60 +55,47 @@ public class EventEdition extends AppCompatActivity {
         if (eventID<0){
             finish();  //did not pass event_id
         }
-/*
+
         //TODO: get event info from backend
-        Call<MeetingService.EventData> call = Server.getService().getEventfromId(String.valueOf(eventID));
-        call.enqueue(new Callback<MeetingService.EventData>() {
+        Call<MeetingService.EventsData> call = Server.getService().getEventfromId(String.valueOf(eventID));
+        call.enqueue(new Callback<MeetingService.EventsData>() {
             @Override
-            public void onResponse(Call<MeetingService.EventData> call, Response<MeetingService.EventData> response) {
+            public void onResponse(Call<MeetingService.EventsData> call, Response<MeetingService.EventsData>response) {
                 if(!response.isSuccessful()){ //404 error?
-                    Toast.makeText(EventEdition.this, "Oops, Something is wrong: "+response.code() , Toast.LENGTH_LONG).show();
+                    Toast.makeText(EventEdition.this, "Oops, Something is wrong: " +
+                            response.code(), Toast.LENGTH_LONG).show();
                     return;
                 }
                 Toast.makeText(EventEdition.this,"response" , Toast.LENGTH_LONG).show();
                 Toast.makeText(EventEdition.this,response.toString() , Toast.LENGTH_LONG).show();
 
 
-                MeetingService.EventData eventInfo =response.body();//store response
+                MeetingService.EventsData eventInfo = response.body();//store response
 
                 //display the event details to the user
-                nameInput.getEditText().setText(eventInfo.getEvent_name());
-                textInputDate.getEditText().setText(eventInfo.getEvent_date());
-                textInputTime.getEditText().setText(eventInfo.getEvent_time());
-                textInputNotes.getEditText().setText(eventInfo.getNotes());
+                nameInput.setText(eventInfo.getEvent_name());
+                textInputDate.setText(eventInfo.getEvent_date());
+                textInputTime.setText(eventInfo.getEvent_time());
+                textDuration.setText(eventInfo.getEvent_duration());
+                textInputNotes.setText(eventInfo.getNotes());
 
                 //get location details from server
 
-                int location_id = eventInfo.getEvent_location();
+                MeetingService.LocationData locationInfo= eventInfo.getEvent_location();
 
-                Call<MeetingService.LocationData> c = Server.getService().getLocationDetails(String.valueOf(location_id));
-                c.enqueue(Server.mkCallback(
-                        (call2, response2) -> {
-                            if (response2.isSuccessful()) {
-                                assert response2.body() != null;
-                                MeetingService.LocationData locationInfo =response2.body();//store response
-                                //display location details to the user
-                                textInputStreetAddr.getEditText().setText(locationInfo.getStreet_address());
-                                textInputCity.getEditText().setText(locationInfo.getCity());
-                                textInputState.getEditText().setText(locationInfo.getState());
-                                //textInputRoomNo.setText(locationInfo.);
 
-                            } else {
-                                try {
-                                    System.out.println("response.error = " + response2.errorBody().string());
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        },
-                        (call2, t) -> t.printStackTrace()
-                ));
+                textInputStreetAddr.setText(locationInfo.getStreet_address());
+                textInputCity.setText(locationInfo.getCity());
+                textInputState.setText(locationInfo.getState());
+                //textInputRoomNo.setText(locationInfo.);
+
+
 
 
             }
 
             @Override
-            public void onFailure(Call<MeetingService.EventData> call, Throwable t) {//error from server
+            public void onFailure(Call<MeetingService.EventsData> call, Throwable t) {//error from server
 
                 Toast.makeText(EventEdition.this,t.getMessage() , Toast.LENGTH_LONG).show();
 
@@ -110,43 +103,75 @@ public class EventEdition extends AppCompatActivity {
 
         });
 
-*/
 
+
+    }
+
+    private void configureSuggestedLocationsButton(){
+        Button suggestedButton = (Button) findViewById(R.id.suggested_locations_button);
+        suggestedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent suggested = new Intent(getApplicationContext(), SuggestionsListActivity.class);
+                startActivity(suggested);
+            }
+        });
     }
 
     private void configureSaveButton(){
 
+        final TextInputEditText nameInput = (TextInputEditText) findViewById(R.id.text_input_event_name);
+        final TextInputEditText textDuration = findViewById(R.id.text_input_duration);
+        final TextInputEditText textInputDate = findViewById(R.id.text_input_date);
+        final TextInputEditText textInputTime = findViewById(R.id.text_input_time);
+        final TextInputEditText textInputNotes = findViewById(R.id.text_input_notes);
+        final TextInputEditText textInputStreetAddr = findViewById(R.id.text_input_street_address);
+        final TextInputEditText textInputCity = findViewById(R.id.text_input_city);
+        final TextInputEditText textInputState = findViewById(R.id.text_input_state);
+        final TextInputEditText textInputRoomNo = findViewById(R.id.text_input_room_no);
 
-        //get new event details
-        String name =nameInput.getEditText().getText().toString();
-        String date =textInputDate.getEditText().getText().toString();
-        String time =textInputTime.getEditText().getText().toString();
-        String duration = textInputDuration.getEditText().getText().toString();
-        String notes =textInputNotes.getEditText().getText().toString();
+        Button save_button = (Button)findViewById(R.id.save_meeting_button);
+        save_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //get new event details
+                String name = nameInput.getText().toString();
+                String date = textInputDate.getText().toString();
+                String time = textInputTime.getText().toString();
+                String duration = textDuration.getText().toString();
+                String notes =textInputNotes.getText().toString();
 
-        //get new location details
-        //display location details to the user
-        String street =textInputStreetAddr.getEditText().getText().toString();
-        String city =textInputCity.getEditText().getText().toString();
-        String state =textInputState.getEditText().getText().toString();
+                //get new location details
+                //display location details to the user
+                //TODO post location here
+                String street =textInputStreetAddr.getText().toString();
+                String city =textInputCity.getText().toString();
+                String state =textInputState.getText().toString();
 
-        //post changes
-        Call<MeetingService.EventCreationData> c = Server.getService().createEvent(new MeetingService
-                .EventCreationData(name,date,time,duration,
-                0, notes, null));
+                //post changes
+                Call<MeetingService.EventsData> c = Server.getService().createEvent(new MeetingService
+                        .EventCreationData(name,date,time,duration,
+                        0, notes, "")); //TODO fix file attachment field here
 
-        c.enqueue(Server.mkCallback(
-                (call, response) -> {
-                    if (response.isSuccessful()) {
-                        assert response.body() != null;
-                    } else {
-                        Server.parseUnsuccessful(response, MeetingService.EventCreationData.class, System.out::println, System.out::println);
-                    }
-                },
-                (call, t) -> t.printStackTrace()
-        ));
+                //new MeetingService
+                //                .EventCreationData(event_name, event_date, event_time, event_duration, locationID, notes));
 
-        finish();//return to Event Details
+                c.enqueue(Server.mkCallback(
+                        (call, response) -> {
+                            if (response.isSuccessful()) {
+                                assert response.body() != null;
+                            } else {
+                                Server.parseUnsuccessful(response, MeetingService.EventCreationData.class, System.out::println, System.out::println);
+                            }
+                        },
+                        (call, t) -> t.printStackTrace()
+                ));
+
+                finish();//return to Event Details
+            }
+        });
+
+
 
 
 

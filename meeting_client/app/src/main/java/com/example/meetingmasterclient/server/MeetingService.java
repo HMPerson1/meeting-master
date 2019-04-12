@@ -124,9 +124,11 @@ public interface MeetingService {
         @Part MultipartBody.Part file
     );
 */
-    @POST("/events/")
-    Call<EventCreationData> createEvent(@Body EventCreationData data);
+    @POST("/events/new_event")
+    Call<EventsData> createEvent(@Body EventCreationData data);
 
+    @POST("/invitations/")
+    Call<InvitationData> postInvitations(@Body InvitationData data);
     @GET("/invitations/{user_id}/")
     Call<List<InvitationData>> getUserInvitations(@Path("user_id") String user_id);
 
@@ -135,15 +137,18 @@ public interface MeetingService {
                                                  @Path("user_id") String user_id);
 
     @PUT("/invitations/{event_id}/{user_id}/update_status")
-    Call<Void> setInvitationStatus(@Path("event_id") int event_id,
+    Call<Void> setInvitationStatus(@Path("event_id") String event_id,
                                    @Path("user_id") String user_id,
-                                   int status);     //TODO this probs needs fixing, event_id to string
+                                   @Query("status") int status);     //TODO this probs needs fixing, event_id to string
 
     @GET("/invitations/user-invitations")
     Call<List<InvitationData>> getUsersInvitations();
 
     @GET
     Call<EventData> getEvent(@Url String url);
+
+    @GET
+    Call<EventsData> getEvents(@Url String url);
 
     /**
      * needs authentication <br>
@@ -164,6 +169,9 @@ public interface MeetingService {
      */
     @GET("/current_user/ical_url")
     Call<IcalUrlData> getIcalUrl();
+
+    @POST("/TODO/") // TODO
+    Call<Void> putCurrentLocation(@Body CurrentLocationData data);
 
     /* ******************** *
      * Dumb data containers *
@@ -506,10 +514,10 @@ public interface MeetingService {
         public String event_duration;
         public int event_location;
         public String notes;
-        public File file_attachment;
+        public String file_attachment;
 
         public EventCreationData(String event_name, String event_date, String event_time, String event_duration,
-                                 int event_location, String notes, File file_attachment){
+                                 int event_location, String notes, String file_attachment){
             this.event_name = event_name;
             this.event_date = event_date;
             this.event_time = event_time;
@@ -559,19 +567,21 @@ public interface MeetingService {
     }
 
     class InvitationData {
-        public int user_id;
+        public String user_id;
         public int event_id;
         public int status;
         public boolean edit_permission;
 
-        public InvitationData(int user_id, int event_id, int status, boolean edit_permission) {
+
+        public InvitationData(String user_id, int event_id, int status, boolean edit_permission) {
+
             this.user_id = user_id;
             this.event_id = event_id;
             this.status = status;
             this.edit_permission = edit_permission;
         }
 
-        public int getUser_id() {
+        public String getUser_id() {
             return user_id;
         }
 
@@ -632,5 +642,14 @@ public interface MeetingService {
         public String ical_url;
     }
 
+    class CurrentLocationData {
+        double lat;
+        double lon;
+
+        public CurrentLocationData(double lat, double lon) {
+            this.lat = lat;
+            this.lon = lon;
+        }
+    }
 }
 

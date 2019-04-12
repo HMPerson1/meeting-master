@@ -15,9 +15,10 @@
     <string name="title_activity_add_users_to_meeting">AddUserstoMeeting</string>
 
     <!--registration/login strings-->
+
+    <string name="name">Name</string>
     <string name="first_name">First Name</string>
     <string name="last_name">Last Name</string>
-    <string name="name">Name</string>
     <string name="user_name">Username</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -38,8 +39,16 @@
     <string name="location_details">Location Details</string>
     <string name="add_file">Add File</string>
 
+
+    <string name="suggested">Suggested Locations</string>
+    <string name="map">Map</string>
+
+
     <string name="event_name">Event Name</string>
     <string name="date">Date</string>
+    <string name="date_format">Date (YYYY-MM-DD)</string>
+    <string name="time_format">Time (HH:MM)</string>
+    <string name="duration_format">Duration (in HH:MM)</string>
     <string name="time">Time</string>
     <string name="notes_opt">Event Notes (Optional)</string>
     <string name="street_address">Street Address</string>
@@ -54,16 +63,29 @@
     <string name="invite_accept">Accept</string>
     <string name="decline">Decline</string>
 
+    <string name="search">Search</string>
+
     <string name="msg_token_fmt">InstanceID Token: %s</string>
     <string name="log_fcm_token">Log FCM Token</string>
     <string name="channel_invite_name">Invitations</string>
     <string name="channel_invite_description">When you are invited to an event</string>
     <string name="channel_edit_name">Edits</string>
     <string name="channel_edit_description">When another user edits an event</string>
+    <string name="channel_arrived_home_name">Home Arrival</string>
+    <string name="channel_arrived_home_description">When another user has arrived home safely</string>
+    <string name="channel_live_location_name">Location Tracking</string>
+    <string name="channel_live_location_description">When your location is being tracked</string>
+    <string name="channel_leave_now_name">Leave Now</string>
+    <string name="channel_leave_now_description">When the user has to leave to get to an event on time</string>
     <string name="notification_invite_title">Event Invitation</string>
     <string name="notification_invite_body">You have been invited to attend %s</string>
     <string name="notification_edit_title">Event Edited</string>
     <string name="notification_edit_body">%s has been edited</string>
+    <string name="notification_arrived_home_title">Arrived Home</string>
+    <string name="notification_arrived_home_body">%s has arrived home safely</string>
+    <string name="notif_service_tracking_location_title">Tracking Location</string>
+    <string name="notif_service_tracking_location_body">Other event attendees can see where you are</string>
+    <string name="notification_leave_now_body">You should leave now to arrive on time</string>
 
     <string name="create_event_button">Create Event</string>
     <string name="title_activity_profile_details">ProfileDetails</string>
@@ -81,5 +103,18 @@
     <string name="export_event">Export Event</string>
     <string name="sync_calendar">Sync Calendar</string>
     <string name="title_activity_file_upload_experiments">FileUploadExperiments</string>
+    <string name="title_activity_location_suggestion">LocationSuggestion</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_suggestions_list">SuggestionsListActivity</string>
 
+    <!-- google maps -->
+
+
+
+
+
+
+    <string name="desc_service_location_update">Sends your current location to other event attendees</string>
+    <string name="start_locationupdateservice">Start LocationUpdateService</string>
+    <string name="stop_locationupdateservice">Stop LocationUpdateService</string>
 </resources>

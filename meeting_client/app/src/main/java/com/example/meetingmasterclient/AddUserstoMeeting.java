@@ -1,7 +1,9 @@
 package com.example.meetingmasterclient;
 
 import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,6 +25,7 @@ import com.example.meetingmasterclient.server.Server;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,6 +33,7 @@ import retrofit2.Response;
 
 
 public class AddUserstoMeeting extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +80,12 @@ public class AddUserstoMeeting extends AppCompatActivity {
                 for (int i = listViewInvitedPeople.getAdapter().getCount(); i >=0 ; i--){ //loop in reverse order so that arraylist indexes are not shifted upon removal
                     if (listViewInvitedPeople.isItemChecked(i)){ //check if item in listview position i is checked
                         listViewInvitedPeople.setItemChecked(i,false);
+                        //remove from shared preferences
+                        String userName= list.get(i);
+                        SharedPreferences sharedPref = getSharedPreferences("invited_users_IDs",Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.remove(userName);
+                        editor.commit();
                         list.remove(i);
                     }
 
@@ -122,12 +132,28 @@ public class AddUserstoMeeting extends AppCompatActivity {
                         //add user to list if successful
                         List<MeetingService.UserProfile> userProfs =response.body();//store response
                         for (MeetingService.UserProfile userProf : userProfs){
-                            //get event name
+
+                            //check if user already listed, if user is already listed notify user
+                            if(list.contains(userProf.username)){
+                                Toast.makeText(AddUserstoMeeting.this,"User Already added to List" , Toast.LENGTH_LONG).show();
+                                continue;
+                            }
+                            addInvitedUser(userProf.username, String.valueOf(userProf.getPk()));//store in shared preferences4
                             list.add(userProf.username);
                             adapter.notifyDataSetChanged();
+
                         }//end for
 
+
+
+
+
+
                     }
+
+
+
+
 
                     @Override
                     public void onFailure(Call<List<MeetingService.UserProfile>> call, Throwable t) {//error from server
@@ -144,6 +170,14 @@ public class AddUserstoMeeting extends AppCompatActivity {
         //exit the activity and return to Create a meeting page when the admin presses the save changes button
         configureSaveButton();
     }
+    public void addInvitedUser(String key, String value) {
+        SharedPreferences sharedPref = getSharedPreferences("invited_users_IDs",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(key, value);
+        editor.commit();
+
+    }
+
 
     private void configureSaveButton(){
         Button save_button = (Button)findViewById(R.id.save_button);

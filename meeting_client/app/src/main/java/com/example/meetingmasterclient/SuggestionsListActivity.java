@@ -3,6 +3,8 @@ package com.example.meetingmasterclient;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,7 +27,6 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
-import com.example.meetingmasterclient.utils.StartingSoonAlarm;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,26 +40,28 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 
-public class InvitationListActivity extends AppCompatActivity {
-    private static final String TAG = "InvitationListActivity";
+public class SuggestionsListActivity extends AppCompatActivity {
+    private static final String TAG = "SuggestionsListActivity";
     private static final String authToken = ""; // TODO
-    private InvitesAdapter adapter;
+    private SuggestionsListActivity.LocationSuggestionsAdapter adapter;
     private RequestQueue requestQueue;
     int user_id;
     JSONArray jArray = new JSONArray();
     List<String> eventIDs = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_invitation_list);
+        setContentView(R.layout.activity_suggestions_list);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        RecyclerView recyclerView = findViewById(R.id.invites_recycler_view);
+
+        RecyclerView recyclerView = findViewById(R.id.suggestions_recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        adapter = new InvitesAdapter();
+        adapter = new SuggestionsListActivity.LocationSuggestionsAdapter();
         recyclerView.setAdapter(adapter);
 
         requestQueue = Volley.newRequestQueue(this, new HurlStack());
@@ -69,7 +72,7 @@ public class InvitationListActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<MeetingService.UserProfile> call, retrofit2.Response<MeetingService.UserProfile> response) {
                 if(!response.isSuccessful()){ //404 error?
-                    Toast.makeText(InvitationListActivity.this, "Oops, Something is wrong: "+response.code() , Toast.LENGTH_LONG).show();
+                    Toast.makeText(SuggestionsListActivity.this, "Oops, Something is wrong: "+response.code() , Toast.LENGTH_LONG).show();
                     return;
                 }
                 //get user id
@@ -81,13 +84,13 @@ public class InvitationListActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<MeetingService.UserProfile> call, Throwable t) {//error from server
 
-                Toast.makeText(InvitationListActivity.this,t.getMessage() , Toast.LENGTH_LONG).show();
+                Toast.makeText(SuggestionsListActivity.this,t.getMessage() , Toast.LENGTH_LONG).show();
 
             }
         });
 
 
-
+/* placeholder for getting location suggestions from backend
         Call<List<MeetingService.InvitationData>> call = Server.getService().getUsersInvitations();
         call.enqueue(new Callback<List<MeetingService.InvitationData>>() {
             @Override
@@ -114,7 +117,7 @@ public class InvitationListActivity extends AppCompatActivity {
 
 
                 }//end for
-                getEvents(response.body());
+                //getEvents(response.body());
 
 
 
@@ -126,28 +129,32 @@ public class InvitationListActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<MeetingService.InvitationData>> call, Throwable t) {//error from server
 
-                Toast.makeText(InvitationListActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(SuggestionsListActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
 
             }
         });
-/*
+        */
+
         // TODO: for testing
         try {
             JSONObject jo = new JSONObject();
-            jo.put("pk", "1");
-            jo.put("name", "The First Event");
+            jo.put("address", "12 railroad blvd");
+            jo.put("state", "neverland");
+            jo.put("city","amnesia");
             jArray.put(jo);
             JSONObject jo2 = new JSONObject();
-            jo2.put("pk", "2");
-            jo2.put("name", "Event 2: Electric Boogaloo");
+            jo2.put("address", "random address");
+            jo2.put("state", "somewhere");
+            jo2.put("city","itty");
             jArray.put(jo2);
             adapter.setDataSet(jArray);
             //adapter.setDataSet(new JSONArray("[{\"pk\": 1, \"name\": \"The First Event\"},{\"pk\": 2, \"name\": \"Event 2: Electric Boogaloo\"}]"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        */
+
     }
+    /* //placeholder for retrieval for location endpoint
     private void getEvents(List<MeetingService.InvitationData> invitations){
         for (String eventId:eventIDs) {
             Call<MeetingService.EventsData> call2 = Server.getService().getEventfromId(String.valueOf(eventId));
@@ -173,7 +180,7 @@ public class InvitationListActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    adapter.setDataSet(jArray); //display invites
+                    adapter.setDataSet(jArray); //display suggestions
 
 
                 }
@@ -181,13 +188,15 @@ public class InvitationListActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(Call<MeetingService.EventsData> call, Throwable t) {//error from server
 
-                    Toast.makeText(InvitationListActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(SuggestionsListActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
 
                 }
             });
 
         }
     }//getEvents
+
+    */
     @Override
     protected void onStart() {
         super.onStart();
@@ -203,7 +212,7 @@ public class InvitationListActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.w(TAG, "onErrorResponse: fetch invites", error);
+                        Log.w(TAG, "onErrorResponse: fetch Location", error);
                     }
                 }) {
             @Override
@@ -215,41 +224,35 @@ public class InvitationListActivity extends AppCompatActivity {
         });
     }
 
-    private void performInviteResponse(int eventId, String action,int position) {
-        if (action.equals("accept")) {
-            changeInvitationStatus(eventId,String.valueOf(user_id),2);
-            StartingSoonAlarm.scheduleStartingSoonAlarm(getApplicationContext(), eventId);
-        }else{
-            changeInvitationStatus(eventId,String.valueOf(user_id),3);
-        }
-        //remove from display
-        jArray.remove(position);
-        adapter.setDataSet(jArray);
+    private void pickLocation(int eventId, String action,int position) {
+        //TODO send location id to edit event activity change activity
     }
 
-    private class InvitesAdapter extends RecyclerView.Adapter<InvitesAdapter.ViewHolder> {
+    private class LocationSuggestionsAdapter extends RecyclerView.Adapter<SuggestionsListActivity.LocationSuggestionsAdapter.ViewHolder> {
 
         @Nullable
         private JSONArray dataSet;
 
         @NonNull
         @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return new ViewHolder(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.invitation_list_card, parent, false));
+        public SuggestionsListActivity.LocationSuggestionsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            return new SuggestionsListActivity.LocationSuggestionsAdapter.ViewHolder(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.location_suggestion_info, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull SuggestionsListActivity.LocationSuggestionsAdapter.ViewHolder holder, int position) {
             if (dataSet == null) {
                 Log.e(TAG, "onBindViewHolder: dataSet was null");
                 return;
             }
 
             try {
-                JSONObject event = dataSet.getJSONObject(position);
-                holder.eventId = event.getInt("pk");
-                holder.eventNameView.setText(event.getString("name"));
+                JSONObject location = dataSet.getJSONObject(position);
+                //holder.eventId = event.getInt("pk");
+                holder.locationAddressView.setText(location.getString("address"));
+                holder.locationStateView.setText(location.getString("state"));
+                holder.locationCityView.setText(location.getString("city"));
                 holder.position = holder.getAdapterPosition();
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -269,48 +272,22 @@ public class InvitationListActivity extends AppCompatActivity {
 
         private class ViewHolder extends RecyclerView.ViewHolder {
             int eventId = -1;
-            TextView eventNameView;
+            int locationId=-1;
+            TextView locationAddressView;
+            TextView locationStateView;
+            TextView locationCityView;
             int position;
 
             ViewHolder(@NonNull View view) {
                 super(view);
-                eventNameView = view.findViewById(R.id.event_name);
-                Button acceptButton = view.findViewById(R.id.button_accept);
-                acceptButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        performInviteResponse(eventId, "accept",position);
-                    }
-                });
-                Button declineButton = view.findViewById(R.id.button_decline);
-                declineButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        performInviteResponse(eventId, "decline",position);
-                    }
-                });
+                locationAddressView = view.findViewById(R.id.address);
+                locationStateView = view.findViewById(R.id.state_info);
+                locationCityView = view.findViewById(R.id.city_info);
+
             }
         }
 
 
     }
 
-
-    public void changeInvitationStatus(int eventID, String userID, int newStatus){//1=pend 2=accept 3=declined
-        Call<Void> c = Server.getService().setInvitationStatus(String.valueOf(eventID), userID, newStatus);
-        c.enqueue
-                (Server.mkCallback(
-                        (call, response) -> {
-                            if (response.isSuccessful()) {
-                                // TODO: change button to reflect this
-                            } else {
-                                //Server.parseUnsuccessful(response, MeetingService.EventDataError.class,
-                                //        System.out::println, System.out::println);
-                                //TODO: make InvitationData error
-                            }
-                        },
-                        (call, t) -> t.printStackTrace()
-                ));
-
-    }
 }

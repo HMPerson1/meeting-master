@@ -5,11 +5,13 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
+import com.example.meetingmasterclient.utils.Notifications;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -20,6 +22,7 @@ class Notifier extends ContextWrapper {
     private static final String PREF_KEY_LAST_ID = "last_id";
     private static final String PREF_NAME = "notifications";
     private static final String TAG = "Notifier";
+    private static final String NOTIF_TAG = "fcm_notif";
 
     public Notifier(Context base) {
         super(base);
@@ -28,25 +31,41 @@ class Notifier extends ContextWrapper {
     void onMessageRecieved(Map<String, String> data) {
         try {
             String kind = Objects.requireNonNull(data.get("kind"), "data.kind == null");
-            String eventId = Objects.requireNonNull(data.get("event_id"), "data.event_id == null");
-            String eventName = Objects.requireNonNull(data.get("event_name"), "data.event_name == null");
             String channelId;
             String contentTitle;
             String contentText;
+            Class<?> activityToStart = null;
+            Bundle intentExtras = new Bundle();
+
             switch (kind) {
                 case "invite": {
-                    channelId = Constants.CHANNEL_INVITE_ID;
+                    String eventId = Objects.requireNonNull(data.get("event_id"), "data.event_id == null");
+                    String eventName = Objects.requireNonNull(data.get("event_name"), "data.event_name == null");
+                    channelId = Notifications.CHANNEL_INVITE_ID;
                     contentTitle = getString(R.string.notification_invite_title);
                     contentText = getString(R.string.notification_invite_body, eventName);
+                    activityToStart = EventDetails.class;
+                    intentExtras.putInt("event_id", Integer.parseInt(eventId));
                     break;
                 }
                 case "edit": {
-                    channelId = Constants.CHANNEL_EDIT_ID;
+                    String eventId = Objects.requireNonNull(data.get("event_id"), "data.event_id == null");
+                    String eventName = Objects.requireNonNull(data.get("event_name"), "data.event_name == null");
+                    channelId = Notifications.CHANNEL_EDIT_ID;
                     if (!shouldShowEditNotification(eventId)) {
                         return;
                     }
                     contentTitle = getString(R.string.notification_edit_title);
                     contentText = getString(R.string.notification_edit_body, eventName);
+                    activityToStart = EventDetails.class;
+                    intentExtras.putInt("event_id", Integer.parseInt(eventId));
+                    break;
+                }
+                case "arrived_home": {
+                    String userFullName = Objects.requireNonNull(data.get("user_full_name"), "data.user_full_name == null");
+                    channelId = Notifications.CHANNEL_ARRIVED_HOME_ID;
+                    contentTitle = getString(R.string.notification_arrived_home_title);
+                    contentText = getString(R.string.notification_arrived_home_body, userFullName);
                     break;
                 }
                 default:
@@ -54,11 +73,18 @@ class Notifier extends ContextWrapper {
                     return;
             }
 
-            Intent intent = new Intent(this, EventDetails.class);
-            intent.putExtra("event_id", eventId);
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-            stackBuilder.addNextIntentWithParentStack(intent);
-            PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntent;
+            if (activityToStart != null) {
+                Intent intent = new Intent(this, activityToStart);
+                intent.putExtras(intentExtras);
+                TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+                stackBuilder.addNextIntentWithParentStack(intent);
+                pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+            } else {
+                // auto-cancel only works if pendingIntent is non-null
+                // https://stackoverflow.com/a/16196933
+                pendingIntent = PendingIntent.getActivity(this, 0, new Intent(), 0);
+            }
 
             NotificationCompat.Builder notification = new NotificationCompat.Builder(this, channelId)
                     .setSmallIcon(R.drawable.ic_notification)
@@ -66,11 +92,12 @@ class Notifier extends ContextWrapper {
                     .setContentText(contentText)
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(contentText))
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .setAutoCancel(true)
                     .setContentIntent(pendingIntent);
 
             // our notifications are "fire-and-forget" so we don't keep track of ids
-            NotificationManagerCompat.from(this).notify(nextNotificationId(), notification.build());
-        } catch (NullPointerException e) {
+            NotificationManagerCompat.from(this).notify(NOTIF_TAG, nextNotificationId(), notification.build());
+        } catch (NullPointerException | NumberFormatException e) {
             Log.w(TAG, "onMessageReceived: ", e);
         }
     }
