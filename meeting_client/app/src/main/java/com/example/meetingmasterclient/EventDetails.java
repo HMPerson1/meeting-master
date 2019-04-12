@@ -156,6 +156,7 @@ public class EventDetails extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent suggest = new Intent(getApplicationContext(), LocationSuggestion.class);
+                suggest.putExtra("event_id", eventID);
                 startActivity(suggest);
             }
         });

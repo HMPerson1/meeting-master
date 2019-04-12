@@ -173,6 +173,9 @@ public interface MeetingService {
     @POST("/TODO/") // TODO
     Call<Void> putCurrentLocation(@Body CurrentLocationData data);
 
+    @POST("/suggestions/")
+    Call<SuggestionData> makeSuggestion(@Body SuggestionData data);
+
     /* ******************** *
      * Dumb data containers *
      * ******************** */
@@ -649,6 +652,16 @@ public interface MeetingService {
         public CurrentLocationData(double lat, double lon) {
             this.lat = lat;
             this.lon = lon;
+        }
+    }
+
+    class SuggestionData {
+        int event_id;
+        int location_id;
+
+        public SuggestionData(int event_id, int location_id) {
+            this.event_id = event_id;
+            this.location_id = location_id;
         }
     }
 }
