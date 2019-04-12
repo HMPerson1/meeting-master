@@ -136,18 +136,20 @@ public class EventEdition extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //get new event details
-                String name =nameInput.getText().toString();
-                String date =textInputDate.getText().toString();
-                String time =textInputTime.getText().toString();
+                String name = nameInput.getText().toString();
+                String date = textInputDate.getText().toString();
+                String time = textInputTime.getText().toString();
                 String duration = textDuration.getText().toString();
                 String notes =textInputNotes.getText().toString();
 
                 //get new location details
-                String street =textInputStreetAddr.getText().toString();
-                String city =textInputCity.getText().toString();
-                String state =textInputState.getText().toString();
+
+                //display location details to the user
+                //TODO post location here
+
 
                 putLocationandEvent();
+
 
                 finish();//return to Event Details
             }
@@ -188,17 +190,19 @@ public class EventEdition extends AppCompatActivity {
         String event_duration = textDuration.getText().toString().trim();
         String notes = textInputNotes.getText().toString().trim();
 
-        //post changes
-        Call<MeetingService.EventsData> c = Server.getService().createEvent(new MeetingService
+        MeetingService.EventCreationData eventCreationData = new MeetingService
                 .EventCreationData(event_name,event_date,event_time,event_duration,
-                locationID, notes, new File("")));
+                locationID, notes, null);
+        //post changes
+        Call<MeetingService.EventsData> c = Server.getService().updateEvent(eventCreationData,String.valueOf(eventID));
+        Log.d("eventinfo", event_date+eventCreationData.getEvent_name()+" "+event_time+" "+event_duration+" "+locationID+notes);
 
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
                     if (response.isSuccessful()) {
                         assert response.body() != null;
                     } else {
-                        Server.parseUnsuccessful(response, MeetingService.EventCreationData.class, System.out::println, System.out::println);
+                        Server.parseUnsuccessful(response, MeetingService.EventDataError.class, System.out::println, System.out::println);
                     }
                 },
                 (call, t) -> t.printStackTrace()

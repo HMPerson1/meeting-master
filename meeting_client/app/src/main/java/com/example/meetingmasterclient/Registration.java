@@ -13,6 +13,7 @@ import android.os.ParcelFileDescriptor;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -226,28 +227,30 @@ public class Registration extends AppCompatActivity {
         String last_name = textInputLastName.getEditText().getText().toString().trim();
         String phone_number = textInputPhoneNumber.getEditText().getText().toString().trim();
 
-
         Call<MeetingService.AuthToken> c = Server.getService().register(new MeetingService
                 .RegistrationData(username,first_name,last_name,email,password1,password2,phone_number));
-
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
+                    Toast.makeText(Registration.this,response.toString(), Toast.LENGTH_LONG).show();
+                    Log.d("Registration response", response.toString());
                     if (response.isSuccessful()) {
                         assert response.body() != null;
                         Server.authenticate(response.body().key);
-
                         if (hasPicture) {
                             Upload.uploadPictureToServer(getApplicationContext(), profilePictureUri);
                         }
-
                         Toast.makeText(Registration.this, "Registration Success", Toast.LENGTH_LONG).show();
-
                     } else {
                         String error = null;
-                        Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, System.out::println, System.out::println);
+                        Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, registrationError -> {
+                            Toast.makeText(Registration.this, registrationError.toString(), Toast.LENGTH_LONG).show();
+                            Log.d("Registration error", registrationError.toString());
+                            System.out.println(registrationError.toString());
+                        }, System.out::println);
                     }
                 },
                 (call, t) -> t.printStackTrace()
         ));
+
     }
 }

@@ -108,8 +108,8 @@ public interface MeetingService {
     @GET("/events/{id}")
     Call<EventsData> getEventfromId(@Path("id") String id);
 
-    @PUT("/events/{id}/")
-    Call<Void> updateEvent(@Body EventData data);
+    @PUT("/events/{id}")
+    Call<EventsData> updateEvent(@Body EventCreationData data,@Path("id") String id);
 
     /*
     @Multipart
@@ -449,7 +449,7 @@ public interface MeetingService {
 
     class EventData {
         public int id;
-        public int event_admin;
+        public int event_admin_id;
         public String event_name;
         public String event_date;
         public String event_time;
@@ -460,7 +460,7 @@ public interface MeetingService {
 
         public EventData(int id, int event_admin, String event_name, String event_date, String event_time, String event_duration, String file_attachment, String notes, int event_location) {
             this.id = id;
-            this.event_admin = event_admin;
+            this.event_admin_id = event_admin;
             this.event_name = event_name;
             this.event_date = event_date;
             this.event_time = event_time;
@@ -475,7 +475,7 @@ public interface MeetingService {
         }
 
         public int getEvent_admin() {
-            return event_admin;
+            return event_admin_id;
         }
 
         public String getEvent_name() {
@@ -537,18 +537,21 @@ public interface MeetingService {
             this.file_attachment = null;
         }
 
+        public String getEvent_name() {
+            return event_name;
+        }
     }
 
     class EventDataError{
-        public int[] id;
-        public int[] event_admin;
+        public String[] id;
+        public String[] event_admin;
         public String[] event_name;
         public String[] event_date;
         public String[] event_time;
         public String[] event_duration;
         public String[] file_attachment;
         public String[] notes;
-        public int[] event_location;
+        public String[] event_location;
 
         @Override
         @NonNull

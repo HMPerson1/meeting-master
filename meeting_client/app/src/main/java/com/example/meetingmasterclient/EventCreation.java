@@ -41,9 +41,6 @@ public class EventCreation extends AppCompatActivity {
     private TextInputLayout textInputState;
     private TextInputLayout textInputRoomNo;
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,15 +59,11 @@ public class EventCreation extends AppCompatActivity {
         textInputCity = findViewById(R.id.text_input_city);
         textInputState = findViewById(R.id.text_input_state);
         textInputRoomNo = findViewById(R.id.text_input_room_no);
-
-
-
     }
 
     /* input validation */
 
     private boolean validateEventName(){
-
         String eventName = textInputEventName.getEditText().getText().toString();
 
         if (eventName.isEmpty()){
@@ -81,10 +74,6 @@ public class EventCreation extends AppCompatActivity {
             return true;
         }
     }
-
-    //TODO validate date
-
-    //TODO validate time
 
     private boolean validateStreetAddr(){
         String streetAddr = textInputStreetAddr.getEditText().getText().toString();
@@ -139,32 +128,23 @@ public class EventCreation extends AppCompatActivity {
             }
         });
     }//configureAttendee
-
-
-
-
+    
     public boolean confirmInput(View v) {
-        return (validateEventName() | validateStreetAddr() | validateCity()
-            | validateState());
+        return (validateEventName() | validateStreetAddr() | validateCity() | validateState());
     }
 
     public void createMeetingRequest(View v){
         if(!confirmInput(v)) return;
 
-
-
-
         //File file_attachment
-
-
 
         postLocationandEvent();
         //testing postInvites
         MeetingService.EventsData eventsData = new MeetingService.EventsData();
         postInvites(eventsData);
 
-
     }
+
     public Map<String, ?> getInvitedUsers() {
         SharedPreferences sharedPref = getSharedPreferences("invited_users_IDs", Context.MODE_PRIVATE);
         Map<String, ?> allEntries = sharedPref.getAll();
@@ -177,7 +157,7 @@ public class EventCreation extends AppCompatActivity {
     }
     public void postInvites(MeetingService.EventsData event){
         int eventID = event.getPk();
-        eventID=1;//for testing
+        eventID = 1;//for testing
         Map<String, ?> invitedUsers = getInvitedUsers();
         //send invites to invited users
         for (Map.Entry<String, ?> entry : invitedUsers.entrySet()) {
@@ -185,9 +165,7 @@ public class EventCreation extends AppCompatActivity {
             c.enqueue(Server.mkCallback(
                     (call, response) -> {
                         if (response.isSuccessful()) {
-
                             Toast.makeText(EventCreation.this, "Invitation Sent", Toast.LENGTH_LONG).show();
-
                         } else {
                             String error=null;
                             Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, System.out::println, System.out::println);
@@ -196,12 +174,9 @@ public class EventCreation extends AppCompatActivity {
                     (call, t) -> t.printStackTrace()
             ));
         }
-
-
     }
-    public void postEvent(MeetingService.LocationData locationInfo){
-        LocationID= locationInfo.getPk();
-        int locationID =Integer.valueOf(LocationID);
+
+    public void postEvent(MeetingService.LocationData locationInfo, int locationID){
         String event_name = textInputEventName.getEditText().getText().toString().trim();
         String event_date = textInputDate.getEditText().getText().toString().trim();
         String event_time = textInputTime.getEditText().getText().toString().trim();
@@ -209,15 +184,22 @@ public class EventCreation extends AppCompatActivity {
         String notes = textInputNotes.getEditText().getText().toString().trim();
 
         Call<MeetingService.EventsData> c = Server.getService().createEvent(new MeetingService
-                .EventCreationData(event_name, locationID));
+                .EventCreationData(event_name, event_date, event_time, event_duration, locationID, notes, null)); //TODO FILE NAME RIGHT HERE));
+        Toast.makeText(EventCreation.this, "call: " + c.toString(), Toast.LENGTH_LONG).show();
 
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
                     if (response.isSuccessful()) {
                         assert response.body() != null;
+                        Toast.makeText(EventCreation.this, "EventCreation success: " +
+                                response.toString(), Toast.LENGTH_LONG).show();
+                        Log.d("EventCreation success", response.toString());
                         //Server.authenticate(response.body().key); TODO check this
                     } else {
-                        Server.parseUnsuccessful(response, MeetingService.EventsData.class, System.out::println, System.out::println);
+                        Toast.makeText(EventCreation.this, "EventCreation unsuccessful: " + response.toString(),
+                                Toast.LENGTH_LONG).show();
+                        Log.d("EventCreation error", response.toString());
+                        Server.parseUnsuccessful(response, MeetingService.EventDataError.class, System.out::println, System.out::println);
                     }
                 },
                 (call, t) -> t.printStackTrace()
@@ -225,38 +207,35 @@ public class EventCreation extends AppCompatActivity {
     }
 
     public void postLocationandEvent(){
+        Call<MeetingService.LocationData> c2 = Server.getService().newLocation(
+                new MeetingService.LocationData(
+                    textInputStreetAddr.getEditText().getText().toString(),
+                    textInputCity.getEditText().getText().toString(),
+                    textInputState.getEditText().getText().toString()));
 
-        Call<MeetingService.LocationData> c2 = Server.getService().newLocation(new MeetingService.LocationData(textInputStreetAddr.getEditText().getText().toString(),
-                textInputCity.getEditText().getText().toString(),textInputState.getEditText().getText().toString()));
         c2.enqueue(new Callback<MeetingService.LocationData>() {
             @Override
             public void onResponse(Call<MeetingService.LocationData> call, Response<MeetingService.LocationData> response) {
                 if(!response.isSuccessful()){ //404 error?
-                    Toast.makeText(EventCreation.this, "Oops, Something is wrong: "+response.code() , Toast.LENGTH_LONG).show();
+                    Toast.makeText(EventCreation.this, "LocationCreation error: "
+                            + response.toString(), Toast.LENGTH_LONG).show();
+                    Log.d("LocationCreation error", response.toString());
                     return;
+                } else {
+                    Toast.makeText(EventCreation.this, "LocationCreation success: " + response.toString(),
+                            Toast.LENGTH_LONG).show();
+                    Log.i("LocationCreation success", response.toString());
                 }
-
-                Toast.makeText(EventCreation.this,response.toString() , Toast.LENGTH_LONG).show();
-                MeetingService.LocationData locationInfo =response.body();
-                postEvent(response.body());
-
-
+                MeetingService.LocationData locationInfo = response.body();
+                int locationID = locationInfo.getPk();
+                postEvent(locationInfo, locationID);
             }
 
             @Override
             public void onFailure(Call<MeetingService.LocationData> call, Throwable t) {//error from server
-
                 Toast.makeText(EventCreation.this,t.getMessage() , Toast.LENGTH_LONG).show();
-
             }
         });
 
     }
-
-
-
-    }
-
-
-
-
+}
