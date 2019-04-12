@@ -1,6 +1,8 @@
 package com.example.meetingmasterclient;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
@@ -10,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -26,7 +29,10 @@ import retrofit2.Response;
 
 public class UserSearch extends AppCompatActivity {
     private TextInputLayout textInputSearch;
-    List<MeetingService.UserProfile> userResults;
+    private List<MeetingService.UserProfile> userResults;
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +52,14 @@ public class UserSearch extends AppCompatActivity {
         });
 
         //init RecyclerView
-        /*RecyclerView recyclerView = findViewById(R.id.search_results);
+        recyclerView = findViewById(R.id.search_results);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-*/
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
+        //mAdapter = new UserSearch();
+        recyclerView.setAdapter(mAdapter);
+
         /*
         adapter = new AttendeeList.AttendeeAdapter();
         recyclerView.setAdapter(adapter);*/
@@ -113,6 +123,17 @@ public class UserSearch extends AppCompatActivity {
     }
 
     public void populateList(Response<List<MeetingService.UserProfile>> response){
+
+    }
+}
+
+private class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.ViewHolder>{
+    @Nullable
+    private List<MeetingService.UserProfile> dataSet;
+
+    @NonNull
+    @Override
+    public UserSearchAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType){
 
     }
 }
