@@ -93,7 +93,7 @@ class EventCreateSerializer(serializers.ModelSerializer):
             event_time=validated_data.pop('event_time'),
             event_location=location,
             event_duration=validated_data.pop('event_duration'),
-            file_attachment=validated_data.pop('file_attachment'),
+            file_attachment=validated_data.get('file_attachment', None),
             notes=validated_data.pop('notes')
         )
         return event
