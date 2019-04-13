@@ -51,8 +51,7 @@ public class AttendeeList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attendee_list);
 
-        // TODO revert this after done using debug activity
-        eventID = "2"; //getIntent().getStringExtra("event_id");
+        eventID = Integer.toString(getIntent().getIntExtra("event_id", -1));
 
         recyclerView = findViewById(R.id.recycler_view_invited_people);
         recyclerView.setHasFixedSize(true);
