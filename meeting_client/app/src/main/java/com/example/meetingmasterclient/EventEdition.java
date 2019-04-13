@@ -163,9 +163,12 @@ public class EventEdition extends AppCompatActivity {
 
                 putLocationandEvent();
 
+                Intent intent = new Intent(getApplicationContext(), EventDetails.class);
+                intent.putExtra("event_id", eventID);
+                startActivity(intent);
 
-                finish();//return to Event Details
-            }
+                finish();
+        }
         });
 
 
