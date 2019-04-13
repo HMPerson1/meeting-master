@@ -124,12 +124,13 @@ public class UserSearch extends AppCompatActivity {
 
         mAdapter.setDataSet(userResults);
 
+        /*
         Toast.makeText(UserSearch.this, "UserResults: " + userResults,
-                Toast.LENGTH_LONG).show();
+                Toast.LENGTH_LONG).show();*/
 
         for (int i = 0; i < userResults.size(); i++) {
             String user = userResults.get(i).getUsername();
-            Toast.makeText(UserSearch.this, "User " + (i + 1) + ": " + user, Toast.LENGTH_LONG).show();
+           // Toast.makeText(UserSearch.this, "User " + (i + 1) + ": " + user, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -173,8 +174,8 @@ public class UserSearch extends AppCompatActivity {
                         //TODO view user clicked
                         Intent intent = new Intent(getBaseContext(), ProfileDetails.class);
                         int position = getAdapterPosition();
-
-                        //intent.putExtra("USER_PROFILE", )
+                        intent.putExtra("user_id", dataSet.get(position).getPk());
+                        startActivity(intent);
                     }
                 });
             }
