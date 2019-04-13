@@ -38,8 +38,8 @@ public class EventDetails extends AppCompatActivity {
     private Button acceptInviteButton;
     private Button declineInviteButton;
     private Button suggestLocationButton;
-
     private Button mapButton;
+    private Button leaveEventButton;
 
     MeetingService.EventsData eventInfo;
     //TODO disable "View Attachment" button if no attachment exists in document
@@ -171,6 +171,8 @@ public class EventDetails extends AppCompatActivity {
                 startActivity(map);
             }
         });
+
+        checkEventLeave();
 
     }
 
@@ -322,5 +324,28 @@ public class EventDetails extends AppCompatActivity {
         csvExporter.writeToFile("test.csv");
 
         //TODO finish implementation. Needs an intent and sent to calendar apps
+    }
+
+    private void checkEventLeave() {
+        leaveEventButton = (Button) findViewById(R.id.leave_event_button);
+
+        /*
+        Call<Whatever> c = Server.getService().methodToGetStatus(parameters of the method);
+        c.enqueue(Server.mkCallback(
+            (call, response) -> {
+                if (check if event is ongoing) {
+                    leaveEventButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            LocationUpdateService.start(getApplicationContext(), eventID);
+                        }
+                    });
+
+                    leaveEventButton.setVisibility(View.VISIBLE);
+                }
+            },
+            (call, t) -> t.printStackTrace()
+        ));
+        */
     }
 }
