@@ -11,6 +11,8 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 
 import retrofit2.http.Multipart;
@@ -121,6 +123,17 @@ public interface MeetingService {
         @Part MultipartBody.Part file
     );
 */
+    @FormUrlEncoded
+    @PUT("/events/{id}")
+    Call<EventData> editEventForm(
+            @Field("event_name") String event_name,
+            @Field("event_date") String event_date,
+            @Field("event_time") String event_time,
+            @Field("event_duration") String event_duration,
+            @Field("event_location") int event_location,
+            @Field("notes") String notes,
+            @Field("file_attachment") File file
+    );
     @POST("/events/new_event")
     Call<EventsData> createEvent(@Body EventCreationData data);
 
