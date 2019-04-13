@@ -173,6 +173,9 @@ public interface MeetingService {
     @GET("/suggestions/event-suggestions/{event_id}")
     Call <List<LocationSuggestionsData>> getSuggestedLocations(@Path("event_id")  String event_id);
 
+    @POST("/suggestions/")
+    Call<LocationSuggestionsData> makeSuggestion(@Body LocationSuggestionsData data);
+
     /* ******************** *
      * Dumb data containers *
      * ******************** */
