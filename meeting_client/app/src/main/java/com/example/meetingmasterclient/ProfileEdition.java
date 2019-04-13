@@ -127,9 +127,5 @@ public class ProfileEdition extends AppCompatActivity {
                 },
                 (call, t) -> t.printStackTrace()
         ));
-
-        Intent profDetails = new Intent(getApplicationContext(), ProfileDetails.class);
-        startActivity(profDetails);
     }
-
 }

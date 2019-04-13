@@ -246,6 +246,10 @@ public interface MeetingService {
             this.last_name = last_name;
         }
 
+        public void setUsername(String username){
+            this.username = username;
+        }
+
         @Override
         @NonNull
 

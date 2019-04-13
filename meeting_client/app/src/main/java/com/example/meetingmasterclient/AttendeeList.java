@@ -45,6 +45,7 @@ public class AttendeeList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attendee_list);
 
+        //TODO use this example for user search
         RecyclerView recyclerView = findViewById(R.id.recycler_view_invited_people);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -66,11 +67,7 @@ public class AttendeeList extends AppCompatActivity {
         list.add(test);
         list.add(test2);
 
-
         adapter.setDataSet(list);
-
-
-
 
         //TODO: Before user returns to create a meeting page, store the list of users in the database
         //exit the activity and return to Create a meeting page when the admin presses the save changes button
@@ -95,7 +92,7 @@ public class AttendeeList extends AppCompatActivity {
 
         @Nullable
         private List<MeetingService.UserProfile> dataSet;
-        private List<Boolean> editingPermit=new ArrayList<Boolean>();
+        private List<Boolean> editingPermit = new ArrayList<Boolean>();
         public List<Boolean> getEditingPermit() {
             return editingPermit;
         }
@@ -109,7 +106,7 @@ public class AttendeeList extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull AttendeeAdapter.ViewHolder holder, int position) {
-            String name =dataSet.get(position).getFirst_name()+" "+ dataSet.get(position).getLast_name();
+            String name = dataSet.get(position).getFirst_name()+" "+ dataSet.get(position).getLast_name();
             holder.personName.setText(name);
         }
 
