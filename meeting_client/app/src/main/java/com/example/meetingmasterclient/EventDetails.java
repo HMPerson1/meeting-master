@@ -33,6 +33,7 @@ public class EventDetails extends AppCompatActivity {
     public static final String PREFS_NAME = "App_Settings";
     private static final String TAG = "DebugLauncherActivity";
     int eventID;    //TODO this will change to string
+    String eventIDstring;
     String userID;
     private Button attendeeListButton;
     private Button acceptInviteButton;
@@ -61,6 +62,7 @@ public class EventDetails extends AppCompatActivity {
         final TextInputEditText textInputRoomNo = findViewById(R.id.room_num);
 
         eventID = getEventByID(getIntent().getIntExtra("id", -1));
+        eventIDstring = Integer.toString(eventID);
 
 
 
@@ -170,7 +172,7 @@ public class EventDetails extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent attendees = new Intent(getBaseContext(), AttendeeList.class);
-                int eventA = eventID;
+                String eventA = eventIDstring;
                 intent.putExtra("event_id", eventA);
                 startActivity(new Intent(EventDetails.this, AttendeeList.class));
                 startActivity(attendees);

@@ -28,6 +28,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOError;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +43,7 @@ public class AttendeeList extends AppCompatActivity {
     private RecyclerView recyclerView;
     private AttendeeAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
-    private int eventID;
+    private String eventID;
 
     private static final String TAG = "DebugLauncherActivity";
     @Override
@@ -49,7 +51,8 @@ public class AttendeeList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attendee_list);
 
-        eventID = getIntent().getIntExtra("event_id", -1);
+        // TODO revert this after done using debug activity
+        eventID = "2"; //getIntent().getStringExtra("event_id");
 
         recyclerView = findViewById(R.id.recycler_view_invited_people);
         recyclerView.setHasFixedSize(true);
@@ -81,6 +84,7 @@ public class AttendeeList extends AppCompatActivity {
         //TODO: Before user returns to create a meeting page, store the list of users in the database
         //exit the activity and return to Create a meeting page when the admin presses the save changes button
         configureSaveButton();
+        submitAttendeeRequest();
     }
 
     private void configureSaveButton(){
@@ -94,10 +98,43 @@ public class AttendeeList extends AppCompatActivity {
         });
     }
 
+    public void submitAttendeeRequest(){
+        Call<List<MeetingService.UserProfile>> c = Server.getService().getEventInvitations(eventID);
+        c.enqueue(Server.mkCallback(
+            (call, response) -> {
+                Toast.makeText(AttendeeList.this, response.body().toString(), Toast.LENGTH_LONG).show();
+                if (response.isSuccessful()){
+                    populateAttendeeList(response);
+                } else {
+                    try {
+                        System.out.println("response.error = " + response.errorBody().toString());
+                    } catch (NullPointerException e){
+                        e.printStackTrace();
+                    }
+                    return;
+                }
+            },
+            (call, t) -> t.printStackTrace()
+        ));
+    }
 
+    public void populateAttendeeList(Response<List<MeetingService.UserProfile>> response){
+        attendeeList = response.body();
+
+        if (attendeeList == null){
+            Toast.makeText(AttendeeList.this, "attendeeList is empty", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        adapter.setDataSet(attendeeList);
+
+        for (int i = 0; i < attendeeList.size(); i++){
+            String user = attendeeList.get(i).getUsername();
+            Toast.makeText(AttendeeList.this, "User " + (i+1) + ": " + user, Toast.LENGTH_LONG).show();
+        }
+    }
 
     private class AttendeeAdapter extends RecyclerView.Adapter<AttendeeAdapter.ViewHolder> {
-
         @Nullable
         private List<MeetingService.UserProfile> dataSet;
         private List<Boolean> editingPermit = new ArrayList<Boolean>();
@@ -148,11 +185,7 @@ public class AttendeeList extends AppCompatActivity {
                         }
                     }
                 });
-
-
             }
         }
-
-
     }//AttendeeAdapter
 }

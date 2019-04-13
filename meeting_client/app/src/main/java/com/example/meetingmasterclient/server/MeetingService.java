@@ -144,6 +144,9 @@ public interface MeetingService {
     @GET("/invitations/user-invitations")
     Call<List<InvitationData>> getUsersInvitations();
 
+    @GET("/invitations/event-invitations/{event_id}")
+    Call<List<MeetingService.UserProfile>> getEventInvitations(@Path("event_id") String event_id);
+
     @GET
     Call<EventData> getEvent(@Url String url);
 
