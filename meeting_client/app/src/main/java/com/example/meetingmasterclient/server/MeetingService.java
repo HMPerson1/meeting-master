@@ -3,12 +3,10 @@ package com.example.meetingmasterclient.server;
 import android.support.annotation.NonNull;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
 import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -16,7 +14,6 @@ import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 
 import retrofit2.http.Multipart;
-import retrofit2.http.PATCH;
 
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -99,7 +96,7 @@ public interface MeetingService {
     @GET
     Call<UserProfile> getUser(@Url String url);
 
-    @GET("/locations/{id}/")
+    @GET("/locations/{id}")
     Call<LocationData> getLocationDetails(@Path("id") String id);
 
     @POST("/locations/")
@@ -172,6 +169,9 @@ public interface MeetingService {
 
     @POST("/TODO/") // TODO
     Call<Void> putCurrentLocation(@Body CurrentLocationData data);
+
+    @GET("/suggestions/event-suggestions/{event_id}")
+    Call <List<LocationSuggestionsData>> getSuggestedLocations(@Path("event_id")  String event_id);
 
     /* ******************** *
      * Dumb data containers *
@@ -653,6 +653,24 @@ public interface MeetingService {
         public CurrentLocationData(double lat, double lon) {
             this.lat = lat;
             this.lon = lon;
+        }
+    }
+
+    class LocationSuggestionsData {
+        int event_id;
+        int location_id;
+
+        public LocationSuggestionsData(int event_id, int location_id) {
+            this.event_id = event_id;
+            this.location_id = location_id;
+        }
+
+        public int getEvent_id() {
+            return event_id;
+        }
+
+        public int getLocation_id() {
+            return location_id;
         }
     }
 }

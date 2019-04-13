@@ -29,6 +29,7 @@ import retrofit2.Response;
 public class EventEdition extends AppCompatActivity {
 
     int eventID;
+    int locationID;
 
     EditText nameInput;
     EditText textDuration;
@@ -63,6 +64,13 @@ public class EventEdition extends AppCompatActivity {
 
         Intent intent = getIntent();
         eventID = intent.getIntExtra("event_id", -1);
+        locationID = intent.getIntExtra("location_id", -1);
+
+        if (locationID!=-1){
+            //location id given by suggestions list, fill in location text input fields with the chosen location
+
+
+        }
 
         if (eventID<0){
             finish();  //did not pass event_id
@@ -93,13 +101,17 @@ public class EventEdition extends AppCompatActivity {
 
                 //get location details from server
 
-                MeetingService.LocationData locationInfo= eventInfo.getEvent_location();
+                if (locationID<0) {
+                    MeetingService.LocationData locationInfo = eventInfo.getEvent_location();
 
 
-                textInputStreetAddr.setText(locationInfo.getStreet_address());
-                textInputCity.setText(locationInfo.getCity());
-                textInputState.setText(locationInfo.getState());
-                //textInputRoomNo.setText(locationInfo.);
+                    textInputStreetAddr.setText(locationInfo.getStreet_address());
+                    textInputCity.setText(locationInfo.getCity());
+                    textInputState.setText(locationInfo.getState());
+                    //textInputRoomNo.setText(locationInfo.);
+                }else{
+                    getLocation();
+                }
 
 
 
@@ -123,6 +135,7 @@ public class EventEdition extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent suggested = new Intent(getApplicationContext(), SuggestionsListActivity.class);
+                suggested.putExtra("event_id", eventID);
                 startActivity(suggested);
             }
         });
@@ -243,6 +256,31 @@ public class EventEdition extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void getLocation(){ //for location suggestions view displays suggested location
+        Call<MeetingService.LocationData> call2 = Server.getService().getLocationDetails(String.valueOf(locationID));
+        call2.enqueue(new Callback<MeetingService.LocationData>() {
+            @Override
+            public void onResponse(Call<MeetingService.LocationData> call, retrofit2.Response<MeetingService.LocationData> response) {
+                if (!response.isSuccessful()) { //404 error?
+                    return;
+                }
+
+                MeetingService.LocationData locationInfo = response.body();//store response
+                textInputStreetAddr.setText(locationInfo.getStreet_address());
+                textInputCity.setText(locationInfo.getCity());
+                textInputState.setText(locationInfo.getState());
+
+            }
+
+            @Override
+            public void onFailure(Call<MeetingService.LocationData> call, Throwable t) {//error from server
+
+                Toast.makeText(EventEdition.this, t.getMessage(), Toast.LENGTH_LONG).show();
+
+            }
+        });
     }
 
 }
