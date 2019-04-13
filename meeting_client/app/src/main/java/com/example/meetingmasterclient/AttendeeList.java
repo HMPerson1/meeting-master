@@ -37,25 +37,34 @@ import retrofit2.Response;
 
 
 public class AttendeeList extends AppCompatActivity {
+    private List<MeetingService.UserProfile> attendeeList;
+    private RecyclerView recyclerView;
+    private AttendeeAdapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
+    private int eventID;
 
     private static final String TAG = "DebugLauncherActivity";
-    private AttendeeAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attendee_list);
 
-        //TODO use this example for user search
-        RecyclerView recyclerView = findViewById(R.id.recycler_view_invited_people);
+        eventID = getIntent().getIntExtra("event_id", -1);
+
+        recyclerView = findViewById(R.id.recycler_view_invited_people);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
 
         adapter = new AttendeeAdapter();
         recyclerView.setAdapter(adapter);
 
+        attendeeList = new ArrayList<>();
+        adapter.setDataSet(attendeeList);
+
+        /* for testing
         final List<MeetingService.UserProfile> list = new ArrayList<>(); //used for testing functionality of list
 
-        // TODO: for testing
         MeetingService.UserProfile test = new MeetingService.UserProfile();
         test.setFirst_name("john");
         test.setLast_name("meyer");
@@ -67,7 +76,7 @@ public class AttendeeList extends AppCompatActivity {
         list.add(test);
         list.add(test2);
 
-        adapter.setDataSet(list);
+        adapter.setDataSet(list);*/
 
         //TODO: Before user returns to create a meeting page, store the list of users in the database
         //exit the activity and return to Create a meeting page when the admin presses the save changes button
@@ -79,9 +88,8 @@ public class AttendeeList extends AppCompatActivity {
         save_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                List<Boolean> EditingPermit=adapter.getEditingPermit();
-                finish();//return to create a meeting
-
+                List<Boolean> EditingPermit = adapter.getEditingPermit();
+                finish();   //return to create a meeting
             }
         });
     }
@@ -133,7 +141,7 @@ public class AttendeeList extends AppCompatActivity {
 
                     @Override
                     public void onClick(View view) {
-                        if (permissions.getText()==permissions.getTextOn()) {
+                        if (permissions.getText() == permissions.getTextOn()) {
                             editingPermit.set(getAdapterPosition(),true);
                         } else {
                             editingPermit.set(getAdapterPosition(),false);

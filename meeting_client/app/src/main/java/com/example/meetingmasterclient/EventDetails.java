@@ -62,13 +62,7 @@ public class EventDetails extends AppCompatActivity {
 
         eventID = getEventByID(getIntent().getIntExtra("id", -1));
 
-        attendeeListButton = (Button) findViewById(R.id.view_attendees_button);
-        attendeeListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(EventDetails.this, AttendeeList.class));
-            }
-        });
+
 
         //TODO: get info from backend
         //MeetingService.EventData eventData = new MeetingService.EventData();
@@ -168,6 +162,18 @@ public class EventDetails extends AppCompatActivity {
             public void onClick(View view) {
                 Intent map = new Intent(getApplicationContext(), MapsActivity.class);
                 startActivity(map);
+            }
+        });
+
+        attendeeListButton = (Button) findViewById(R.id.view_attendees_button);
+        attendeeListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent attendees = new Intent(getBaseContext(), AttendeeList.class);
+                int eventA = eventID;
+                intent.putExtra("event_id", eventA);
+                startActivity(new Intent(EventDetails.this, AttendeeList.class));
+                startActivity(attendees);
             }
         });
 
