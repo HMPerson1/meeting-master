@@ -42,7 +42,8 @@
 
     <string name="suggested">Suggested Locations</string>
     <string name="map">Map</string>
-
+    <string name="view">View</string>
+    <string name="textview_placeholder">TextView Placeholder</string>
 
     <string name="event_name">Event Name</string>
     <string name="date">Date</string>
