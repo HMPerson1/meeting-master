@@ -29,10 +29,10 @@ public class LocationSuggestion extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        textInputStreetAddr = findViewById(R.id.text_input_street_address);
-        textInputCity = findViewById(R.id.text_input_city);
-        textInputState = findViewById(R.id.text_input_state);
-        textInputRoomNo = findViewById(R.id.text_input_room_no);
+        textInputStreetAddr = findViewById(R.id.suggestion_street_address);
+        textInputCity = findViewById(R.id.suggestion_city);
+        textInputState = findViewById(R.id.suggestion_state);
+        textInputRoomNo = findViewById(R.id.suggestion_room_no);
 
         ((Button)findViewById(R.id.suggest_button)).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,8 +103,8 @@ public class LocationSuggestion extends AppCompatActivity {
         int event_id = getIntent().getIntExtra("event_id", 0);
 
         if (event_id != 0) {
-            Call<MeetingService.SuggestionData> c = Server.getService().makeSuggestion(
-                    new MeetingService.SuggestionData(event_id, location_id)
+            Call<MeetingService.LocationSuggestionsData> c = Server.getService().makeSuggestion(
+                    new MeetingService.LocationSuggestionsData(event_id, location_id)
             );
 
             c.enqueue(Server.mkCallback(
