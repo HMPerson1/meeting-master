@@ -184,7 +184,7 @@ public class EventCreation extends AppCompatActivity {
         String notes = textInputNotes.getEditText().getText().toString().trim();
 
         Call<MeetingService.EventsData> c = Server.getService().createEvent(new MeetingService
-                .EventCreationData(event_name, event_date, event_time, event_duration, locationID, notes, "")); //TODO FILE NAME RIGHT HERE));
+                .EventCreationData(event_name, event_date, event_time, event_duration, locationID, notes, null)); //TODO FILE NAME RIGHT HERE));
         Toast.makeText(EventCreation.this, "call: " + c.toString(), Toast.LENGTH_LONG).show();
 
         c.enqueue(Server.mkCallback(
@@ -199,7 +199,7 @@ public class EventCreation extends AppCompatActivity {
                         Toast.makeText(EventCreation.this, "EventCreation unsuccessful: " + response.toString(),
                                 Toast.LENGTH_LONG).show();
                         Log.d("EventCreation error", response.toString());
-                        Server.parseUnsuccessful(response, MeetingService.EventsData.class, System.out::println, System.out::println);
+                        Server.parseUnsuccessful(response, MeetingService.EventDataError.class, System.out::println, System.out::println);
                     }
                 },
                 (call, t) -> t.printStackTrace()
