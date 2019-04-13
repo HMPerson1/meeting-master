@@ -207,8 +207,9 @@ public class EventEdition extends AppCompatActivity {
                 .EventCreationData(event_name,event_date,event_time,event_duration,
                 locationID, notes, null);
         //post changes
-        Call<MeetingService.EventsData> c = Server.getService().updateEvent(eventCreationData,String.valueOf(eventID));
-        Log.d("eventinfo", event_date+eventCreationData.getEvent_name()+" "+event_time+" "+event_duration+" "+locationID+notes);
+        Call<MeetingService.EventsData> c = Server.getService().updateEvent(eventCreationData,String.valueOf(eventID));*/
+        Call<MeetingService.EventsData> c = Server.getService().editEventForm(String.valueOf(eventID),event_name,event_date,event_time,event_duration,
+                locationID, notes, null);
 
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
@@ -219,11 +220,11 @@ public class EventEdition extends AppCompatActivity {
                     }
                 },
                 (call, t) -> t.printStackTrace()
-        ));*/
+        ));
 
 
 
-        
+
     }
 
     public void putLocationandEvent(){

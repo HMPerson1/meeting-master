@@ -125,7 +125,7 @@ public interface MeetingService {
 */
     @FormUrlEncoded
     @PUT("/events/{id}")
-    Call<EventData> editEventForm(
+    Call<EventsData> editEventForm(@Path("id") String id,
             @Field("event_name") String event_name,
             @Field("event_date") String event_date,
             @Field("event_time") String event_time,
