@@ -170,11 +170,20 @@ public interface MeetingService {
     @POST("/TODO/") // TODO
     Call<Void> putCurrentLocation(@Body CurrentLocationData data);
 
+    @GET("/TODO/") // TODO
+    Call<List<CurrentLocationData>> getCurrentLocations();
+
     @GET("/suggestions/event-suggestions/{event_id}")
     Call <List<LocationSuggestionsData>> getSuggestedLocations(@Path("event_id")  String event_id);
 
     @POST("/suggestions/")
     Call<LocationSuggestionsData> makeSuggestion(@Body LocationSuggestionsData data);
+
+    @GET("/events/current-user-active-event")
+    Call<ActiveEventsData> getUserStatus();
+
+    @PUT("/events/current-user-active-event")
+    Call<ActiveEventsData> putUserStatus(@Body ActiveEventsData data);
 
     /* ******************** *
      * Dumb data containers *
@@ -678,6 +687,16 @@ public interface MeetingService {
 
         public int getLocation_id() {
             return location_id;
+        }
+    }
+
+    class ActiveEventsData {
+        public int event;
+        public int state;
+
+        public ActiveEventsData(int event, int state) {
+            this.event = event;
+            this.state = state;
         }
     }
 }

@@ -118,6 +118,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        /*try {
+            LocationUpdateService.start(getApplicationContext(), getIntent().getIntExtra("event_id", 0));
+        } catch(SecurityException e) {
+            e.printStackTrace();
+        }*/
+
         updateLocationUI();
         Timer timer = new Timer();
         timer.schedule(new Locate(), 0, 5000);

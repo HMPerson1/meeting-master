@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,6 +33,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class EventDetails extends AppCompatActivity {
+    private static final int LOCATION_PERMISSION = 90;
     public static final String PREFS_NAME = "App_Settings";
     private static final String TAG = "DebugLauncherActivity";
     int eventID;    //TODO this will change to string
@@ -329,23 +333,72 @@ public class EventDetails extends AppCompatActivity {
     private void checkEventLeave() {
         leaveEventButton = (Button) findViewById(R.id.leave_event_button);
 
-        /*
-        Call<Whatever> c = Server.getService().methodToGetStatus(parameters of the method);
+        Call<MeetingService.ActiveEventsData> c = Server.getService().getUserStatus();
         c.enqueue(Server.mkCallback(
-            (call, response) -> {
-                if (check if event is ongoing) {
-                    leaveEventButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            LocationUpdateService.start(getApplicationContext(), eventID);
-                        }
-                    });
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        if (response.body().state == 2) {
+                            leaveEventButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    leaveEvent();
+                                }
+                            });
 
-                    leaveEventButton.setVisibility(View.VISIBLE);
-                }
-            },
-            (call, t) -> t.printStackTrace()
+                            leaveEventButton.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), "An error has occurred while retrieving status", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                (call, t) -> t.printStackTrace()
         ));
-        */
+    }
+
+    private void leaveEvent() {
+        Call<MeetingService.ActiveEventsData> c = Server.getService().putUserStatus(
+                new MeetingService.ActiveEventsData(eventID, 3)
+        );
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                                == PackageManager.PERMISSION_GRANTED) {
+                            //LocationUpdateService.start(getApplicationContext(), eventID);
+                            System.out.println("Permitted");
+                        } else {
+                            ActivityCompat.requestPermissions(this,
+                                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                                    LOCATION_PERMISSION);
+                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Status Update Error", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case LOCATION_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    try {
+                        //LocationUpdateService.start(getApplicationContext(), eventID);
+                        System.out.println("Permitted");
+                    } catch (SecurityException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(),
+                            "You cannot use the location features without these permissions",
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                break;
+        }
     }
 }
