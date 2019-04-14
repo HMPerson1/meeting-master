@@ -40,6 +40,7 @@ import retrofit2.Response;
 
 public class AttendeeList extends AppCompatActivity {
     private List<MeetingService.UserProfile> attendeeList;
+    private List<MeetingService.InvitationData> attendeeResponse;
     private RecyclerView recyclerView;
     private AttendeeAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -98,7 +99,7 @@ public class AttendeeList extends AppCompatActivity {
     }
 
     public void submitAttendeeRequest(){
-        Call<List<MeetingService.UserProfile>> c = Server.getService().getEventInvitations(eventID);
+        Call<List<MeetingService.InvitationData>> c = Server.getService().getEventInvitations(eventID);
         c.enqueue(Server.mkCallback(
             (call, response) -> {
                 Toast.makeText(AttendeeList.this, response.body().toString(), Toast.LENGTH_LONG).show();
@@ -117,20 +118,43 @@ public class AttendeeList extends AppCompatActivity {
         ));
     }
 
-    public void populateAttendeeList(Response<List<MeetingService.UserProfile>> response){
-        attendeeList = response.body();
+    public void populateAttendeeList(Response<List<MeetingService.InvitationData>> response){
+        attendeeResponse = response.body();
 
-        if (attendeeList == null){
+        if (attendeeResponse == null){
             Toast.makeText(AttendeeList.this, "attendeeList is empty", Toast.LENGTH_LONG).show();
             return;
         }
 
+        Call <MeetingService.UserProfile> userProfileCall;
+        for (int i = 0; i < attendeeResponse.size(); i++){
+            int userID = Integer.parseInt(attendeeResponse.get(i).getUser_id());
+            userProfileCall = Server.getService().getUserByID(userID);
+            userProfileCall.enqueue(Server.mkCallback(
+                    (call, res) -> {
+                        if (res.isSuccessful()){
+                            //Toast.makeText(AttendeeList.this, res.body().toString(), Toast.LENGTH_LONG).show();
+                            attendeeList.add(res.body());
+                        } else {
+                            try {
+                                Toast.makeText(AttendeeList.this, "res.error = " + res.errorBody().toString(), Toast.LENGTH_LONG).show();
+                                System.out.println("res.error = " + res.errorBody().toString());
+                            } catch (NullPointerException e){
+                                e.printStackTrace();
+                            }
+                            return;
+                        }
+                    },
+                    (call, t) -> t.printStackTrace()
+            ));
+        }
+
         adapter.setDataSet(attendeeList);
 
-        for (int i = 0; i < attendeeList.size(); i++){
+        /*for (int i = 0; i < attendeeList.size(); i++){
             String user = attendeeList.get(i).getUsername();
             Toast.makeText(AttendeeList.this, "User " + (i+1) + ": " + user, Toast.LENGTH_LONG).show();
-        }
+        }*/
     }
 
     private class AttendeeAdapter extends RecyclerView.Adapter<AttendeeAdapter.ViewHolder> {

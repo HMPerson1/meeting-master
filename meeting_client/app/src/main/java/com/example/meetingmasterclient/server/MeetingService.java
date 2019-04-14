@@ -96,6 +96,9 @@ public interface MeetingService {
     @GET
     Call<UserProfile> getUser(@Url String url);
 
+    @GET("/users/{id}")
+    Call<UserProfile> getUserByID(@Path("id") int id);
+
     @GET("/locations/{id}")
     Call<LocationData> getLocationDetails(@Path("id") String id);
 
@@ -605,6 +608,17 @@ public interface MeetingService {
 
         public int getStatus() {
             return status;
+        }
+
+        @Override
+        @NonNull
+        public String toString(){
+            return "InvitationData{" +
+                    "user_id=" + user_id +
+                    ", event_id=" + event_id +
+                    ", status=" + status +
+                    ", edit_permission=" + edit_permission
+                    + "}";
         }
     }
 
