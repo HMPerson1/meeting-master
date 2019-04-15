@@ -66,6 +66,8 @@ class EventListView(drf_generics.ListAPIView):
 # class EventDetailView(APIView):
 class EventDetailView(MethodSerializerView, drf_generics.RetrieveUpdateDestroyAPIView):
 
+    queryset = Event.objects.all()
+    
     method_serializer_classes = {
         ('GET', ): EventModelSerializer,
         ('PUT', ): EventCreateSerializer,
