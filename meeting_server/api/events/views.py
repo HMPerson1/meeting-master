@@ -1,25 +1,41 @@
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework import exceptions
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import generics as drf_generics
 
 from api import fcm
 from api.events.renderers import IcalRenderer
 from .models import Event, ActiveEvent
 from .serializers import EventModelSerializer, EventCreateSerializer, EventListQuerySerializer, EventIcalSerializer, \
-    ActiveEventSerializer
-from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
+    EventFileSerializer, ActiveEventSerializer
+from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser, JSONParser
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 
-class EventCreateView(drf_generics.CreateAPIView):
+class MethodSerializerView(object):
 
+    method_serializer_classes = None
+
+    def get_serializer_class(self):
+        assert self.method_serializer_classes is not None, (
+            'Expected view %s should contain method_serializer_classes '
+            'to get right serializer class.' %
+            (self.__class__.__name__, )
+        )
+        for methods, serializer_cls in self.method_serializer_classes.items():
+            if self.request.method in methods:
+                return serializer_cls
+
+        raise exceptions.MethodNotAllowed(self.request.method)
+
+
+class EventCreateView(drf_generics.CreateAPIView):
     serializer_class = EventCreateSerializer
-    parser_classes = (MultiPartParser, FormParser, FileUploadParser)
 
 
 class EventListView(drf_generics.ListAPIView):
@@ -47,7 +63,21 @@ class EventListView(drf_generics.ListAPIView):
         return queryset
 
 
-class EventDetailView(APIView):
+# class EventDetailView(APIView):
+class EventDetailView(MethodSerializerView, drf_generics.RetrieveUpdateDestroyAPIView):
+
+    queryset = Event.objects.all()
+    
+    method_serializer_classes = {
+        ('GET', ): EventModelSerializer,
+        ('PUT', ): EventCreateSerializer,
+        ('DELETE', ): None
+    }
+
+    http_method_names = ['get', 'put', 'delete']
+
+
+class EventFileUploadView(APIView):
     parser_classes = (MultiPartParser, FormParser, FileUploadParser)
 
     def get_object(self, pk):
@@ -56,48 +86,35 @@ class EventDetailView(APIView):
         except ObjectDoesNotExist:
             raise Http404
 
-    def get(self, request, pk, format=None):
-        event = self.get_object(pk=pk)
-        serializer = EventModelSerializer(event)
-        return Response(serializer.data)
-
     @swagger_auto_schema(manual_parameters=[
-        openapi.Parameter('event_name', openapi.IN_FORM, "Name of your Event", type=openapi.TYPE_STRING, required=True),
-        openapi.Parameter('event_date', openapi.IN_FORM, "YYYY-MM-DD", type=openapi.TYPE_STRING, required=True),
-        openapi.Parameter('event_time', openapi.IN_FORM, "HH:MM", type=openapi.TYPE_STRING, required=True),
-        openapi.Parameter('event_duration', openapi.IN_FORM, "Optional duration field - HH:MM", type=openapi.TYPE_STRING),
-        openapi.Parameter('event_location', openapi.IN_FORM, "ID of your Event's Location", type=openapi.TYPE_INTEGER, required=True),
-        openapi.Parameter('notes', openapi.IN_FORM, "Miscellaneous notes about event", type=openapi.TYPE_STRING),
-        openapi.Parameter('file_attachment', openapi.IN_FORM, "Optional file upload", type=openapi.TYPE_FILE, required=False)
-        ],
+        openapi.Parameter('file_attachment', openapi.IN_FORM, "Optional file upload",
+                          type=openapi.TYPE_FILE, required=True)
+    ],
         responses={
-            201: openapi.Response('Event successfuly updated', EventCreateSerializer)
+            201: openapi.Response('File Attachment Added to Event', EventCreateSerializer)
         }
     )
-    def put(self, request, pk, format=None):
+    def patch(self, request, pk, format=None):
         event = self.get_object(pk=pk)
-        serializer = EventCreateSerializer(event, data=request.data)
+
+        event.file_attachment = request.data['file_attachment']
+        serializer = EventFileSerializer(event)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk, format=None):
-        event = self.get_object(pk=pk)
-        event.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 class EventActive(drf_generics.RetrieveUpdateDestroyAPIView):
     """
-    Retrieve or update the current user's state for an event.
-    1: going to event
-    2: currently at event
-    3: leaving from event
-    (null): not yet going to event/already arrived home from event
+        Retrieve or update the current user's state for an event.
+        1: going to event
+        2: currently at event
+        3: leaving from event
+        (null): not yet going to event/already arrived home from event
     """
-
     serializer_class = ActiveEventSerializer
+
     permission_classes = (IsAuthenticated,)
 
     def get_object(self) -> ActiveEvent:
