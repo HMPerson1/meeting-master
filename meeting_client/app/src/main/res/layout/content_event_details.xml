@@ -8,6 +8,17 @@
     tools:context=".EventDetails"
     tools:showIn="@layout/activity_event_details">
 
+    <include
+        android:id="@+id/active_status_container"
+        layout="@layout/active_status"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -18,7 +29,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/active_status_container">
 
         <LinearLayout
             android:layout_width="match_parent"

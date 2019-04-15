@@ -127,4 +127,8 @@
     <string name="desc_service_location_update">Sends your current location to other event attendees</string>
     <string name="start_locationupdateservice">Start LocationUpdateService</string>
     <string name="stop_locationupdateservice">Stop LocationUpdateService</string>
+    <string name="status_text_goingto">You are going to this event</string>
+    <string name="status_action_arrive">Arrive</string>
+    <string name="status_text_currentlyat">You are at this event</string>
+    <string name="status_action_leave">Leave</string>
 </resources>
