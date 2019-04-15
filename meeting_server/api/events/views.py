@@ -65,6 +65,7 @@ class EventListView(drf_generics.ListAPIView):
 
 # class EventDetailView(APIView):
 class EventDetailView(MethodSerializerView, drf_generics.RetrieveUpdateDestroyAPIView):
+    queryset = Event.objects.all()
 
     method_serializer_classes = {
         ('GET', ): EventModelSerializer,
@@ -110,7 +111,7 @@ class EventActive(drf_generics.RetrieveUpdateDestroyAPIView):
         2: currently at event
         3: leaving from event
         (null): not yet going to event/already arrived home from event
-        """
+    """
     serializer_class = ActiveEventSerializer
 
     permission_classes = (IsAuthenticated,)
