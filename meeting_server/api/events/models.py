@@ -16,7 +16,8 @@ class Event(models.Model):
     event_time = models.TimeField(null=True, blank=True, help_text="HH:MM")
     event_duration = models.TimeField(default=None, blank=True, null=True, help_text="Length of Event in HH:MM")
     file_attachment = models.FileField(null=True, blank=True)
-    notes = models.TextField(default=None, help_text="Miscellaneous notes or details you wish to include")
+    notes = models.TextField(default=None, help_text="Miscellaneous notes or details you wish to include",
+                             null=True, blank=True)
     event_location = models.ForeignKey(Location, related_name='location', on_delete=None)
 
     def __unicode__(self):
