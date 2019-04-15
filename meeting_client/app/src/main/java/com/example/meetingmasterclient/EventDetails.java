@@ -62,17 +62,12 @@ public class EventDetails extends AppCompatActivity {
 
         eventID = getEventByID(getIntent().getIntExtra("id", -1));
 
-
-
-
         //TODO: get info from backend
         //MeetingService.EventData eventData = new MeetingService.EventData();
         //get the current intent
         Intent intent = getIntent();
         eventID = intent.getIntExtra("event_id", -1);
         userID = intent.getStringExtra("user_id");
-
-
 
         userID="1";
 
@@ -171,9 +166,9 @@ public class EventDetails extends AppCompatActivity {
         attendeeListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent attendees = new Intent(getBaseContext(), AttendeeList.class);
-                intent.putExtra("event_id", eventID);
-                startActivity(new Intent(EventDetails.this, AttendeeList.class));
+                Toast.makeText(EventDetails.this, "Passing event_id " + eventID, Toast.LENGTH_LONG).show();
+                Intent attendees = new Intent(getApplicationContext(), AttendeeList.class);
+                attendees.putExtra("event_id", eventID);
                 startActivity(attendees);
             }
         });
@@ -277,7 +272,7 @@ public class EventDetails extends AppCompatActivity {
     }
 
     private int getEventByID(int eventID){
-        if (eventID== -1) {
+        if (eventID == -1) {
             Toast.makeText(getApplicationContext(), "An error has occurred", Toast.LENGTH_SHORT).show();
             return -1;
         }

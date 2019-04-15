@@ -171,7 +171,6 @@ public class UserSearch extends AppCompatActivity {
                 viewButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        //TODO view user clicked
                         Intent intent = new Intent(getBaseContext(), ProfileDetails.class);
                         int position = getAdapterPosition();
                         intent.putExtra("user_id", dataSet.get(position).getPk());
