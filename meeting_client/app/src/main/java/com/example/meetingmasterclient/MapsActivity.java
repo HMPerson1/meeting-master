@@ -4,15 +4,19 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.meetingmasterclient.server.MeetingService;
@@ -33,7 +37,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.List;
 
 import retrofit2.Call;
 
@@ -43,13 +46,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private LatLng currentLocation;
     private static final int LOCATION_PERMISSION = 10;
+    private DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        RecyclerView etaRecyclerView = findViewById(R.id.eta_list);
+        etaRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        EtaAdapter adapter1 = new EtaAdapter();
+        etaRecyclerView.setAdapter(adapter1);
+
+        drawerLayout = findViewById(R.id.drawer_layout);
 
         getLocationPermission();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(Gravity.END)) {
+            drawerLayout.closeDrawer(Gravity.END);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void getLocationPermission() {
@@ -86,22 +105,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        View eta_bottomSheet = findViewById(R.id.eta_bottom_sheet);
-        BottomSheetBehavior bottomsheetBehavior = BottomSheetBehavior.from(eta_bottomSheet);
-        bottomsheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-
-        final ListView listViewInvitedPeople = (ListView) findViewById(R.id.eta_list);
-       ArrayList<ETA> list = new ArrayList<>(); //used for testing functionality of list
-        ETA eta = new ETA("Attendee", "est. time of Arrival");
-        list.add(eta);
-        for (int i = 0; i < 20; i++) { //testing
-            eta = new ETA("Person" + i, String.valueOf(i+10));
-            list.add(eta);
-
-        }
-        final ETAAdapter adapter = new ETAAdapter(MapsActivity.this, R.layout.eta_two_column_view, list);
-        listViewInvitedPeople.setAdapter(adapter);
-
     }
 
 
@@ -199,6 +202,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         public void run() {
             getCurrentLocation();
+        }
+    }
+
+    class EtaAdapter extends RecyclerView.Adapter<EtaAdapter.EtaViewHolder> {
+
+        // TODO: real data
+        // from routes[0].legs[0].duration.text
+        String[][] data = {{"John Doe", "1 min"}, {"Jane Doe", "2 min"}};
+
+        @NonNull
+        @Override
+        public EtaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_eta, parent, false);
+            TextView nameView = view.findViewById(R.id.eta_item_name);
+            TextView timeView = view.findViewById(R.id.eta_item_time);
+            return new EtaViewHolder(view, nameView, timeView);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull EtaViewHolder etaViewHolder, int position) {
+            etaViewHolder.nameView.setText(data[position][0]);
+            etaViewHolder.timeView.setText(data[position][1]);
+        }
+
+        @Override
+        public int getItemCount() {
+            return data.length;
+        }
+
+        class EtaViewHolder extends RecyclerView.ViewHolder {
+            private final TextView nameView;
+            private final TextView timeView;
+
+            EtaViewHolder(@NonNull View itemView, TextView nameView, TextView timeView) {
+                super(itemView);
+                this.nameView = nameView;
+                this.timeView = timeView;
+            }
         }
     }
 }
