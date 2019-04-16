@@ -22,6 +22,8 @@ import android.widget.CheckBox;
 import android.widget.Toast;
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
+import com.example.meetingmasterclient.utils.StartingSoonAlarm;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,6 +35,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class EventDetails extends AppCompatActivity {
+    public CountingIdlingResource idlingResource = new CountingIdlingResource("Event Details Network");
     private static final int LOCATION_PERMISSION = 90;
     public static final String PREFS_NAME = "App_Settings";
     private static final String TAG = "DebugLauncherActivity";
@@ -92,6 +95,7 @@ public class EventDetails extends AppCompatActivity {
         }
 
         //TODO: get event info from backend
+        idlingResource.increment();
         Call<MeetingService.EventsData> call = Server.getService().getEventfromId(String.valueOf(eventID));
         call.enqueue(new Callback<MeetingService.EventsData>() {
             @Override
@@ -99,6 +103,7 @@ public class EventDetails extends AppCompatActivity {
                 if(!response.isSuccessful()){ //404 error?
                     Toast.makeText(EventDetails.this, "Oops, Something is wrong: " +
                             response.code(), Toast.LENGTH_LONG).show();
+                    idlingResource.decrement();
                     return;
                 }
                 Toast.makeText(EventDetails.this,"response" , Toast.LENGTH_LONG).show();
@@ -125,15 +130,14 @@ public class EventDetails extends AppCompatActivity {
 
                 //textInputRoomNo.setText(locationInfo.);
 
-
-
-
+                idlingResource.decrement();
             }
 
             @Override
             public void onFailure(Call<MeetingService.EventsData> call, Throwable t) {//error from server
 
                 Toast.makeText(EventDetails.this,t.getMessage() , Toast.LENGTH_LONG).show();
+                idlingResource.decrement();
 
             }
 
@@ -144,6 +148,7 @@ public class EventDetails extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 changeInvitationStatus(eventID, userID, 2);
+                StartingSoonAlarm.scheduleStartingSoonAlarm(getApplicationContext(), eventID);
             }
         });
 
@@ -181,6 +186,7 @@ public class EventDetails extends AppCompatActivity {
     }
 
     public void changeInvitationStatus(int eventID, String userID, int newStatus){
+        idlingResource.increment();
         Call<Void> c = Server.getService().setInvitationStatus(String.valueOf(eventID), userID, newStatus);
         c.enqueue
                 (Server.mkCallback(
@@ -192,8 +198,12 @@ public class EventDetails extends AppCompatActivity {
                                 //        System.out::println, System.out::println);
                                 //TODO: make InvitationData error
                             }
+                            idlingResource.decrement();
                         },
-                        (call, t) -> t.printStackTrace()
+                        (call, t) -> {
+                            t.printStackTrace();
+                            idlingResource.decrement();
+                        }
                 ));
 
     }
@@ -282,6 +292,7 @@ public class EventDetails extends AppCompatActivity {
             return -1;
         }
 
+        idlingResource.increment();
         Call<MeetingService.EventData> c = Server.getService().getEvent("/events/" + eventID+ "/");
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
@@ -291,14 +302,19 @@ public class EventDetails extends AppCompatActivity {
                         Server.parseUnsuccessful(response, MeetingService.EventDataError.class,
                                 System.out::println, System.out::println);
                     }
+                    idlingResource.decrement();
                 },
-                (call, t) -> t.printStackTrace()
+                (call, t) -> {
+                    t.printStackTrace();
+                    idlingResource.decrement();
+                }
         ));
 
         return eventID;
     }
 
     public void deleteEvent(){
+        idlingResource.increment();
         Call<Void> d = Server.getService().deleteEvent("/events/" + eventID + "/");
         d.enqueue(Server.mkCallback(
                 (call, response) -> {
@@ -309,8 +325,12 @@ public class EventDetails extends AppCompatActivity {
                         Server.parseUnsuccessful(response, MeetingService.RegistrationError.class,
                                 System.out::println, System.out::println);
                     }
+                    idlingResource.decrement();
                 },
-                (call, t) -> t.printStackTrace()
+                (call, t) -> {
+                    t.printStackTrace();
+                    idlingResource.decrement();
+                }
         ));
     }
 
@@ -333,6 +353,7 @@ public class EventDetails extends AppCompatActivity {
     private void checkEventLeave() {
         leaveEventButton = (Button) findViewById(R.id.leave_event_button);
 
+        idlingResource.increment();
         Call<MeetingService.ActiveEventsData> c = Server.getService().getUserStatus();
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
@@ -350,12 +371,18 @@ public class EventDetails extends AppCompatActivity {
                     } else {
                         Toast.makeText(getApplicationContext(), "An error has occurred while retrieving status", Toast.LENGTH_SHORT).show();
                     }
+
+                    idlingResource.decrement();
                 },
-                (call, t) -> t.printStackTrace()
+                (call, t) -> {
+                    t.printStackTrace();
+                    idlingResource.decrement();
+                }
         ));
     }
 
     private void leaveEvent() {
+        idlingResource.increment();
         Call<MeetingService.ActiveEventsData> c = Server.getService().putUserStatus(
                 new MeetingService.ActiveEventsData(eventID, 3)
         );
@@ -375,8 +402,13 @@ public class EventDetails extends AppCompatActivity {
                     } else {
                         Toast.makeText(getApplicationContext(), "Status Update Error", Toast.LENGTH_SHORT).show();
                     }
+
+                    idlingResource.decrement();
                 },
-                (call, t) -> t.printStackTrace()
+                (call, t) -> {
+                    t.printStackTrace();
+                    idlingResource.decrement();
+                }
         ));
     }
 
