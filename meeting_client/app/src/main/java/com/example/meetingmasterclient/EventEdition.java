@@ -163,9 +163,12 @@ public class EventEdition extends AppCompatActivity {
 
                 putLocationandEvent();
 
+                Intent intent = new Intent(getApplicationContext(), EventDetails.class);
+                intent.putExtra("event_id", eventID);
+                startActivity(intent);
 
-                finish();//return to Event Details
-            }
+                finish();
+        }
         });
 
 
@@ -205,10 +208,10 @@ public class EventEdition extends AppCompatActivity {
 
         MeetingService.EventCreationData eventCreationData = new MeetingService
                 .EventCreationData(event_name,event_date,event_time,event_duration,
-                locationID, notes, null);
+                locationID, notes);
         //post changes
         Call<MeetingService.EventsData> c = Server.getService().updateEvent(eventCreationData,String.valueOf(eventID));
-        Log.d("eventinfo", event_date+eventCreationData.getEvent_name()+" "+event_time+" "+event_duration+" "+locationID+notes);
+
 
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
@@ -220,6 +223,10 @@ public class EventEdition extends AppCompatActivity {
                 },
                 (call, t) -> t.printStackTrace()
         ));
+
+
+
+
     }
 
     public void putLocationandEvent(){

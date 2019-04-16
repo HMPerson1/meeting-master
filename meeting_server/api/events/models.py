@@ -11,12 +11,12 @@ start_buffer = timedelta(hours=2)
 
 class Event(models.Model):
     event_admin = models.ForeignKey(UserProfile, related_name='event_admin', on_delete=models.CASCADE)
-    event_name = models.CharField(null=False, blank=False, max_length=256, help_text="Name of your Event")
-    event_date = models.DateField(null=True, blank=True, help_text="YYYY-MM-DD")
-    event_time = models.TimeField(null=True, blank=True, help_text="HH:MM")
-    event_duration = models.TimeField(default=None, blank=True, null=True, help_text="Length of Event in HH:MM")
+    event_name = models.CharField(blank=False, max_length=256, help_text="Name of your Event")
+    event_date = models.DateField(blank=True, help_text="YYYY-MM-DD")
+    event_time = models.TimeField(blank=True, help_text="HH:MM")
+    event_duration = models.TimeField(default=None, blank=True, help_text="Length of Event in HH:MM")
     file_attachment = models.FileField(null=True, blank=True)
-    notes = models.TextField(default=None, help_text="Miscellaneous notes or details you wish to include")
+    notes = models.TextField(default=None, help_text="Miscellaneous notes or details you wish to include", blank=True)
     event_location = models.ForeignKey(Location, related_name='location', on_delete=None)
 
     def __unicode__(self):
