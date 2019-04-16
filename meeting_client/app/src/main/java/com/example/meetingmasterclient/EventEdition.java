@@ -205,14 +205,13 @@ public class EventEdition extends AppCompatActivity {
         String event_time = textInputTime.getText().toString().trim();
         String event_duration = textDuration.getText().toString().trim();
         String notes = textInputNotes.getText().toString().trim();
-/*
+
         MeetingService.EventCreationData eventCreationData = new MeetingService
                 .EventCreationData(event_name,event_date,event_time,event_duration,
-                locationID, notes, null);
+                locationID, notes);
         //post changes
-        Call<MeetingService.EventsData> c = Server.getService().updateEvent(eventCreationData,String.valueOf(eventID));*/
-        Call<MeetingService.EventsData> c = Server.getService().editEventForm(String.valueOf(eventID),event_name,event_date,event_time,event_duration,
-                locationID, notes, null);
+        Call<MeetingService.EventsData> c = Server.getService().updateEvent(eventCreationData,String.valueOf(eventID));
+
 
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
