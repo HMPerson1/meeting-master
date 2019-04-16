@@ -16,6 +16,7 @@ from api.users.models import UserProfile
 from api.locations.models import Location
 import api.fcm as fcm
 
+
 class EventModelSerializer(serializers.ModelSerializer):
     # event_admin = UserProfileSerializer(many=False, read_only=True)
 
@@ -39,12 +40,6 @@ class EventModelSerializer(serializers.ModelSerializer):
         response['current_overall_state'] = instance.current_overall_state().value
         return response
 
-    # def to_representation(self, instance):
-    #     response = super().to_representation(instance)
-    #     response['event_location'] = LocationModelSerializer(instance.event_location).data
-    #     response['event_admin'] = UserProfileSerializer(instance.event_admin).data
-    #     return response
-
 
 class EventListQuerySerializer(serializers.Serializer):
     event_name = serializers.CharField(required=False)
@@ -55,7 +50,7 @@ class EventCreateSerializer(serializers.ModelSerializer):
     # event_admin = UserProfileSerializer(many=False, read_only=True)
     event_location = serializers.PrimaryKeyRelatedField(required=True, queryset=Location.objects.all(),
                                                   help_text="ID of the Location where the Event will be held")
-    file_attachment = serializers.FileField(required=False, use_url=True, allow_empty_file=True, allow_null=True)
+    # file_attachment = serializers.FileField(required=False, use_url=True, allow_empty_file=True, allow_null=True)
 
     class Meta:
         model = Event
@@ -67,7 +62,6 @@ class EventCreateSerializer(serializers.ModelSerializer):
             "event_duration",
             "event_location",
             "notes",
-            "file_attachment"
         )
 
     def update(self, instance: Model, validated_data: Any) -> Any:
@@ -94,8 +88,8 @@ class EventCreateSerializer(serializers.ModelSerializer):
             event_time=validated_data.pop('event_time'),
             event_location=location,
             event_duration=validated_data.pop('event_duration'),
-            file_attachment=validated_data.get('file_attachment', None),
-            notes=validated_data.pop('notes')
+            file_attachment=None,
+            notes=validated_data.pop('notes', None)
         )
         return event
 
@@ -143,3 +137,12 @@ class EventIcalSerializer(serializers.Serializer):
                 'status': att.status,
             } for att in instance.invitation_set.all()],
         }
+
+
+class EventFileSerializer(serializers.Serializer):
+
+    file_attachment = serializers.FileField(required=True, use_url=True, allow_empty_file=True)
+
+    class Meta:
+        model = Event
+        fields = ('file_attachment',)
