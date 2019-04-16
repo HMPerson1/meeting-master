@@ -18,3 +18,5 @@ class UserProfile(models.Model):
     firebase_reg_token = models.CharField(max_length=256, blank=True, default="")
     # TODO: one should be able to request a new ical_key if it gets "compromised"
     ical_key = models.CharField(max_length=24, blank=True, default=gen_ical_key, editable=False, unique=True)
+    latitude = models.FloatField(blank=False)
+    longitude = models.FloatField(blank=False)

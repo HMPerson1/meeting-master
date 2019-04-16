@@ -1,12 +1,14 @@
 # Create your views here.
 from django.contrib.auth.models import User
+from django.http import Http404
 from rest_framework import parsers
 from rest_framework import viewsets, permissions, generics as drf_generics
 from rest_framework.filters import SearchFilter
 
 from api.users import serializers
 from api.users.models import UserProfile
-
+from rest_framework.views import APIView
+from django.core.exceptions import ObjectDoesNotExist
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
@@ -31,6 +33,17 @@ class ProfilePictureView(drf_generics.UpdateAPIView):
     serializer_class = serializers.ProfilePictureSerializer
     permission_classes = (permissions.IsAuthenticated,)
     parser_classes = (parsers.MultiPartParser,)
+
+    def get_object(self):
+        return self.request.user.userprofile
+
+    def get_queryset(self):
+        return UserProfile.objects.none()
+
+
+class UserMapView(drf_generics.UpdateAPIView):
+    serializer_class = serializers.UserMapSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self):
         return self.request.user.userprofile
