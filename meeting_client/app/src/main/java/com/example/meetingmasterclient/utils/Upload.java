@@ -27,7 +27,7 @@ import retrofit2.Call;
 public abstract class Upload {
     public static boolean checkFilePermissions(Context context) {
         return ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED;
+                == PackageManager.PERMISSION_GRANTED;
     }
 
     private static File getFileFromUri(Context context, Uri uri) {

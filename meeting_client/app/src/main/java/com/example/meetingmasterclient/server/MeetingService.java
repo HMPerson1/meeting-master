@@ -105,6 +105,9 @@ public interface MeetingService {
     @PATCH("/events/file-attachment/{id}")
     Call<ResponseBody> uploadFile(@Path("id") String id, @Part MultipartBody.Part file);
 
+    @GET
+    Call<ResponseBody> downloadFile(@Url String url);
+
     @POST("/invitations/")
     Call<InvitationData> postInvitations(@Body InvitationData data);
     @GET("/invitations/{user_id}/")

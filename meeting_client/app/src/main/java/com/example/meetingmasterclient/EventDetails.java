@@ -1,11 +1,14 @@
 package com.example.meetingmasterclient;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Environment;
+import android.renderscript.ScriptGroup;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -22,14 +25,20 @@ import android.widget.CheckBox;
 import android.widget.Toast;
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
+import com.example.meetingmasterclient.utils.FileDownload;
 import com.example.meetingmasterclient.utils.StartingSoonAlarm;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,6 +46,7 @@ import retrofit2.Response;
 public class EventDetails extends AppCompatActivity {
     public CountingIdlingResource idlingResource = new CountingIdlingResource("Event Details Network");
     private static final int LOCATION_PERMISSION = 90;
+    private static final int FILE_PERMISSION = 20;
     public static final String PREFS_NAME = "App_Settings";
     private static final String TAG = "DebugLauncherActivity";
     int eventID;    //TODO this will change to string
@@ -47,6 +57,7 @@ public class EventDetails extends AppCompatActivity {
     private Button suggestLocationButton;
     private Button mapButton;
     private Button leaveEventButton;
+    private Button viewAttachmentButton;
 
     MeetingService.EventsData eventInfo;
     //TODO disable "View Attachment" button if no attachment exists in document
@@ -88,7 +99,7 @@ public class EventDetails extends AppCompatActivity {
 
         userID="1";
 
-
+        viewAttachmentButton = (Button) findViewById(R.id.add_attachments);
 
         if (eventID<0){
             finish();  //did not pass event_id
@@ -130,6 +141,22 @@ public class EventDetails extends AppCompatActivity {
 
                 //textInputRoomNo.setText(locationInfo.);
 
+                viewAttachmentButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                == PackageManager.PERMISSION_GRANTED) {
+                            getFileFromServer(
+                                    eventInfo.getFile_attachment(),
+                                    eventInfo.getEvent_name());
+                        } else {
+                            ActivityCompat.requestPermissions(EventDetails.this,
+                                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                    FILE_PERMISSION);
+                        }
+                    }
+                });
+
                 idlingResource.decrement();
             }
 
@@ -170,8 +197,6 @@ public class EventDetails extends AppCompatActivity {
             }
         });
 
-
-
         mapButton = (Button) findViewById(R.id.map_button);
         mapButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,6 +208,19 @@ public class EventDetails extends AppCompatActivity {
 
         checkEventLeave();
 
+    }
+
+    private void getFileFromServer(String url, String name) {
+        Call<ResponseBody> c = Server.getService().downloadFile(url);
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        (new FileDownload(getApplicationContext(), response.body(), name + url.substring(url.lastIndexOf("."))))
+                                .execute();
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
     }
 
     public void changeInvitationStatus(int eventID, String userID, int newStatus){
@@ -426,6 +464,17 @@ public class EventDetails extends AppCompatActivity {
                 } else {
                     Toast.makeText(getApplicationContext(),
                             "You cannot use the location features without these permissions",
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case FILE_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getFileFromServer(
+                            eventInfo.getFile_attachment(),
+                            eventInfo.getEvent_name());
+                } else {
+                    Toast.makeText(getApplicationContext(),
+                            "You cannot get the file without these permissions",
                             Toast.LENGTH_SHORT).show();
                 }
                 break;
