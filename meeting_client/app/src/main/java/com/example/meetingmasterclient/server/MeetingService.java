@@ -17,6 +17,7 @@ import retrofit2.http.GET;
 
 import retrofit2.http.Multipart;
 
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
@@ -63,19 +64,6 @@ public interface MeetingService {
     @PUT("/current_user/profile_picture")
     Call<ResponseBody> uploadProfilePicture(@Part MultipartBody.Part profile_picture);
 
-    /*
-    @Multipart
-    @PUT("/rest-auth/user/")
-    Call<UserProfile> putCurrentUser(
-        @Part("username") RequestBody username,
-        @Part("first_name") RequestBody first_name,
-        @Part("last_name") RequestBody last_name,
-        @Part("email") RequestBody email,
-        @Part("phone_number") RequestBody phone_number,
-        @Part MultipartBody.Part profile_picture
-    );
-    */
-
     /**
      * may fail with {@link ResetPasswordError}
      */
@@ -110,21 +98,12 @@ public interface MeetingService {
     @PUT("/events/{id}")
     Call<EventsData> updateEvent(@Body EventCreationData data,@Path("id") String id);
 
-    /*
-    @Multipart
-    @POST("/events/")
-    Call<EventData> createEvent(
-        @Part("event_name") RequestBody event_name,
-        @Part("event_date") RequestBody event_date,
-        @Part("event_time") RequestBody event_time,
-        @Part("event_duration") RequestBody event_duration,
-        @Part("event_location") RequestBody event_location,
-        @Part("notes") RequestBody notes,
-        @Part MultipartBody.Part file
-    );
-*/
     @POST("/events/new_event")
     Call<EventsData> createEvent(@Body EventCreationData data);
+
+    @Multipart
+    @PATCH("/events/file-attachment/{id}")
+    Call<ResponseBody> uploadFile(@Path("id") String id, @Part MultipartBody.Part file);
 
     @POST("/invitations/")
     Call<InvitationData> postInvitations(@Body InvitationData data);
