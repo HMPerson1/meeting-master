@@ -10,6 +10,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
 import com.example.meetingmasterclient.server.MeetingService;
@@ -61,7 +62,7 @@ public class StartingSoonAlarm extends BroadcastReceiver {
 
                                             LatLng destination = new LatLng(dest.get(0).getLatitude(), dest.get(0).getLongitude());
 
-                                            (new Route(context, currentLocation, destination, event.getPk())).execute();
+                                            (new Route(context, currentLocation, destination, event.getPk(), event.getEvent_date(), event.getEvent_time())).execute();
                                         } catch(IOException e) {
                                             System.err.println("IO ERROR");
                                         }
@@ -80,33 +81,46 @@ public class StartingSoonAlarm extends BroadcastReceiver {
     }
 
     public static void scheduleStartingSoonAlarm(Context context, int eventId) {
-        Call<MeetingService.EventsData> c = Server.getService().getEvents("/events/" + eventId);
-        c.enqueue(Server.mkCallback(
+        Server.getService().getEventfromId(eventId).enqueue(Server.mkCallback(
                 (call, response) -> {
-                    MeetingService.EventsData event = response.body();
-
-                    try {
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(event.event_date));
-
-                        String eventTime = event.event_time;
-                        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(eventTime.substring(0, 2)));
-                        calendar.set(Calendar.MINUTE, Integer.parseInt(eventTime.substring(3, 5)));
-                        calendar.add(Calendar.HOUR, -1);
-
-                        Intent activate = new Intent(context, StartingSoonAlarm.class);
-                        activate.putExtra("event_id", eventId);
-
-                        PendingIntent pActivate = PendingIntent.getBroadcast(context, 0, activate, 0);
-                        AlarmManager alarms = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-                        alarms.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pActivate);
-                        Toast.makeText(context, "SUCCESS", Toast.LENGTH_SHORT).show();
-                    } catch(ParseException e) {
-                        e.printStackTrace();
+                    if (response.isSuccessful()) {
+                        MeetingService.EventsData event = response.body();
+                        scheduleStartingSoonAlarm(context, eventId, event.getEvent_date(), event.getEvent_time());
+                    } else {
+                        Toast.makeText(context, "Error retrieving event", Toast.LENGTH_SHORT).show();
                     }
                 },
                 (call, t) -> t.printStackTrace()
-                )
-        );
+            ));
+    }
+
+    public static void scheduleStartingSoonAlarm(Context context, int eventId, String eventDate, String eventTime) {
+        try {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(eventDate));
+
+            calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(eventTime.substring(0, 2)));
+            calendar.set(Calendar.MINUTE, Integer.parseInt(eventTime.substring(3, 5)));
+            calendar.add(Calendar.HOUR, -1);
+
+            Intent activate = new Intent(context, StartingSoonAlarm.class);
+            activate.putExtra("event_id", eventId);
+
+            PendingIntent pActivate = PendingIntent.getBroadcast(context, 0, activate, 0);
+            AlarmManager alarms = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+            alarms.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pActivate);
+            System.out.println("Alarm successful");
+        } catch(ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void cancelStartingSoonAlarm(Context context, int eventId) {
+        Intent activate = new Intent(context, StartingSoonAlarm.class);
+        activate.putExtra("event_id", eventId);
+
+        PendingIntent pActivate = PendingIntent.getBroadcast(context, 0, activate, 0);
+        AlarmManager alarms = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        alarms.cancel(pActivate);
     }
 }
