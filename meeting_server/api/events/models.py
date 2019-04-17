@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from enum import Enum
+from typing import List
 
 from django.db import models
 
@@ -34,7 +35,6 @@ class Event(models.Model):
         :return: The current overall state of the event based on the current wall-clock time and the individual states
         of all attendees
         """
-        from api.invitations.models import Invitation
         now = datetime.now()
         start = datetime.combine(self.event_date, self.event_time)
         duration = timedelta(
@@ -45,7 +45,7 @@ class Event(models.Model):
         )
         if now < start - start_buffer:
             return Event.OverallState.NOT_STARTED
-        attendees = UserProfile.objects.filter(invitation__event_id=self, invitation__status=Invitation.ACCEPTED)
+        attendees = self.attendees()
         if now < start + duration:
             if any((not hasattr(u, 'activeevent') or u.activeevent.state == ActiveEvent.GOING_TO for u in attendees)):
                 return Event.OverallState.STARTING
@@ -56,6 +56,12 @@ class Event(models.Model):
                 return Event.OverallState.ENDING
             else:
                 return Event.OverallState.OVER
+
+    def attendees(self) -> List[UserProfile]:
+        from api.invitations.models import Invitation
+        ret = list(UserProfile.objects.filter(invitation__event_id=self, invitation__status=Invitation.ACCEPTED))
+        ret.append(self.event_admin)
+        return ret
 
 
 class ActiveEvent(models.Model):

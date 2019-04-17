@@ -132,6 +132,9 @@ class EventActive(drf_generics.RetrieveUpdateDestroyAPIView):
         fcm.notify_arrived_home(instance.event, instance.user)
         super().perform_destroy(instance)
 
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user.userprofile)
+
 
 class IcalView(drf_generics.ListAPIView):
     serializer_class = EventIcalSerializer
