@@ -1,43 +1,34 @@
 package com.example.meetingmasterclient;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.os.Environment;
-import android.renderscript.ScriptGroup;
+import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
-import android.util.EventLog;
+import android.transition.Slide;
+import android.transition.TransitionManager;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.Toast;
+import android.widget.ViewAnimator;
+
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
 import com.example.meetingmasterclient.utils.FileDownload;
-import com.example.meetingmasterclient.utils.StartingSoonAlarm;
-import androidx.test.espresso.idling.CountingIdlingResource;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
+import androidx.test.espresso.idling.CountingIdlingResource;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -48,18 +39,18 @@ public class EventDetails extends AppCompatActivity {
     private static final int LOCATION_PERMISSION = 90;
     private static final int FILE_PERMISSION = 20;
     public static final String PREFS_NAME = "App_Settings";
-    private static final String TAG = "DebugLauncherActivity";
-    int eventID;    //TODO this will change to string
-    String userID;
+    private int eventID;
+    private String userID;
     private Button attendeeListButton;
-    private Button acceptInviteButton;
-    private Button declineInviteButton;
     private Button suggestLocationButton;
     private Button mapButton;
-    private Button leaveEventButton;
     private Button viewAttachmentButton;
+    private boolean userIsInvited;
+    private UserEventState userEventState = UserEventState.DIFFERENT_EVENT;
+    private MeetingService.EventsData eventInfo;
+    private ViewAnimator statusContainer;
+    private ViewGroup contentView;
 
-    MeetingService.EventsData eventInfo;
     //TODO disable "View Attachment" button if no attachment exists in document
 
     @Override
@@ -78,8 +69,6 @@ public class EventDetails extends AppCompatActivity {
         final TextInputEditText textInputState = findViewById(R.id.state);
         final TextInputEditText textInputRoomNo = findViewById(R.id.room_num);
 
-        eventID = getEventByID(getIntent().getIntExtra("id", -1));
-
         attendeeListButton = (Button) findViewById(R.id.view_attendees_button);
         attendeeListButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,7 +83,6 @@ public class EventDetails extends AppCompatActivity {
         Intent intent = getIntent();
         eventID = intent.getIntExtra("event_id", -1);
         userID = intent.getStringExtra("user_id");
-
 
 
         userID="1";
@@ -158,6 +146,7 @@ public class EventDetails extends AppCompatActivity {
                 });
 
                 idlingResource.decrement();
+                updateUiStatusContainer();
             }
 
             @Override
@@ -168,23 +157,6 @@ public class EventDetails extends AppCompatActivity {
 
             }
 
-        });
-
-        acceptInviteButton = (Button) findViewById(R.id.Accept);
-        acceptInviteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                changeInvitationStatus(eventID, userID, 2);
-                StartingSoonAlarm.scheduleStartingSoonAlarm(getApplicationContext(), eventID);
-            }
-        });
-
-        declineInviteButton = (Button) findViewById(R.id.decline);
-        declineInviteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                changeInvitationStatus(eventID, userID, 3);
-            }
         });
 
         suggestLocationButton = (Button) findViewById(R.id.suggest_location_button);
@@ -206,8 +178,41 @@ public class EventDetails extends AppCompatActivity {
             }
         });
 
-        checkEventLeave();
+        contentView = findViewById(R.id.content_event_details);
+        statusContainer = findViewById(R.id.active_status_container);
 
+        refreshUserEventStatus();
+    }
+
+    private void refreshUserEventStatus() {
+        Server.getService().getUserStatus().enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        MeetingService.ActiveEventsData body = response.body();
+                        assert body != null;
+                        userEventState = (body.state == 0 || body.event == eventID)
+                                ? UserEventState.values()[body.state]
+                                : UserEventState.DIFFERENT_EVENT;
+                        updateUiStatusContainer();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "An error has occurred while retrieving status", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
+        Server.getService().getUsersInvitations().enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        List<MeetingService.InvitationData> body = response.body();
+                        assert body != null;
+                        userIsInvited = body.stream().anyMatch(inv -> inv.event_id == eventID);
+                        updateUiStatusContainer();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "An error has occurred while retrieving status", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
     }
 
     private void getFileFromServer(String url, String name) {
@@ -324,33 +329,6 @@ public class EventDetails extends AppCompatActivity {
         }
     }
 
-    private int getEventByID(int eventID){
-        if (eventID== -1) {
-            Toast.makeText(getApplicationContext(), "An error has occurred", Toast.LENGTH_SHORT).show();
-            return -1;
-        }
-
-        idlingResource.increment();
-        Call<MeetingService.EventData> c = Server.getService().getEvent("/events/" + eventID+ "/");
-        c.enqueue(Server.mkCallback(
-                (call, response) -> {
-                    if (response.isSuccessful()) {
-                        // TODO: set TextField values to retrieved event
-                    } else {
-                        Server.parseUnsuccessful(response, MeetingService.EventDataError.class,
-                                System.out::println, System.out::println);
-                    }
-                    idlingResource.decrement();
-                },
-                (call, t) -> {
-                    t.printStackTrace();
-                    idlingResource.decrement();
-                }
-        ));
-
-        return eventID;
-    }
-
     public void deleteEvent(){
         idlingResource.increment();
         Call<Void> d = Server.getService().deleteEvent("/events/" + eventID + "/");
@@ -388,66 +366,148 @@ public class EventDetails extends AppCompatActivity {
         //TODO finish implementation. Needs an intent and sent to calendar apps
     }
 
-    private void checkEventLeave() {
-        leaveEventButton = (Button) findViewById(R.id.leave_event_button);
-
-        idlingResource.increment();
-        Call<MeetingService.ActiveEventsData> c = Server.getService().getUserStatus();
-        c.enqueue(Server.mkCallback(
-                (call, response) -> {
-                    if (response.isSuccessful()) {
-                        if (response.body().state == 2) {
-                            leaveEventButton.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    leaveEvent();
-                                }
-                            });
-
-                            leaveEventButton.setVisibility(View.VISIBLE);
-                        }
-                    } else {
-                        Toast.makeText(getApplicationContext(), "An error has occurred while retrieving status", Toast.LENGTH_SHORT).show();
-                    }
-
-                    idlingResource.decrement();
-                },
-                (call, t) -> {
-                    t.printStackTrace();
-                    idlingResource.decrement();
+    private void updateUiStatusContainer() {
+        if (eventInfo == null) return;
+        int statusContainerVisibility;
+        int statusContainerChildIdx;
+        switch (eventInfo.current_overall_state) {
+            case 0: // NOT_STARTED
+                if (userIsInvited) {
+                    statusContainerVisibility = View.VISIBLE;
+                    statusContainerChildIdx = 0;
+                } else {
+                    statusContainerVisibility = View.GONE;
+                    statusContainerChildIdx = 0;
                 }
-        ));
+                break;
+            case 1: // STARTING
+                switch (userEventState) {
+                    case NOT_ACTIVE:
+                        statusContainerVisibility = View.VISIBLE;
+                        statusContainerChildIdx = 3;
+                        break;
+                    case GOING_TO:
+                        statusContainerVisibility = View.VISIBLE;
+                        statusContainerChildIdx = 4;
+                        break;
+                    case CURRENTLY_AT:
+                        statusContainerVisibility = View.VISIBLE;
+                        statusContainerChildIdx = 5;
+                        break;
+                    case LEAVING_FROM:
+                        statusContainerVisibility = View.VISIBLE;
+                        statusContainerChildIdx = 6;
+                        break;
+                    default:
+                        statusContainerVisibility = View.GONE;
+                        statusContainerChildIdx = 0;
+                        break;
+                }
+                break;
+            case 2: // ONGOING
+                switch (userEventState) {
+                    case DIFFERENT_EVENT:
+                        statusContainerVisibility = View.GONE;
+                        statusContainerChildIdx = 0;
+                        break;
+                    default:
+                        statusContainerVisibility = View.VISIBLE;
+                        statusContainerChildIdx = 5;
+                        break;
+                    case LEAVING_FROM:
+                        statusContainerVisibility = View.VISIBLE;
+                        statusContainerChildIdx = 6;
+                        break;
+                }
+                break;
+            case 3: // ENDING
+                statusContainerVisibility = View.VISIBLE;
+                statusContainerChildIdx = 6;
+                break;
+            default: // OVER
+                statusContainerVisibility = View.GONE;
+                statusContainerChildIdx = 0;
+                break;
+        }
+
+        TransitionManager.beginDelayedTransition(contentView, new Slide(Gravity.TOP));
+        statusContainer.setVisibility(statusContainerVisibility);
+        statusContainer.setDisplayedChild(statusContainerChildIdx);
     }
 
-    private void leaveEvent() {
-        idlingResource.increment();
-        Call<MeetingService.ActiveEventsData> c = Server.getService().putUserStatus(
-                new MeetingService.ActiveEventsData(eventID, 3)
-        );
-        c.enqueue(Server.mkCallback(
-                (call, response) -> {
-                    if (response.isSuccessful()) {
-                        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                                android.Manifest.permission.ACCESS_FINE_LOCATION)
-                                == PackageManager.PERMISSION_GRANTED) {
-                            //LocationUpdateService.start(getApplicationContext(), eventID);
-                            System.out.println("Permitted");
-                        } else {
-                            ActivityCompat.requestPermissions(this,
-                                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                                    LOCATION_PERMISSION);
-                        }
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Status Update Error", Toast.LENGTH_SHORT).show();
-                    }
+    public void onAcceptInviteClicked(View _ignored) {
+        changeInvitationStatus(eventID, userID, 2);
+    }
 
-                    idlingResource.decrement();
-                },
-                (call, t) -> {
-                    t.printStackTrace();
-                    idlingResource.decrement();
+    public void onDeclineInviteClicked(View _ignored) {
+        changeInvitationStatus(eventID, userID, 3);
+    }
+
+    public void onDepartClicked(View _ignored) {
+        changeUserActiveEventState(1, () -> {
+            startInvitationUpdateService();
+            refreshUserEventStatus();
+        });
+    }
+
+    public void onArriveClicked(View _ignored) {
+        changeUserActiveEventState(2, () -> {
+            stopService(new Intent(getBaseContext(), LocationUpdateService.class));
+            refreshUserEventStatus();
+        });
+    }
+
+    public void onLeaveClicked(View _ignored) {
+        changeUserActiveEventState(3, () -> {
+            startInvitationUpdateService();
+            refreshUserEventStatus();
+        });
+    }
+
+    public void onArriveHomeClicked(View _ignored) {
+        changeUserActiveEventState(0, () -> {
+            stopService(new Intent(getBaseContext(), LocationUpdateService.class));
+            refreshUserEventStatus();
+        });
+    }
+
+    private void changeUserActiveEventState(int newState, Runnable onSuccess) {
+        if (newState == 0) {
+            Server.getService().deleteUserStatus().enqueue(Server.mkCallback((call, response) -> {
+                if (response.isSuccessful()) {
+                    onSuccess.run();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Status Update Error", Toast.LENGTH_SHORT).show();
                 }
-        ));
+            }, (call, t) -> t.printStackTrace()));
+        } else {
+            Server.getService().putUserStatus(
+                    new MeetingService.ActiveEventsData(eventID, newState)
+            ).enqueue(Server.mkCallback(
+                    (call, response) -> {
+                        if (response.isSuccessful()) {
+                            onSuccess.run();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Status Update Error", Toast.LENGTH_SHORT).show();
+                        }
+                    },
+                    (call, t) -> t.printStackTrace()
+            ));
+        }
+    }
+
+    private void startInvitationUpdateService() {
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            // TODO
+            //LocationUpdateService.start(getApplicationContext(), eventID);
+            System.out.println("Permitted");
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_PERMISSION);
+        }
     }
 
     @Override
@@ -481,5 +541,9 @@ public class EventDetails extends AppCompatActivity {
             default:
                 break;
         }
+    }
+
+    enum UserEventState {
+        NOT_ACTIVE, GOING_TO, CURRENTLY_AT, LEAVING_FROM, DIFFERENT_EVENT
     }
 }
