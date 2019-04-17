@@ -395,8 +395,7 @@ public class EventDetails extends AppCompatActivity {
         d.enqueue(Server.mkCallback(
                 (call, response) -> {
                     if (response.isSuccessful()) {
-                        Toast.makeText(EventDetails.this, "Success: " + response.toString(),
-                                Toast.LENGTH_LONG).show();
+                        Toast.makeText(EventDetails.this, "Deletion success", Toast.LENGTH_LONG).show();
                         assert response.body() != null;
                         //Server.authenticate(response.body().key);
                     } else {
