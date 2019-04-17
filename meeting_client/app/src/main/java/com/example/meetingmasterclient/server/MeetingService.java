@@ -144,7 +144,7 @@ public interface MeetingService {
     @GET("/current_user/ical_url")
     Call<IcalUrlData> getIcalUrl();
 
-    @POST("/TODO/") // TODO
+    @PUT("/current_user/live-location")
     Call<Void> putCurrentLocation(@Body CurrentLocationData data);
 
     @GET("/TODO/") // TODO
