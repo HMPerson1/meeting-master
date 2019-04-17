@@ -66,8 +66,8 @@
     <string name="invite_button">Invite Users</string>
     <string name="details_suggest_button">Suggest A Location</string>
     <string name="suggest_button">Suggest Location</string>
-    <string name="leave_button">Leave The Event</string>
-
+    <string name="leave_button">Leave Event</string>
+    <string name="close">Close</string>
     <string name="invite_accept">Accept</string>
     <string name="decline">Decline</string>
 

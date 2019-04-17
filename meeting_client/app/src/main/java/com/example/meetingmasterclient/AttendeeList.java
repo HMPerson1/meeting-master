@@ -55,6 +55,7 @@ public class AttendeeList extends AppCompatActivity {
 
         eventID = Integer.toString(getIntent().getIntExtra("event_id", -1));
         Toast.makeText(AttendeeList.this, "Event id received: " + eventID, Toast.LENGTH_LONG).show();
+
         recyclerView = findViewById(R.id.recycler_view_invited_people);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
@@ -66,13 +67,23 @@ public class AttendeeList extends AppCompatActivity {
         attendeeList = new ArrayList<>();
         adapter.setDataSet(attendeeList);
 
+        submitAttendeeRequest();
+
         //TODO: Before user returns to create a meeting page, store the list of users in the database
         //exit the activity and return to Create a meeting page when the admin presses the save changes button
-        configureSaveButton();
-        submitAttendeeRequest();
+        //configureSaveButton();
+        Button close_button = findViewById(R.id.close_button);
+        close_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+
     }
 
-    private void configureSaveButton(){
+    /*private void configureSaveButton(){
         Button save_button = (Button)findViewById(R.id.save_button);
         save_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,19 +92,20 @@ public class AttendeeList extends AppCompatActivity {
                 finish();   //return to create a meeting
             }
         });
-    }
+    }*/
 
     public void submitAttendeeRequest(){
         Call<List<MeetingService.InvitationData>> c = Server.getService().getEventInvitations(eventID);
         c.enqueue(Server.mkCallback(
             (call, response) -> {
-                Toast.makeText(AttendeeList.this, response.body().toString(), Toast.LENGTH_LONG).show();
                 if (response.isSuccessful()){
+                    Toast.makeText(AttendeeList.this, "response.success = " + response.toString()
+                            + "\nPopulating list", Toast.LENGTH_LONG).show();
                     populateAttendeeList(response);
                 } else {
                     try {
                         Toast.makeText(AttendeeList.this, "response.error = " +
-                                response.body().toString(), Toast.LENGTH_LONG).show();
+                                response.toString(), Toast.LENGTH_LONG).show();
                         System.out.println("response.error = " + response.errorBody().toString());
                     } catch (NullPointerException e){
                         e.printStackTrace();
@@ -121,11 +133,11 @@ public class AttendeeList extends AppCompatActivity {
             userProfileCall.enqueue(Server.mkCallback(
                     (call, res) -> {
                         if (res.isSuccessful()){
-                            Toast.makeText(AttendeeList.this, res.body().toString(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(AttendeeList.this, res.toString(), Toast.LENGTH_LONG).show();
                             attendeeList.add(res.body());
                         } else {
                             try {
-                                Toast.makeText(AttendeeList.this, "res.error = " + res.errorBody().toString(), Toast.LENGTH_LONG).show();
+                                Toast.makeText(AttendeeList.this, "res.error = " + res.toString(), Toast.LENGTH_LONG).show();
                                 System.out.println("res.error = " + res.errorBody().toString());
                             } catch (NullPointerException e){
                                 e.printStackTrace();

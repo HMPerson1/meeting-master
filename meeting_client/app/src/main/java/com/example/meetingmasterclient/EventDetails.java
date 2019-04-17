@@ -80,7 +80,6 @@ public class EventDetails extends AppCompatActivity {
 
         eventID = getEventByID(getIntent().getIntExtra("id", -1));
 
-        //TODO: get info from backend
         //MeetingService.EventData eventData = new MeetingService.EventData();
         //get the current intent
         Intent intent = getIntent();
@@ -95,7 +94,6 @@ public class EventDetails extends AppCompatActivity {
             finish();  //did not pass event_id
         }
 
-        //TODO: get event info from backend
         idlingResource.increment();
         Call<MeetingService.EventsData> call = Server.getService().getEventfromId(String.valueOf(eventID));
         call.enqueue(new Callback<MeetingService.EventsData>() {
@@ -107,7 +105,6 @@ public class EventDetails extends AppCompatActivity {
                     idlingResource.decrement();
                     return;
                 }
-                Toast.makeText(EventDetails.this,"response" , Toast.LENGTH_LONG).show();
                 Toast.makeText(EventDetails.this,response.toString() , Toast.LENGTH_LONG).show();
 
 
@@ -201,7 +198,7 @@ public class EventDetails extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(EventDetails.this, "Passing event_id " + eventID, Toast.LENGTH_LONG).show();
-                Intent attendees = new Intent(getApplicationContext(), AttendeeList.class);
+                Intent attendees = new Intent(EventDetails.this, AttendeeList.class);
                 attendees.putExtra("event_id", eventID);
                 startActivity(attendees);
             }
@@ -326,10 +323,10 @@ public class EventDetails extends AppCompatActivity {
     }
 
     private int getEventByID(int eventID){
-        if (eventID == -1) {
+        /*if (eventID == -1) {
             Toast.makeText(getApplicationContext(), "An error has occurred", Toast.LENGTH_SHORT).show();
             return -1;
-        }
+        }*/
 
         idlingResource.increment();
         Call<MeetingService.EventData> c = Server.getService().getEvent("/events/" + eventID+ "/");
@@ -391,7 +388,6 @@ public class EventDetails extends AppCompatActivity {
 
     private void checkEventLeave() {
         leaveEventButton = (Button) findViewById(R.id.leave_event_button);
-
         idlingResource.increment();
         Call<MeetingService.ActiveEventsData> c = Server.getService().getUserStatus();
         c.enqueue(Server.mkCallback(
