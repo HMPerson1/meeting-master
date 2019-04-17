@@ -150,7 +150,7 @@ public class InvitationListActivity extends AppCompatActivity {
     }
     private void getEvents(List<MeetingService.InvitationData> invitations){
         for (String eventId:eventIDs) {
-            Call<MeetingService.EventsData> call2 = Server.getService().getEventfromId(String.valueOf(eventId));
+            Call<MeetingService.EventsData> call2 = Server.getService().getEventfromId(Integer.parseInt(eventId));
             call2.enqueue(new Callback<MeetingService.EventsData>() {
                 @Override
                 public void onResponse(Call<MeetingService.EventsData> call, retrofit2.Response<MeetingService.EventsData> response) {
@@ -297,7 +297,7 @@ public class InvitationListActivity extends AppCompatActivity {
 
 
     public void changeInvitationStatus(int eventID, String userID, int newStatus){//1=pend 2=accept 3=declined
-        Call<Void> c = Server.getService().setInvitationStatus(String.valueOf(eventID), userID, newStatus);
+        Call<MeetingService.InvitationData> c = Server.getService().setInvitationStatus(String.valueOf(eventID), userID, newStatus);
         c.enqueue
                 (Server.mkCallback(
                         (call, response) -> {

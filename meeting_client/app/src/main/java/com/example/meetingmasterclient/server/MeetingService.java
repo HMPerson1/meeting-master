@@ -2,7 +2,6 @@ package com.example.meetingmasterclient.server;
 
 import android.support.annotation.NonNull;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,17 +10,14 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
-import retrofit2.http.Field;
-import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-
 import retrofit2.http.Multipart;
 
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
-import retrofit2.http.Path;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.Url;
 
@@ -93,7 +89,7 @@ public interface MeetingService {
     Call<LocationData> newLocation(@Body LocationData data);
 
     @GET("/events/{id}")
-    Call<EventsData> getEventfromId(@Path("id") String id);
+    Call<EventsData> getEventfromId(@Path("id") int id);
 
     @PUT("/events/{id}")
     Call<EventsData> updateEvent(@Body EventCreationData data,@Path("id") String id);
@@ -118,15 +114,12 @@ public interface MeetingService {
                                                  @Path("user_id") String user_id);
 
     @PUT("/invitations/{event_id}/{user_id}/update_status")
-    Call<Void> setInvitationStatus(@Path("event_id") String event_id,
-                                   @Path("user_id") String user_id,
-                                   @Query("status") int status);     //TODO this probs needs fixing, event_id to string
+    Call<InvitationData> setInvitationStatus(@Path("event_id") String event_id,
+                                             @Path("user_id") String user_id,
+                                             @Query("status") int status);     //TODO this probs needs fixing, event_id to string
 
     @GET("/invitations/user-invitations")
     Call<List<InvitationData>> getUsersInvitations();
-
-    @GET
-    Call<EventData> getEvent(@Url String url);
 
     @GET
     Call<EventsData> getEvents(@Url String url);
@@ -168,6 +161,9 @@ public interface MeetingService {
 
     @PUT("/events/current-user-active-event")
     Call<ActiveEventsData> putUserStatus(@Body ActiveEventsData data);
+
+    @DELETE("/events/current-user-active-event")
+    Call<Void> deleteUserStatus();
 
     /* ******************** *
      * Dumb data containers *
@@ -413,6 +409,7 @@ public interface MeetingService {
         public LocationData event_location;
         public String notes;
         public String file_attachment;
+        public int current_overall_state;
 
         public int getPk() {
             return pk;
@@ -681,6 +678,14 @@ public interface MeetingService {
         public ActiveEventsData(int event, int state) {
             this.event = event;
             this.state = state;
+        }
+
+        @Override
+        public String toString() {
+            return "ActiveEventsData{" +
+                    "event=" + event +
+                    ", state=" + state +
+                    '}';
         }
     }
 }
