@@ -144,11 +144,8 @@ public interface MeetingService {
     @PUT("/current_user/firebase_reg_token")
     Call<Void> putFirebaseRegToken(@Body FirebaseRegTokenData data);
 
-    /**
-     * TODO someone check this, not sure if correct
-     */
     @DELETE("/events/{id}/")
-    Call<Void> deleteEvent(@Url String url);
+    Call<Void> deleteEvent(@Path("id") int eventID);
 
     /**
      * needs authentication <br>

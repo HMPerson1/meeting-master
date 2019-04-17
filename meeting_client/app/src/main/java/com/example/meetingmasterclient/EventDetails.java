@@ -2,7 +2,9 @@ package com.example.meetingmasterclient;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -307,7 +309,6 @@ public class EventDetails extends AppCompatActivity {
                 intent.putExtra("event_id", eventID);
                 startActivity(intent);
 
-
                 return false;
             }
         });
@@ -325,18 +326,40 @@ public class EventDetails extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()) {
             case R.id.delete_event_menu:
+                /*
                 boolean userConfirm = openAlertDialog();
                 userConfirm = true; //TODO delete this line once openAlertDialog() is fixed
                 if (userConfirm) {
                     deleteEvent();
                 }
-                return true;
+                return true;*/
+                showDeletePrompt();
             case R.id.export_event_menu:
                 exportEvent();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showDeletePrompt(){
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                switch(i){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        deleteEvent();
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you would like to delete this event?").setPositiveButton(
+                "Delete", dialogClickListener).setNegativeButton("Cancel", dialogClickListener)
+                .show();
     }
 
     private int getEventByID(int eventID){
@@ -368,13 +391,17 @@ public class EventDetails extends AppCompatActivity {
 
     public void deleteEvent(){
         idlingResource.increment();
-        Call<Void> d = Server.getService().deleteEvent("/events/" + eventID + "/");
+        Call<Void> d = Server.getService().deleteEvent(eventID);
         d.enqueue(Server.mkCallback(
                 (call, response) -> {
                     if (response.isSuccessful()) {
+                        Toast.makeText(EventDetails.this, "Success: " + response.toString(),
+                                Toast.LENGTH_LONG).show();
                         assert response.body() != null;
                         //Server.authenticate(response.body().key);
                     } else {
+                        Toast.makeText(EventDetails.this, "Failure: " + response.toString(),
+                                Toast.LENGTH_LONG).show();
                         Server.parseUnsuccessful(response, MeetingService.RegistrationError.class,
                                 System.out::println, System.out::println);
                     }
@@ -385,6 +412,7 @@ public class EventDetails extends AppCompatActivity {
                     idlingResource.decrement();
                 }
         ));
+        finish();
     }
 
     public void exportEvent(){
