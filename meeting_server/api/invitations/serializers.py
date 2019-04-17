@@ -54,10 +54,14 @@ class InvitationStatusUpdateSerializer(serializers.ModelSerializer):
 
 class InvitationAttendeeMapSerializer(serializers.ModelSerializer):
     event_id = serializers.PrimaryKeyRelatedField(many=False, queryset=Event.objects.all())
+    user_id = serializers.PrimaryKeyRelatedField(many=False, queryset=UserProfile.objects.all())
+
+    class Meta:
+        model = Invitation
+        fields = ('event_id', 'user_id')
 
     def to_representation(self, instance):
         response = super().to_representation(instance)
         response['user_id'] = UserMapSerializer(instance.user_id).data
         # response['event_admin'] = UserProfileSerializer(instance.event_admin).data
         return response
- 
