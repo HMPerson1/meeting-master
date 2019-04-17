@@ -89,7 +89,7 @@ public interface MeetingService {
     Call<LocationData> newLocation(@Body LocationData data);
 
     @GET("/events/{id}")
-    Call<EventsData> getEventfromId(@Path("id") String id);
+    Call<EventsData> getEventfromId(@Path("id") int id);
 
     @PUT("/events/{id}")
     Call<EventsData> updateEvent(@Body EventCreationData data,@Path("id") String id);
@@ -114,15 +114,12 @@ public interface MeetingService {
                                                  @Path("user_id") String user_id);
 
     @PUT("/invitations/{event_id}/{user_id}/update_status")
-    Call<Void> setInvitationStatus(@Path("event_id") String event_id,
-                                   @Path("user_id") String user_id,
-                                   @Query("status") int status);     //TODO this probs needs fixing, event_id to string
+    Call<InvitationData> setInvitationStatus(@Path("event_id") String event_id,
+                                             @Path("user_id") String user_id,
+                                             @Query("status") int status);     //TODO this probs needs fixing, event_id to string
 
     @GET("/invitations/user-invitations")
     Call<List<InvitationData>> getUsersInvitations();
-
-    @GET
-    Call<EventData> getEvent(@Url String url);
 
     @GET
     Call<EventsData> getEvents(@Url String url);

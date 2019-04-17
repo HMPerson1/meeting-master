@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -27,6 +29,7 @@ import com.example.meetingmasterclient.server.Server;
 import com.example.meetingmasterclient.utils.FileDownload;
 
 import java.util.List;
+import java.util.Optional;
 
 import androidx.test.espresso.idling.CountingIdlingResource;
 import okhttp3.ResponseBody;
@@ -45,7 +48,7 @@ public class EventDetails extends AppCompatActivity {
     private Button suggestLocationButton;
     private Button mapButton;
     private Button viewAttachmentButton;
-    private boolean userIsInvited;
+    private UserInvitationStatus userInvitationStatus = UserInvitationStatus.NONE;
     private UserEventState userEventState = UserEventState.DIFFERENT_EVENT;
     private MeetingService.EventsData eventInfo;
     private ViewAnimator statusContainer;
@@ -95,7 +98,7 @@ public class EventDetails extends AppCompatActivity {
 
         //TODO: get event info from backend
         idlingResource.increment();
-        Call<MeetingService.EventsData> call = Server.getService().getEventfromId(String.valueOf(eventID));
+        Call<MeetingService.EventsData> call = Server.getService().getEventfromId(eventID);
         call.enqueue(new Callback<MeetingService.EventsData>() {
             @Override
             public void onResponse(Call<MeetingService.EventsData> call, Response<MeetingService.EventsData>response) {
@@ -181,19 +184,30 @@ public class EventDetails extends AppCompatActivity {
         contentView = findViewById(R.id.content_event_details);
         statusContainer = findViewById(R.id.active_status_container);
 
-        refreshUserEventStatus();
+        fetchUserEventState();
     }
 
-    private void refreshUserEventStatus() {
+    private void fetchEventData() {
+        Server.getService().getEventfromId(eventID).enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        eventInfo = response.body();
+                        updateUiStatusContainer();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "An error has occurred while retrieving event data", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
+    }
+
+    private void fetchUserEventState() {
         Server.getService().getUserStatus().enqueue(Server.mkCallback(
                 (call, response) -> {
                     if (response.isSuccessful()) {
                         MeetingService.ActiveEventsData body = response.body();
                         assert body != null;
-                        userEventState = (body.state == 0 || body.event == eventID)
-                                ? UserEventState.values()[body.state]
-                                : UserEventState.DIFFERENT_EVENT;
-                        updateUiStatusContainer();
+                        onUpdatedUserActiveEventState(body);
                     } else {
                         Toast.makeText(getApplicationContext(), "An error has occurred while retrieving status", Toast.LENGTH_SHORT).show();
                     }
@@ -205,14 +219,30 @@ public class EventDetails extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         List<MeetingService.InvitationData> body = response.body();
                         assert body != null;
-                        userIsInvited = body.stream().anyMatch(inv -> inv.event_id == eventID);
-                        updateUiStatusContainer();
+                        Optional<MeetingService.InvitationData> invite =
+                                body.stream().filter(inv -> inv.event_id == eventID).findAny();
+                        onUpdatedInvitationStatus(invite.orElse(null));
                     } else {
                         Toast.makeText(getApplicationContext(), "An error has occurred while retrieving status", Toast.LENGTH_SHORT).show();
                     }
                 },
                 (call, t) -> t.printStackTrace()
         ));
+    }
+
+    private void onUpdatedInvitationStatus(@Nullable MeetingService.InvitationData invite) {
+        userInvitationStatus =
+                Optional.ofNullable(invite)
+                        .map(inv -> UserInvitationStatus.values()[inv.status])
+                        .orElse(UserInvitationStatus.NONE);
+        updateUiStatusContainer();
+    }
+
+    private void onUpdatedUserActiveEventState(@NonNull MeetingService.ActiveEventsData body) {
+        userEventState = (body.state == 0 || body.event == eventID)
+                ? UserEventState.values()[body.state]
+                : UserEventState.DIFFERENT_EVENT;
+        updateUiStatusContainer();
     }
 
     private void getFileFromServer(String url, String name) {
@@ -228,27 +258,25 @@ public class EventDetails extends AppCompatActivity {
         ));
     }
 
-    public void changeInvitationStatus(int eventID, String userID, int newStatus){
+    private void changeInvitationStatus(int eventID, String userID, int newStatus) {
         idlingResource.increment();
-        Call<Void> c = Server.getService().setInvitationStatus(String.valueOf(eventID), userID, newStatus);
-        c.enqueue
-                (Server.mkCallback(
-                        (call, response) -> {
-                            if (response.isSuccessful()) {
-                                // TODO: change button to reflect this
-                            } else {
-                                //Server.parseUnsuccessful(response, MeetingService.EventDataError.class,
-                                //        System.out::println, System.out::println);
-                                //TODO: make InvitationData error
-                            }
-                            idlingResource.decrement();
-                        },
-                        (call, t) -> {
-                            t.printStackTrace();
-                            idlingResource.decrement();
-                        }
-                ));
-
+        Server.getService().setInvitationStatus(String.valueOf(eventID), userID, newStatus
+        ).enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        MeetingService.InvitationData body = response.body();
+                        assert body != null;
+                        onUpdatedInvitationStatus(body);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "An error has occurred while updating invitation status", Toast.LENGTH_SHORT).show();
+                    }
+                    idlingResource.decrement();
+                },
+                (call, t) -> {
+                    t.printStackTrace();
+                    idlingResource.decrement();
+                }
+        ));
     }
 
     public boolean openAlertDialog(){
@@ -368,66 +396,92 @@ public class EventDetails extends AppCompatActivity {
 
     private void updateUiStatusContainer() {
         if (eventInfo == null) return;
+        // TODO: if (eventInfo.event_admin == userID) userInvitationStatus = UserInvitationStatus.ACCEPTED;
         int statusContainerVisibility;
         int statusContainerChildIdx;
-        switch (eventInfo.current_overall_state) {
-            case 0: // NOT_STARTED
-                if (userIsInvited) {
-                    statusContainerVisibility = View.VISIBLE;
-                    statusContainerChildIdx = 0;
-                } else {
-                    statusContainerVisibility = View.GONE;
-                    statusContainerChildIdx = 0;
-                }
-                break;
-            case 1: // STARTING
-                switch (userEventState) {
-                    case NOT_ACTIVE:
-                        statusContainerVisibility = View.VISIBLE;
-                        statusContainerChildIdx = 3;
-                        break;
-                    case GOING_TO:
-                        statusContainerVisibility = View.VISIBLE;
-                        statusContainerChildIdx = 4;
-                        break;
-                    case CURRENTLY_AT:
-                        statusContainerVisibility = View.VISIBLE;
-                        statusContainerChildIdx = 5;
-                        break;
-                    case LEAVING_FROM:
-                        statusContainerVisibility = View.VISIBLE;
-                        statusContainerChildIdx = 6;
-                        break;
-                    default:
-                        statusContainerVisibility = View.GONE;
-                        statusContainerChildIdx = 0;
-                        break;
-                }
-                break;
-            case 2: // ONGOING
-                switch (userEventState) {
-                    case DIFFERENT_EVENT:
-                        statusContainerVisibility = View.GONE;
-                        statusContainerChildIdx = 0;
-                        break;
-                    default:
-                        statusContainerVisibility = View.VISIBLE;
-                        statusContainerChildIdx = 5;
-                        break;
-                    case LEAVING_FROM:
-                        statusContainerVisibility = View.VISIBLE;
-                        statusContainerChildIdx = 6;
-                        break;
-                }
-                break;
-            case 3: // ENDING
-                statusContainerVisibility = View.VISIBLE;
-                statusContainerChildIdx = 6;
-                break;
-            default: // OVER
+        switch (userInvitationStatus) {
+            case NONE:
                 statusContainerVisibility = View.GONE;
                 statusContainerChildIdx = 0;
                 break;
+            case PENDING:
+                statusContainerVisibility = View.VISIBLE;
+                statusContainerChildIdx = 0;
+                break;
+            case DECLINED:
+                statusContainerVisibility = View.VISIBLE;
+                statusContainerChildIdx = 2;
+                break;
+            case ACCEPTED:
+            default:
+                switch (eventInfo.current_overall_state) {
+                    case 0: // NOT_STARTED
+                        statusContainerVisibility = View.VISIBLE;
+                        statusContainerChildIdx = 1;
+                        break;
+                    case 1: // STARTING
+                        switch (userEventState) {
+                            case NOT_ACTIVE:
+                                statusContainerVisibility = View.VISIBLE;
+                                statusContainerChildIdx = 3;
+                                break;
+                            case GOING_TO:
+                                statusContainerVisibility = View.VISIBLE;
+                                statusContainerChildIdx = 4;
+                                break;
+                            case CURRENTLY_AT:
+                                statusContainerVisibility = View.VISIBLE;
+                                statusContainerChildIdx = 5;
+                                break;
+                            case LEAVING_FROM:
+                                statusContainerVisibility = View.VISIBLE;
+                                statusContainerChildIdx = 6;
+                                break;
+                            case DIFFERENT_EVENT:
+                            default:
+                                statusContainerVisibility = View.GONE;
+                                statusContainerChildIdx = 0;
+                                break;
+                        }
+                        break;
+                    case 2: // ONGOING
+                        switch (userEventState) {
+                            case NOT_ACTIVE:
+                            case DIFFERENT_EVENT:
+                                statusContainerVisibility = View.GONE;
+                                statusContainerChildIdx = 0;
+                                break;
+                            case CURRENTLY_AT:
+                            default:
+                                statusContainerVisibility = View.VISIBLE;
+                                statusContainerChildIdx = 5;
+                                break;
+                            case LEAVING_FROM:
+                                statusContainerVisibility = View.VISIBLE;
+                                statusContainerChildIdx = 6;
+                                break;
+                        }
+                        break;
+                    case 3: // ENDING
+                        switch (userEventState) {
+                            case NOT_ACTIVE:
+                            case DIFFERENT_EVENT:
+                                statusContainerVisibility = View.GONE;
+                                statusContainerChildIdx = 0;
+                                break;
+                            case LEAVING_FROM:
+                            default:
+                                statusContainerVisibility = View.VISIBLE;
+                                statusContainerChildIdx = 6;
+                                break;
+                        }
+                        break;
+                    case 4: // OVER
+                    default:
+                        statusContainerVisibility = View.VISIBLE;
+                        statusContainerChildIdx = 7;
+                        break;
+                }
         }
 
         TransitionManager.beginDelayedTransition(contentView, new Slide(Gravity.TOP));
@@ -444,38 +498,30 @@ public class EventDetails extends AppCompatActivity {
     }
 
     public void onDepartClicked(View _ignored) {
-        changeUserActiveEventState(1, () -> {
-            startInvitationUpdateService();
-            refreshUserEventStatus();
-        });
+        changeUserActiveEventState(1, this::startLocationUpdateService);
     }
 
     public void onArriveClicked(View _ignored) {
-        changeUserActiveEventState(2, () -> {
-            stopService(new Intent(getBaseContext(), LocationUpdateService.class));
-            refreshUserEventStatus();
-        });
+        changeUserActiveEventState(2, () ->
+                stopService(new Intent(getBaseContext(), LocationUpdateService.class)));
     }
 
     public void onLeaveClicked(View _ignored) {
-        changeUserActiveEventState(3, () -> {
-            startInvitationUpdateService();
-            refreshUserEventStatus();
-        });
+        changeUserActiveEventState(3, this::startLocationUpdateService);
     }
 
     public void onArriveHomeClicked(View _ignored) {
-        changeUserActiveEventState(0, () -> {
-            stopService(new Intent(getBaseContext(), LocationUpdateService.class));
-            refreshUserEventStatus();
-        });
+        changeUserActiveEventState(0, () ->
+                stopService(new Intent(getBaseContext(), LocationUpdateService.class)));
     }
 
     private void changeUserActiveEventState(int newState, Runnable onSuccess) {
         if (newState == 0) {
             Server.getService().deleteUserStatus().enqueue(Server.mkCallback((call, response) -> {
                 if (response.isSuccessful()) {
+                    onUpdatedUserActiveEventState(new MeetingService.ActiveEventsData(0, 0));
                     onSuccess.run();
+                    fetchEventData();
                 } else {
                     Toast.makeText(getApplicationContext(), "Status Update Error", Toast.LENGTH_SHORT).show();
                 }
@@ -486,7 +532,11 @@ public class EventDetails extends AppCompatActivity {
             ).enqueue(Server.mkCallback(
                     (call, response) -> {
                         if (response.isSuccessful()) {
+                            MeetingService.ActiveEventsData body = response.body();
+                            assert body != null;
+                            onUpdatedUserActiveEventState(body);
                             onSuccess.run();
+                            fetchEventData();
                         } else {
                             Toast.makeText(getApplicationContext(), "Status Update Error", Toast.LENGTH_SHORT).show();
                         }
@@ -496,7 +546,7 @@ public class EventDetails extends AppCompatActivity {
         }
     }
 
-    private void startInvitationUpdateService() {
+    private void startLocationUpdateService() {
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -545,5 +595,9 @@ public class EventDetails extends AppCompatActivity {
 
     enum UserEventState {
         NOT_ACTIVE, GOING_TO, CURRENTLY_AT, LEAVING_FROM, DIFFERENT_EVENT
+    }
+
+    enum UserInvitationStatus {
+        NONE, PENDING, ACCEPTED, DECLINED
     }
 }

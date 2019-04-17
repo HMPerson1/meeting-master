@@ -86,7 +86,7 @@ public class EventEdition extends AppCompatActivity {
         }
 
         //TODO: get event info from backend
-        Call<MeetingService.EventsData> call = Server.getService().getEventfromId(String.valueOf(eventID));
+        Call<MeetingService.EventsData> call = Server.getService().getEventfromId(eventID);
         call.enqueue(new Callback<MeetingService.EventsData>() {
             @Override
             public void onResponse(Call<MeetingService.EventsData> call, Response<MeetingService.EventsData>response) {
