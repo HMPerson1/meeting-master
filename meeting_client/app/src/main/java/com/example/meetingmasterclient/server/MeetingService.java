@@ -3,20 +3,19 @@ package com.example.meetingmasterclient.server;
 import android.support.annotation.NonNull;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
 import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 
 import retrofit2.http.Multipart;
-import retrofit2.http.PATCH;
 
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -99,7 +98,7 @@ public interface MeetingService {
     @GET
     Call<UserProfile> getUser(@Url String url);
 
-    @GET("/locations/{id}/")
+    @GET("/locations/{id}")
     Call<LocationData> getLocationDetails(@Path("id") String id);
 
     @POST("/locations/")
@@ -108,8 +107,8 @@ public interface MeetingService {
     @GET("/events/{id}")
     Call<EventsData> getEventfromId(@Path("id") String id);
 
-    @PUT("/events/{id}/")
-    Call<Void> updateEvent(@Body EventData data);
+    @PUT("/events/{id}")
+    Call<EventsData> updateEvent(@Body EventCreationData data,@Path("id") String id);
 
     /*
     @Multipart
@@ -172,6 +171,12 @@ public interface MeetingService {
 
     @POST("/TODO/") // TODO
     Call<Void> putCurrentLocation(@Body CurrentLocationData data);
+
+    @GET("/suggestions/event-suggestions/{event_id}")
+    Call <List<LocationSuggestionsData>> getSuggestedLocations(@Path("event_id")  String event_id);
+
+    @POST("/suggestions/")
+    Call<LocationSuggestionsData> makeSuggestion(@Body LocationSuggestionsData data);
 
     /* ******************** *
      * Dumb data containers *
@@ -244,6 +249,10 @@ public interface MeetingService {
 
         public void setLast_name(String last_name) {
             this.last_name = last_name;
+        }
+
+        public void setUsername(String username){
+            this.username = username;
         }
 
         @Override
@@ -449,7 +458,7 @@ public interface MeetingService {
 
     class EventData {
         public int id;
-        public int event_admin;
+        public int event_admin_id;
         public String event_name;
         public String event_date;
         public String event_time;
@@ -460,7 +469,7 @@ public interface MeetingService {
 
         public EventData(int id, int event_admin, String event_name, String event_date, String event_time, String event_duration, String file_attachment, String notes, int event_location) {
             this.id = id;
-            this.event_admin = event_admin;
+            this.event_admin_id = event_admin;
             this.event_name = event_name;
             this.event_date = event_date;
             this.event_time = event_time;
@@ -475,7 +484,7 @@ public interface MeetingService {
         }
 
         public int getEvent_admin() {
-            return event_admin;
+            return event_admin_id;
         }
 
         public String getEvent_name() {
@@ -514,17 +523,17 @@ public interface MeetingService {
         public String event_duration;
         public int event_location;
         public String notes;
-        public String file_attachment;
+
 
         public EventCreationData(String event_name, String event_date, String event_time, String event_duration,
-                                 int event_location, String notes, String file_attachment){
+                                 int event_location, String notes){
             this.event_name = event_name;
             this.event_date = event_date;
             this.event_time = event_time;
             this.event_duration = event_duration;
             this.event_location = event_location;
             this.notes = notes;
-            this.file_attachment = file_attachment;
+
         }
 
         public EventCreationData(String event_name, int event_location){
@@ -534,20 +543,24 @@ public interface MeetingService {
             this.event_duration = null;
             this.event_location = event_location;
             this.notes = null;
-            this.file_attachment = null;
+
+        }
+
+        public String getEvent_name() {
+            return event_name;
         }
     }
 
     class EventDataError{
-        public int[] id;
-        public int[] event_admin;
+        public String[] id;
+        public String[] event_admin;
         public String[] event_name;
         public String[] event_date;
         public String[] event_time;
         public String[] event_duration;
         public String[] file_attachment;
         public String[] notes;
-        public int[] event_location;
+        public String[] event_location;
 
         @Override
         @NonNull
@@ -649,6 +662,24 @@ public interface MeetingService {
         public CurrentLocationData(double lat, double lon) {
             this.lat = lat;
             this.lon = lon;
+        }
+    }
+
+    class LocationSuggestionsData {
+        int event_id;
+        int location_id;
+
+        public LocationSuggestionsData(int event_id, int location_id) {
+            this.event_id = event_id;
+            this.location_id = location_id;
+        }
+
+        public int getEvent_id() {
+            return event_id;
+        }
+
+        public int getLocation_id() {
+            return location_id;
         }
     }
 }

@@ -1,10 +1,9 @@
 package com.example.meetingmasterclient;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,7 +46,7 @@ public class SuggestionsListActivity extends AppCompatActivity {
     private RequestQueue requestQueue;
     int user_id;
     JSONArray jArray = new JSONArray();
-    List<String> eventIDs = new ArrayList<>();
+    int eventID=-1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +54,9 @@ public class SuggestionsListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_suggestions_list);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Intent intent = getIntent();
+        eventID = intent.getIntExtra("event_id", -1);
 
 
         RecyclerView recyclerView = findViewById(R.id.suggestions_recycler_view);
@@ -67,76 +69,41 @@ public class SuggestionsListActivity extends AppCompatActivity {
         requestQueue = Volley.newRequestQueue(this, new HurlStack());
         requestQueue.start();
 
-        Call<MeetingService.UserProfile> c = Server.getService().getCurrentUser();
-        c.enqueue(new Callback<MeetingService.UserProfile>() {
+
+
+
+        Call<List<MeetingService.LocationSuggestionsData>> call = Server.getService().getSuggestedLocations(Integer.toString(eventID));
+        call.enqueue(new Callback<List<MeetingService.LocationSuggestionsData>>() {
             @Override
-            public void onResponse(Call<MeetingService.UserProfile> call, retrofit2.Response<MeetingService.UserProfile> response) {
-                if(!response.isSuccessful()){ //404 error?
-                    Toast.makeText(SuggestionsListActivity.this, "Oops, Something is wrong: "+response.code() , Toast.LENGTH_LONG).show();
-                    return;
-                }
-                //get user id
-                MeetingService.UserProfile userProf =response.body();//store response
-                user_id=userProf.getPk();
-
-            }
-
-            @Override
-            public void onFailure(Call<MeetingService.UserProfile> call, Throwable t) {//error from server
-
-                Toast.makeText(SuggestionsListActivity.this,t.getMessage() , Toast.LENGTH_LONG).show();
-
-            }
-        });
-
-
-/* placeholder for getting location suggestions from backend
-        Call<List<MeetingService.InvitationData>> call = Server.getService().getUsersInvitations();
-        call.enqueue(new Callback<List<MeetingService.InvitationData>>() {
-            @Override
-            public void onResponse(Call<List<MeetingService.InvitationData>> call, retrofit2.Response<List<MeetingService.InvitationData>> response) {
+            public void onResponse(Call<List<MeetingService.LocationSuggestionsData>> call, retrofit2.Response<List<MeetingService.LocationSuggestionsData>> response) {
                 if (!response.isSuccessful()) { //404 error?
-                    Toast.makeText(InvitationListActivity.this, "Oops, Something is wrong: " + response.code(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(SuggestionsListActivity.this, "Oops, Something is wrong: " + response.code(), Toast.LENGTH_LONG).show();
                     return;
                 }
-                Toast.makeText(InvitationListActivity.this, "response"+response.body(), Toast.LENGTH_LONG).show();
-                Toast.makeText(InvitationListActivity.this, response.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(SuggestionsListActivity.this, "response"+response.body(), Toast.LENGTH_LONG).show();
+
 
                 //add user to list if successful
-                List<MeetingService.InvitationData> invitations = response.body();//store response
+                List<MeetingService.LocationSuggestionsData> locations = response.body();//store response
 
-                for (MeetingService.InvitationData invitation : invitations) {
-                    //get event name
-                    if (invitation.getStatus()!=1){ //do not display if invitation not pending
-                        continue;
-                    }
-                    String eventId = String.valueOf(invitation.getEvent_id());
-                    eventIDs.add(eventId);
-
-
-
-
-                }//end for
-                //getEvents(response.body());
-
-
-
+                getLocationInfo(locations);
 
 
             }
 
 
             @Override
-            public void onFailure(Call<List<MeetingService.InvitationData>> call, Throwable t) {//error from server
+            public void onFailure(Call<List<MeetingService.LocationSuggestionsData>> call, Throwable t) {//error from server
 
                 Toast.makeText(SuggestionsListActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
 
             }
         });
-        */
+
 
         // TODO: for testing
-        try {
+        /*try {
+
             JSONObject jo = new JSONObject();
             jo.put("address", "12 railroad blvd");
             jo.put("state", "neverland");
@@ -151,30 +118,29 @@ public class SuggestionsListActivity extends AppCompatActivity {
             //adapter.setDataSet(new JSONArray("[{\"pk\": 1, \"name\": \"The First Event\"},{\"pk\": 2, \"name\": \"Event 2: Electric Boogaloo\"}]"));
         } catch (JSONException e) {
             e.printStackTrace();
-        }
+        }*/
 
     }
-    /* //placeholder for retrieval for location endpoint
-    private void getEvents(List<MeetingService.InvitationData> invitations){
-        for (String eventId:eventIDs) {
-            Call<MeetingService.EventsData> call2 = Server.getService().getEventfromId(String.valueOf(eventId));
-            call2.enqueue(new Callback<MeetingService.EventsData>() {
+
+    private void getLocationInfo(List<MeetingService.LocationSuggestionsData> locations){
+        for ( MeetingService.LocationSuggestionsData locationSuggestion:locations) {
+            int locationID = locationSuggestion.getLocation_id();
+            Call<MeetingService.LocationData> call2 = Server.getService().getLocationDetails(String.valueOf(locationID));
+            call2.enqueue(new Callback<MeetingService.LocationData>() {
                 @Override
-                public void onResponse(Call<MeetingService.EventsData> call, retrofit2.Response<MeetingService.EventsData> response) {
+                public void onResponse(Call<MeetingService.LocationData> call, retrofit2.Response<MeetingService.LocationData> response) {
                     if (!response.isSuccessful()) { //404 error?
-                        Toast.makeText(InvitationListActivity.this, "Oops, Something is wrong: " + response.code(), Toast.LENGTH_LONG).show();
                         return;
                     }
-                    Toast.makeText(InvitationListActivity.this, "response" + response.body(), Toast.LENGTH_LONG).show();
-                    Toast.makeText(InvitationListActivity.this, response.toString(), Toast.LENGTH_LONG).show();
 
-
-                    MeetingService.EventsData eventInfo = response.body();//store response
+                    MeetingService.LocationData locationInfo = response.body();//store response
 
                     try {
                         JSONObject jo = new JSONObject();
-                        jo.put("pk", eventInfo.getPk());
-                        jo.put("name", eventInfo.getEvent_name());
+                        jo.put("address", locationInfo.getStreet_address());
+                        jo.put("state", locationInfo.getState());
+                        jo.put("city", locationInfo.getCity());
+                        jo.put("locationID", locationID);
                         jArray.put(jo);
 
                     } catch (JSONException e) {
@@ -186,7 +152,7 @@ public class SuggestionsListActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(Call<MeetingService.EventsData> call, Throwable t) {//error from server
+                public void onFailure(Call<MeetingService.LocationData> call, Throwable t) {//error from server
 
                     Toast.makeText(SuggestionsListActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
 
@@ -194,38 +160,23 @@ public class SuggestionsListActivity extends AppCompatActivity {
             });
 
         }
-    }//getEvents
+    }//getLocationInfo
 
-    */
     @Override
     protected void onStart() {
         super.onStart();
         String url = "https://localhost:8000/user/0/invitations"; // TODO
-        requestQueue.add(new JsonArrayRequest(
-                Request.Method.GET, url, null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        adapter.setDataSet(response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.w(TAG, "onErrorResponse: fetch Location", error);
-                    }
-                }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> ret = new HashMap<>(super.getHeaders());
-                ret.put("Authorization", "Token " + authToken);
-                return ret;
-            }
-        });
+
+
     }
 
-    private void pickLocation(int eventId, String action,int position) {
-        //TODO send location id to edit event activity change activity
+    private void pickLocation(int locationID, int eventId) {
+        //send location id to edit event activity change activity
+        Intent suggested = new Intent(getApplicationContext(), EventEdition.class);
+        suggested.putExtra("event_id", eventID);
+        suggested.putExtra("location_id", locationID);
+        startActivity(suggested);
+
     }
 
     private class LocationSuggestionsAdapter extends RecyclerView.Adapter<SuggestionsListActivity.LocationSuggestionsAdapter.ViewHolder> {
@@ -249,11 +200,19 @@ public class SuggestionsListActivity extends AppCompatActivity {
 
             try {
                 JSONObject location = dataSet.getJSONObject(position);
-                //holder.eventId = event.getInt("pk");
+                holder.locationId = location.getInt("locationID");
                 holder.locationAddressView.setText(location.getString("address"));
                 holder.locationStateView.setText(location.getString("state"));
                 holder.locationCityView.setText(location.getString("city"));
                 holder.position = holder.getAdapterPosition();
+                holder.linearLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(SuggestionsListActivity.this, "click" , Toast.LENGTH_LONG).show();
+                        pickLocation(holder.locationId,holder.eventId);
+                    }
+                });
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -270,24 +229,32 @@ public class SuggestionsListActivity extends AppCompatActivity {
             notifyDataSetChanged();
         }
 
-        private class ViewHolder extends RecyclerView.ViewHolder {
+        private class ViewHolder extends RecyclerView.ViewHolder{
             int eventId = -1;
             int locationId=-1;
             TextView locationAddressView;
             TextView locationStateView;
             TextView locationCityView;
             int position;
+            LinearLayout linearLayout;
 
             ViewHolder(@NonNull View view) {
                 super(view);
                 locationAddressView = view.findViewById(R.id.address);
                 locationStateView = view.findViewById(R.id.state_info);
                 locationCityView = view.findViewById(R.id.city_info);
+                linearLayout = view.findViewById(R.id.tableLayout);
+
+
 
             }
+
+
         }
 
 
     }
+
+
 
 }

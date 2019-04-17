@@ -41,12 +41,6 @@
     </android.support.design.widget.TextInputLayout>
 
     <Button
-        android:id="@+id/forget_password_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/forgot_password"/>
-
-    <Button
         android:id="@+id/login_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -58,5 +52,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/register"/>
+
+    <Button
+        android:id="@+id/forget_password_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/forgot_password"/>
 
 </LinearLayout>
