@@ -144,7 +144,7 @@ public interface MeetingService {
     @PUT("/current_user/firebase_reg_token")
     Call<Void> putFirebaseRegToken(@Body FirebaseRegTokenData data);
 
-    @DELETE("/events/{id}/")
+    @DELETE("/events/{id}")
     Call<Void> deleteEvent(@Path("id") int eventID);
 
     /**
