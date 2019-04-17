@@ -59,6 +59,8 @@ def notify_arrived_home(event: Event, obj_user: UserProfile, dry_run=False):
     if not firebase_enabled:
         return
     for user in UserProfile.objects.filter(invitation__event_id=event, invitation__status=Invitation.ACCEPTED):
+        if user == obj_user:
+            continue
         data = {
             'kind': 'arrived_home',
             'user_full_name': obj_user.django_user.get_full_name()
