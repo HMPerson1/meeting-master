@@ -24,6 +24,14 @@ public class LeaveNowAlarm extends BroadcastReceiver {
                     (call, response) -> {
                         MeetingService.EventsData event = response.body();
                         setNotification(context, event);
+
+                        Call<MeetingService.ActiveEventsData> ca = Server.getService().putUserStatus(
+                                new MeetingService.ActiveEventsData(event.getPk(), 1)
+                        );
+                        ca.enqueue(Server.mkCallback(
+                                (call2, response2) -> {},
+                                (call2, t) -> t.printStackTrace()
+                        ));
                     },
                     (call, t) -> t.printStackTrace()
             ));

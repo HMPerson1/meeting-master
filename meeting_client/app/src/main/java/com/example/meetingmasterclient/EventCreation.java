@@ -1,13 +1,18 @@
 package com.example.meetingmasterclient;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 
 import android.support.design.widget.TextInputEditText;
 
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +26,8 @@ import retrofit2.Call;
 
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
+import com.example.meetingmasterclient.utils.LocalPicture;
+import com.example.meetingmasterclient.utils.Upload;
 
 import java.io.File;
 import java.util.Map;
@@ -30,12 +37,16 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class EventCreation extends AppCompatActivity {
+    private static final int FILE_PERMISSION = 12;
+    private static final int READ_REQUEST_CODE = 25;
     int LocationID;
     private TextInputLayout textInputEventName;
     private TextInputLayout textInputDate;
     private TextInputLayout textInputTime;
     private TextInputLayout textInputDuration;
     private TextInputLayout textInputNotes;
+    private Uri fileUri;
+    private boolean hasFile;
     private TextInputLayout textInputStreetAddr;
     private TextInputLayout textInputCity;
     private TextInputLayout textInputState;
@@ -59,6 +70,20 @@ public class EventCreation extends AppCompatActivity {
         textInputCity = findViewById(R.id.text_input_city);
         textInputState = findViewById(R.id.text_input_state);
         textInputRoomNo = findViewById(R.id.text_input_room_no);
+
+        hasFile = false;
+        ((Button) findViewById(R.id.add_attachments)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Upload.checkFilePermissions(getApplicationContext())) {
+                    uploadFile();
+                } else {
+                    ActivityCompat.requestPermissions(EventCreation.this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            FILE_PERMISSION);
+                }
+            }
+        });
     }
 
     /* input validation */
@@ -72,6 +97,41 @@ public class EventCreation extends AppCompatActivity {
         } else {
             textInputEventName.setError(null);
             return true;
+        }
+    }
+
+    private void uploadFile() {
+        Intent fileIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        fileIntent.addCategory(Intent.CATEGORY_OPENABLE);
+        fileIntent.setType("*/*");
+
+        startActivityForResult(fileIntent, READ_REQUEST_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch(requestCode) {
+            case FILE_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    uploadFile();
+                } else {
+                    Toast.makeText(getApplicationContext(),
+                            "You cannot upload a file without these permissions",
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK && resultData != null) {
+            fileUri = resultData.getData();
+            hasFile = true;
+
+            Toast.makeText(getApplicationContext(), "File selected successfully", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -139,6 +199,7 @@ public class EventCreation extends AppCompatActivity {
         //File file_attachment
 
         postLocationandEvent();
+
         //testing postInvites
         MeetingService.EventsData eventsData = new MeetingService.EventsData();
         postInvites(eventsData);
@@ -194,6 +255,11 @@ public class EventCreation extends AppCompatActivity {
                         Toast.makeText(EventCreation.this, "EventCreation success: " +
                                 response.toString(), Toast.LENGTH_LONG).show();
                         Log.d("EventCreation success", response.toString());
+
+                        if (hasFile) {
+                            Upload.uploadFileToServer(getApplicationContext(), fileUri, String.valueOf(response.body().getPk()));
+                        }
+
                         //Server.authenticate(response.body().key); TODO check this
                     } else {
                         Toast.makeText(EventCreation.this, "EventCreation unsuccessful: " + response.toString(),

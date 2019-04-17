@@ -64,7 +64,9 @@
     <string name="location">Location</string>
     <string name="invitees">Invitees</string>
     <string name="invite_button">Invite Users</string>
+    <string name="details_suggest_button">Suggest A Location</string>
     <string name="suggest_button">Suggest Location</string>
+    <string name="leave_button">Leave The Event</string>
 
     <string name="invite_accept">Accept</string>
     <string name="decline">Decline</string>
@@ -83,6 +85,8 @@
     <string name="channel_live_location_description">When your location is being tracked</string>
     <string name="channel_leave_now_name">Leave Now</string>
     <string name="channel_leave_now_description">When the user has to leave to get to an event on time</string>
+    <string name="channel_download_file_name">File Download</string>
+    <string name="channel_download_file_description">When the file attachment of an event is being downloaded</string>
     <string name="notification_invite_title">Event Invitation</string>
     <string name="notification_invite_body">You have been invited to attend %s</string>
     <string name="notification_edit_title">Event Edited</string>
