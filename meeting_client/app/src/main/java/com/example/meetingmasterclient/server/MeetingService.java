@@ -403,6 +403,7 @@ public interface MeetingService {
     class EventsData {
         public int pk;
         public String event_name;
+        public int event_admin;
         public String event_date;
         public String event_time;
         public String event_duration;
