@@ -206,7 +206,7 @@
                 android:id="@+id/suggest_location_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Suggest a Location" />
+                android:text="@string/details_suggest_button" />
 
 
             <Button
@@ -214,6 +214,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/map" />
+
+
+            <Button
+                android:id="@+id/leave_event_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/leave_button"
+                android:visibility="invisible" />
 
 
         </LinearLayout>

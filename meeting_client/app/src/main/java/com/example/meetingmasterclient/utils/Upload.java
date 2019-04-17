@@ -27,7 +27,7 @@ import retrofit2.Call;
 public abstract class Upload {
     public static boolean checkFilePermissions(Context context) {
         return ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED;
+                == PackageManager.PERMISSION_GRANTED;
     }
 
     private static File getFileFromUri(Context context, Uri uri) {
@@ -35,7 +35,7 @@ public abstract class Upload {
 
         try {
             File file = File.createTempFile(
-                    "pic",
+                    "med",
                     "." + MimeTypeMap.getSingleton().getExtensionFromMimeType(cr.getType(uri)),
                     context.getCacheDir()
             );
@@ -84,6 +84,33 @@ public abstract class Upload {
                     } else {
                         Toast.makeText(context,
                                 "An error has occurred while saving the profile picture",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
+    }
+
+    public static void uploadFileToServer(Context context, Uri fileUri, String id) {
+        File file = getFileFromUri(context, fileUri);
+
+        if (file == null) {
+            return;
+        }
+
+        Call<ResponseBody> c = Server.getService().uploadFile(id, MultipartBody.Part.createFormData(
+                "file_attachment",
+                file.getName(),
+                RequestBody.create(MediaType.parse(context.getContentResolver().getType(fileUri)), file)
+        ));
+
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(context, "File Success", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(context,
+                                "An error has occurred while saving the file",
                                 Toast.LENGTH_SHORT).show();
                     }
                 },
