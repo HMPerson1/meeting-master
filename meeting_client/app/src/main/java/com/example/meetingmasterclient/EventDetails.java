@@ -107,7 +107,6 @@ public class EventDetails extends AppCompatActivity {
                 }
                 Toast.makeText(EventDetails.this,response.toString() , Toast.LENGTH_LONG).show();
 
-
                 eventInfo = response.body();//store response
 
                 //display the event details to the user
@@ -149,19 +148,20 @@ public class EventDetails extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<MeetingService.EventsData> call, Throwable t) {//error from server
-
                 Toast.makeText(EventDetails.this,t.getMessage() , Toast.LENGTH_LONG).show();
                 idlingResource.decrement();
-
             }
 
         });
 
+        //TODO figure out which button starts enabled/disabled
         acceptInviteButton = (Button) findViewById(R.id.Accept);
         acceptInviteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 changeInvitationStatus(eventID, userID, 2);
+                acceptInviteButton.setEnabled(false);
+                declineInviteButton.setEnabled(true);
                 StartingSoonAlarm.scheduleStartingSoonAlarm(getApplicationContext(), eventID);
             }
         });
@@ -171,6 +171,8 @@ public class EventDetails extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 changeInvitationStatus(eventID, userID, 3);
+                declineInviteButton.setEnabled(false);
+                acceptInviteButton.setEnabled(true);
             }
         });
 
@@ -221,17 +223,32 @@ public class EventDetails extends AppCompatActivity {
         ));
     }
 
+    public String statusToString(int status){
+        if (status == 1){
+            return "Pending";
+        } else if (status == 2){
+            return "Accepted";
+        } else if (status == 3){
+            return "Declined";
+        } else {
+            return "Ope";
+        }
+    }
+
     public void changeInvitationStatus(int eventID, String userID, int newStatus){
         idlingResource.increment();
         Call<Void> c = Server.getService().setInvitationStatus(String.valueOf(eventID), userID, newStatus);
         c.enqueue
                 (Server.mkCallback(
                         (call, response) -> {
+                            Toast.makeText(EventDetails.this, "Response = " + response.toString(),
+                                    Toast.LENGTH_LONG).show();
                             if (response.isSuccessful()) {
-                                // TODO: change button to reflect this
+                                Toast.makeText(EventDetails.this, "Status successfully changed" +
+                                        " to " + statusToString(newStatus), Toast.LENGTH_LONG).show();
                             } else {
-                                //Server.parseUnsuccessful(response, MeetingService.EventDataError.class,
-                                //        System.out::println, System.out::println);
+                                Toast.makeText(EventDetails.this, "Status failure",
+                                        Toast.LENGTH_LONG).show();
                                 //TODO: make InvitationData error
                             }
                             idlingResource.decrement();
