@@ -1,11 +1,15 @@
 package com.example.meetingmasterclient;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -15,6 +19,7 @@ import android.widget.Toast;
 
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
+import com.example.meetingmasterclient.utils.LocalPicture;
 import com.example.meetingmasterclient.utils.Upload;
 
 import retrofit2.Call;
@@ -22,6 +27,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ProfileEdition extends AppCompatActivity {
+    private static final int READ_REQUEST_CODE = 10;
+    private static final int FILE_PERMISSION = 20;
     private TextInputEditText textInputFirstName;
     private TextInputEditText textInputLastName;
     private TextInputEditText textInputUsername;
@@ -35,6 +42,8 @@ public class ProfileEdition extends AppCompatActivity {
     private String phoneNum;
     private int userID;
     private String profPic;
+    private boolean pictureChanged;
+    private Uri profilePictureUri;
 
     MeetingService.UserProfile currentUser;
 
@@ -49,6 +58,8 @@ public class ProfileEdition extends AppCompatActivity {
         textInputUsername = findViewById(R.id.text_input_edit_username);
         textInputEmailAddress = findViewById(R.id.text_input_edit_email);
         textInputPhoneNumber = findViewById(R.id.text_input_edit_phone_number);
+
+        pictureChanged = false;
 
         Call<MeetingService.UserProfile> c = Server.getService().getCurrentUser();
         c.enqueue(new Callback<MeetingService.UserProfile>() {
@@ -89,6 +100,18 @@ public class ProfileEdition extends AppCompatActivity {
             }
         });
 
+        ((Button)findViewById(R.id.upload_profile_picture_button)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Upload.checkFilePermissions(getApplicationContext())) {
+                    uploadPicture();
+                } else {
+                    ActivityCompat.requestPermissions(ProfileEdition.this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            FILE_PERMISSION);
+                }
+            }
+        });
 
         confirmButton = findViewById(R.id.confirm_profile_changes_button);
         confirmButton.setOnClickListener(new View.OnClickListener() {
@@ -116,6 +139,9 @@ public class ProfileEdition extends AppCompatActivity {
                     Log.d("Profile edition response", response.toString());
                     if (response.isSuccessful()){
                         assert response.body() != null;
+                        if (pictureChanged) {
+                            Upload.uploadPictureToServer(getApplicationContext(), profilePictureUri);
+                        }
                         Toast.makeText(ProfileEdition.this, "Success", Toast.LENGTH_LONG).show();
                     } else {
                         Server.parseUnsuccessful(response, MeetingService.UserProfileError.class, userProfileError -> {
@@ -127,9 +153,23 @@ public class ProfileEdition extends AppCompatActivity {
                 },
                 (call, t) -> t.printStackTrace()
         ));
-
-        Intent profDetails = new Intent(getApplicationContext(), ProfileDetails.class);
-        startActivity(profDetails);
     }
 
+    private void uploadPicture() {
+        Intent fileIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        fileIntent.addCategory(Intent.CATEGORY_OPENABLE);
+        fileIntent.setType("image/*");
+
+        startActivityForResult(fileIntent, READ_REQUEST_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK && resultData != null) {
+            profilePictureUri = resultData.getData();
+            pictureChanged = true;
+
+            new LocalPicture(this).execute(profilePictureUri);
+        }
+    }
 }

@@ -2,28 +2,38 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_event_details"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".EventDetails"
     tools:showIn="@layout/activity_event_details">
 
+    <include
+        android:id="@+id/active_status_container"
+        layout="@layout/active_status"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/active_status_container">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="8dp">
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -181,32 +191,11 @@
                 android:layout_height="wrap_content"
                 android:text="View Attendees" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:weightSum="2">
-
-                <Button
-                    android:id="@+id/Accept"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/accept"
-                    android:layout_weight="1"/>
-
-                <Button
-                    android:id="@+id/decline"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/decline"
-                    android:layout_weight="1"/>
-            </LinearLayout>
-
             <Button
                 android:id="@+id/suggest_location_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Suggest a Location" />
+                android:text="@string/details_suggest_button" />
 
 
             <Button
@@ -214,6 +203,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/map" />
+
+
+            <Button
+                android:id="@+id/leave_event_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/leave_button"
+                android:visibility="invisible" />
 
 
         </LinearLayout>

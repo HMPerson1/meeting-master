@@ -46,7 +46,7 @@ def notify_invite(user: UserProfile, event: Event, dry_run=False):
 def notify_edit(event: Event, dry_run=False):
     if not firebase_enabled:
         return
-    for user in UserProfile.objects.filter(invitation__event_id=event, invitation__status=Invitation.ACCEPTED):
+    for user in event.attendees():
         data = {
             'kind': 'edit',
             'event_id': str(event.pk),
@@ -58,7 +58,9 @@ def notify_edit(event: Event, dry_run=False):
 def notify_arrived_home(event: Event, obj_user: UserProfile, dry_run=False):
     if not firebase_enabled:
         return
-    for user in UserProfile.objects.filter(invitation__event_id=event, invitation__status=Invitation.ACCEPTED):
+    for user in event.attendees():
+        if user == obj_user:
+            continue
         data = {
             'kind': 'arrived_home',
             'user_full_name': obj_user.django_user.get_full_name()

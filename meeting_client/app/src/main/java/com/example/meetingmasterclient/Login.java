@@ -119,5 +119,7 @@ public class Login extends AppCompatActivity {
                 },
                 (call, t) -> t.printStackTrace()
         ));
+        Intent debug = new Intent(Login.this, DebugLauncherActivity.class);
+        startActivity(debug);
     }
 }

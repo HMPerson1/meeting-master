@@ -2,26 +2,22 @@ package com.example.meetingmasterclient.server;
 
 import android.support.annotation.NonNull;
 
-import java.io.File;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
 import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
-
 import retrofit2.http.Multipart;
-import retrofit2.http.PATCH;
 
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
-import retrofit2.http.Path;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.Url;
 
@@ -64,19 +60,6 @@ public interface MeetingService {
     @PUT("/current_user/profile_picture")
     Call<ResponseBody> uploadProfilePicture(@Part MultipartBody.Part profile_picture);
 
-    /*
-    @Multipart
-    @PUT("/rest-auth/user/")
-    Call<UserProfile> putCurrentUser(
-        @Part("username") RequestBody username,
-        @Part("first_name") RequestBody first_name,
-        @Part("last_name") RequestBody last_name,
-        @Part("email") RequestBody email,
-        @Part("phone_number") RequestBody phone_number,
-        @Part MultipartBody.Part profile_picture
-    );
-    */
-
     /**
      * may fail with {@link ResetPasswordError}
      */
@@ -99,33 +82,27 @@ public interface MeetingService {
     @GET
     Call<UserProfile> getUser(@Url String url);
 
-    @GET("/locations/{id}/")
+    @GET("/locations/{id}")
     Call<LocationData> getLocationDetails(@Path("id") String id);
 
     @POST("/locations/")
     Call<LocationData> newLocation(@Body LocationData data);
 
     @GET("/events/{id}")
-    Call<EventsData> getEventfromId(@Path("id") String id);
+    Call<EventsData> getEventfromId(@Path("id") int id);
 
-    @PUT("/events/{id}/")
-    Call<Void> updateEvent(@Body EventData data);
+    @PUT("/events/{id}")
+    Call<EventsData> updateEvent(@Body EventCreationData data,@Path("id") String id);
 
-    /*
-    @Multipart
-    @POST("/events/")
-    Call<EventData> createEvent(
-        @Part("event_name") RequestBody event_name,
-        @Part("event_date") RequestBody event_date,
-        @Part("event_time") RequestBody event_time,
-        @Part("event_duration") RequestBody event_duration,
-        @Part("event_location") RequestBody event_location,
-        @Part("notes") RequestBody notes,
-        @Part MultipartBody.Part file
-    );
-*/
     @POST("/events/new_event")
     Call<EventsData> createEvent(@Body EventCreationData data);
+
+    @Multipart
+    @PATCH("/events/file-attachment/{id}")
+    Call<ResponseBody> uploadFile(@Path("id") String id, @Part MultipartBody.Part file);
+
+    @GET
+    Call<ResponseBody> downloadFile(@Url String url);
 
     @POST("/invitations/")
     Call<InvitationData> postInvitations(@Body InvitationData data);
@@ -137,15 +114,12 @@ public interface MeetingService {
                                                  @Path("user_id") String user_id);
 
     @PUT("/invitations/{event_id}/{user_id}/update_status")
-    Call<Void> setInvitationStatus(@Path("event_id") String event_id,
-                                   @Path("user_id") String user_id,
-                                   @Query("status") int status);     //TODO this probs needs fixing, event_id to string
+    Call<InvitationData> setInvitationStatus(@Path("event_id") String event_id,
+                                             @Path("user_id") String user_id,
+                                             @Query("status") int status);     //TODO this probs needs fixing, event_id to string
 
     @GET("/invitations/user-invitations")
     Call<List<InvitationData>> getUsersInvitations();
-
-    @GET
-    Call<EventData> getEvent(@Url String url);
 
     @GET
     Call<EventsData> getEvents(@Url String url);
@@ -172,6 +146,24 @@ public interface MeetingService {
 
     @POST("/TODO/") // TODO
     Call<Void> putCurrentLocation(@Body CurrentLocationData data);
+
+    @GET("/TODO/") // TODO
+    Call<List<CurrentLocationData>> getCurrentLocations();
+
+    @GET("/suggestions/event-suggestions/{event_id}")
+    Call <List<LocationSuggestionsData>> getSuggestedLocations(@Path("event_id")  String event_id);
+
+    @POST("/suggestions/")
+    Call<LocationSuggestionsData> makeSuggestion(@Body LocationSuggestionsData data);
+
+    @GET("/events/current-user-active-event")
+    Call<ActiveEventsData> getUserStatus();
+
+    @PUT("/events/current-user-active-event")
+    Call<ActiveEventsData> putUserStatus(@Body ActiveEventsData data);
+
+    @DELETE("/events/current-user-active-event")
+    Call<Void> deleteUserStatus();
 
     /* ******************** *
      * Dumb data containers *
@@ -244,6 +236,10 @@ public interface MeetingService {
 
         public void setLast_name(String last_name) {
             this.last_name = last_name;
+        }
+
+        public void setUsername(String username){
+            this.username = username;
         }
 
         @Override
@@ -413,6 +409,7 @@ public interface MeetingService {
         public LocationData event_location;
         public String notes;
         public String file_attachment;
+        public int current_overall_state;
 
         public int getPk() {
             return pk;
@@ -449,7 +446,7 @@ public interface MeetingService {
 
     class EventData {
         public int id;
-        public int event_admin;
+        public int event_admin_id;
         public String event_name;
         public String event_date;
         public String event_time;
@@ -460,7 +457,7 @@ public interface MeetingService {
 
         public EventData(int id, int event_admin, String event_name, String event_date, String event_time, String event_duration, String file_attachment, String notes, int event_location) {
             this.id = id;
-            this.event_admin = event_admin;
+            this.event_admin_id = event_admin;
             this.event_name = event_name;
             this.event_date = event_date;
             this.event_time = event_time;
@@ -475,7 +472,7 @@ public interface MeetingService {
         }
 
         public int getEvent_admin() {
-            return event_admin;
+            return event_admin_id;
         }
 
         public String getEvent_name() {
@@ -514,17 +511,17 @@ public interface MeetingService {
         public String event_duration;
         public int event_location;
         public String notes;
-        public String file_attachment;
+
 
         public EventCreationData(String event_name, String event_date, String event_time, String event_duration,
-                                 int event_location, String notes, String file_attachment){
+                                 int event_location, String notes){
             this.event_name = event_name;
             this.event_date = event_date;
             this.event_time = event_time;
             this.event_duration = event_duration;
             this.event_location = event_location;
             this.notes = notes;
-            this.file_attachment = file_attachment;
+
         }
 
         public EventCreationData(String event_name, int event_location){
@@ -534,20 +531,24 @@ public interface MeetingService {
             this.event_duration = null;
             this.event_location = event_location;
             this.notes = null;
-            this.file_attachment = null;
+
+        }
+
+        public String getEvent_name() {
+            return event_name;
         }
     }
 
     class EventDataError{
-        public int[] id;
-        public int[] event_admin;
+        public String[] id;
+        public String[] event_admin;
         public String[] event_name;
         public String[] event_date;
         public String[] event_time;
         public String[] event_duration;
         public String[] file_attachment;
         public String[] notes;
-        public int[] event_location;
+        public String[] event_location;
 
         @Override
         @NonNull
@@ -649,6 +650,42 @@ public interface MeetingService {
         public CurrentLocationData(double lat, double lon) {
             this.lat = lat;
             this.lon = lon;
+        }
+    }
+
+    class LocationSuggestionsData {
+        int event_id;
+        int location_id;
+
+        public LocationSuggestionsData(int event_id, int location_id) {
+            this.event_id = event_id;
+            this.location_id = location_id;
+        }
+
+        public int getEvent_id() {
+            return event_id;
+        }
+
+        public int getLocation_id() {
+            return location_id;
+        }
+    }
+
+    class ActiveEventsData {
+        public int event;
+        public int state;
+
+        public ActiveEventsData(int event, int state) {
+            this.event = event;
+            this.state = state;
+        }
+
+        @Override
+        public String toString() {
+            return "ActiveEventsData{" +
+                    "event=" + event +
+                    ", state=" + state +
+                    '}';
         }
     }
 }
