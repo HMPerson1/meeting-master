@@ -398,6 +398,7 @@ public class EventDetails extends AppCompatActivity {
                         Toast.makeText(EventDetails.this, "Deletion success", Toast.LENGTH_LONG).show();
                         assert response.body() != null;
                         //Server.authenticate(response.body().key);
+                        finish();
                     } else {
                         Toast.makeText(EventDetails.this, "Failure: " + response.toString(),
                                 Toast.LENGTH_LONG).show();
@@ -411,7 +412,6 @@ public class EventDetails extends AppCompatActivity {
                     idlingResource.decrement();
                 }
         ));
-        finish();
     }
 
     public void exportEvent(){
