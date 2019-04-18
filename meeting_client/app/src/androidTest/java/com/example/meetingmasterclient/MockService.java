@@ -71,7 +71,23 @@ public class MockService implements MeetingService {
 
     @Override
     public Call<LocationData> getLocationDetails(String id) {
-        return null;
+        LocationData response;
+        if (id.equals("1")){
+            response = new LocationData("abc","easy","state");
+            response.setPk(Integer.valueOf(id));
+            response.setNumber_of_uses(1);
+        }else if (id.equals("3")){
+            response = new LocationData("test3","testCity3","state");
+            response.setPk(Integer.valueOf(id));
+            response.setNumber_of_uses(1);
+        }else{
+            response = new LocationData("add","city","state");
+            response.setPk(Integer.valueOf(id));
+            response.setNumber_of_uses(1);
+        }
+
+
+        return delegate.returningResponse(response).getLocationDetails(id);
     }
 
     @Override
@@ -182,7 +198,17 @@ public class MockService implements MeetingService {
 
     @Override
     public Call<List<LocationSuggestionsData>> getSuggestedLocations(String event_id) {
-        return null;
+        List<LocationSuggestionsData> response=new ArrayList<>();
+        if (event_id.equals("1")){
+            LocationSuggestionsData location = new LocationSuggestionsData(Integer.valueOf(event_id),1);
+            response.add(location);
+        }else if (event_id.equals("3")){
+            LocationSuggestionsData location = new LocationSuggestionsData(Integer.valueOf(event_id),3);
+            response.add(location);
+        }
+
+
+        return delegate.returningResponse(response).getSuggestedLocations(event_id);
     }
 
     @Override
