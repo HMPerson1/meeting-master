@@ -1,6 +1,8 @@
 package com.example.meetingmasterclient;
 
+
 import android.Manifest;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -85,6 +87,13 @@ public class EventEdition extends AppCompatActivity {
             finish();  //did not pass event_id
         }
 
+        autoPopulateFieldsWithEventandLocationData();
+
+
+
+    }//on create
+
+    private void autoPopulateFieldsWithEventandLocationData(){
         //TODO: get event info from backend
         Call<MeetingService.EventsData> call = Server.getService().getEventfromId(eventID);
         call.enqueue(new Callback<MeetingService.EventsData>() {
@@ -135,8 +144,7 @@ public class EventEdition extends AppCompatActivity {
             }
 
         });
-
-    }//on create
+    }
 
     private void configureAddFileButton() {
         Button addFile = (Button) findViewById(R.id.add_attachments);
@@ -187,6 +195,14 @@ public class EventEdition extends AppCompatActivity {
 
             Toast.makeText(getApplicationContext(), "File selected successfully", Toast.LENGTH_SHORT).show();
         }
+
+        if (resultCode == Activity.RESULT_OK) {
+            Log.d("location", String.valueOf(locationID));
+            eventID = resultData.getIntExtra("event_id",-1);
+            locationID = resultData.getIntExtra("location_id",-1);
+            Log.d("location2", String.valueOf(locationID));
+            autoPopulateFieldsWithEventandLocationData();
+        }
     }
 
     private void configureSuggestedLocationsButton(){
@@ -196,7 +212,7 @@ public class EventEdition extends AppCompatActivity {
             public void onClick(View view) {
                 Intent suggested = new Intent(getApplicationContext(), SuggestionsListActivity.class);
                 suggested.putExtra("event_id", eventID);
-                startActivity(suggested);
+                startActivityForResult(suggested, 1);
             }
         });
     }
@@ -223,9 +239,8 @@ public class EventEdition extends AppCompatActivity {
 
                 putLocationandEvent();
 
-                Intent intent = new Intent(getApplicationContext(), EventDetails.class);
+                Intent intent = new Intent();
                 intent.putExtra("event_id", eventID);
-                startActivity(intent);
 
                 finish();
         }
@@ -349,5 +364,7 @@ public class EventEdition extends AppCompatActivity {
             }
         });
     }
+
+
 
 }
