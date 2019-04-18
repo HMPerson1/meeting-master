@@ -78,7 +78,7 @@ public class LocationSuggestion extends AppCompatActivity {
     }
 
     private boolean validateInput() {
-        return validateStreetAddr() && validateCity() && validateState();
+        return validateStreetAddr() & validateCity() & validateState();
     }
 
     private void makeLocation() {
