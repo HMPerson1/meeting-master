@@ -102,18 +102,18 @@ public class Login extends AppCompatActivity {
         Call<MeetingService.AuthToken> c = Server.getService().login(new MeetingService.LoginData(username, password));
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
-                    Toast.makeText(Login.this,response.toString() , Toast.LENGTH_LONG).show();
                     if (response.isSuccessful()) {
                         assert response.body() != null;
                         Server.authenticate(response.body().key);
+                        Toast.makeText(Login.this, "Login success", Toast.LENGTH_LONG).show();
                     } else {
                         try {
                             assert response.errorBody() != null;
                             System.out.println("response.error = " + response.errorBody().string());
+                            Toast.makeText(Login.this, "Login failure", Toast.LENGTH_LONG).show();
+                            Toast.makeText(Login.this,response.toString() , Toast.LENGTH_LONG).show();
                         } catch (IOException e) {
                             e.printStackTrace();
-
-
                         }
                     }
                 },

@@ -1,5 +1,6 @@
 package com.example.meetingmasterclient;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -172,10 +173,11 @@ public class SuggestionsListActivity extends AppCompatActivity {
 
     private void pickLocation(int locationID, int eventId) {
         //send location id to edit event activity change activity
-        Intent suggested = new Intent(getApplicationContext(), EventEdition.class);
+        Intent suggested = new Intent();
         suggested.putExtra("event_id", eventID);
         suggested.putExtra("location_id", locationID);
-        startActivity(suggested);
+        setResult(Activity.RESULT_OK,suggested);
+        finish();
 
     }
 
