@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import com.example.meetingmasterclient.MapsActivity;
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
 import com.google.android.gms.maps.GoogleMap;
@@ -30,6 +31,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Random;
 
 import retrofit2.Call;
@@ -37,17 +39,17 @@ import retrofit2.Call;
 public class Route extends AsyncTask<Void, Void, JSONObject[]> {
     public static LinkedList<Polyline> polylines = new LinkedList<>();
     private Context context;
-    private GoogleMap mMap;
+    private MapsActivity mapActivity;
     private LatLng[] origins;
     private LatLng destination;
     private int eventId;
     private String eventDate;
     private String eventTime;
 
-    public Route(Context context, GoogleMap mMap, LatLng[] origins, LatLng destination) {
+    public Route(MapsActivity mapActivity, LatLng[] origins, LatLng destination) {
         super();
-        this.context = context;
-        this.mMap = mMap;
+        this.mapActivity = mapActivity;
+        this.context = mapActivity.getApplicationContext();
         this.origins = origins;
         this.destination = destination;
     }
@@ -169,9 +171,11 @@ public class Route extends AsyncTask<Void, Void, JSONObject[]> {
                                 arr.getJSONObject(j)
                                         .getJSONObject("polyline")
                                         .getString("points")));
-                        polylines.add(mMap.addPolyline(options));
+                        polylines.add(mapActivity.mMap.addPolyline(options));
                     }
                 }
+
+                mapActivity.onRoutesCompleted(routes);
             }
         } catch(JSONException je) {
             System.err.println("JSON Error 2");
