@@ -19,7 +19,6 @@ public class ProfileDetails extends AppCompatActivity {
         setContentView(R.layout.activity_profile_details);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         getUserById(getIntent().getIntExtra("user_id", -1));
     }
 

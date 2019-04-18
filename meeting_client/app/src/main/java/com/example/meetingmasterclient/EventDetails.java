@@ -1,7 +1,9 @@
 package com.example.meetingmasterclient;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -72,21 +74,11 @@ public class EventDetails extends AppCompatActivity {
         final TextInputEditText textInputState = findViewById(R.id.state);
         final TextInputEditText textInputRoomNo = findViewById(R.id.room_num);
 
-        attendeeListButton = (Button) findViewById(R.id.view_attendees_button);
-        attendeeListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(EventDetails.this, AttendeeList.class));
-            }
-        });
-
-        //TODO: get info from backend
         //MeetingService.EventData eventData = new MeetingService.EventData();
         //get the current intent
         Intent intent = getIntent();
         eventID = intent.getIntExtra("event_id", -1);
         userID = intent.getStringExtra("user_id");
-
 
         userID="1";
 
@@ -96,7 +88,6 @@ public class EventDetails extends AppCompatActivity {
             finish();  //did not pass event_id
         }
 
-        //TODO: get event info from backend
         idlingResource.increment();
         Call<MeetingService.EventsData> call = Server.getService().getEventfromId(eventID);
         call.enqueue(new Callback<MeetingService.EventsData>() {
@@ -108,9 +99,7 @@ public class EventDetails extends AppCompatActivity {
                     idlingResource.decrement();
                     return;
                 }
-                Toast.makeText(EventDetails.this,"response" , Toast.LENGTH_LONG).show();
                 Toast.makeText(EventDetails.this,response.toString() , Toast.LENGTH_LONG).show();
-
 
                 eventInfo = response.body();//store response
 
@@ -154,10 +143,8 @@ public class EventDetails extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<MeetingService.EventsData> call, Throwable t) {//error from server
-
                 Toast.makeText(EventDetails.this,t.getMessage() , Toast.LENGTH_LONG).show();
                 idlingResource.decrement();
-
             }
 
         });
@@ -178,6 +165,17 @@ public class EventDetails extends AppCompatActivity {
             public void onClick(View view) {
                 Intent map = new Intent(getApplicationContext(), MapsActivity.class);
                 startActivity(map);
+            }
+        });
+
+        attendeeListButton = (Button) findViewById(R.id.view_attendees_button);
+        attendeeListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(EventDetails.this, "Passing event_id " + eventID, Toast.LENGTH_LONG).show();
+                Intent attendees = new Intent(EventDetails.this, AttendeeList.class);
+                attendees.putExtra("event_id", eventID);
+                startActivity(attendees);
             }
         });
 
@@ -258,12 +256,28 @@ public class EventDetails extends AppCompatActivity {
         ));
     }
 
+    public String statusToString(int status){
+        if (status == 1){
+            return "Pending";
+        } else if (status == 2){
+            return "Accepted";
+        } else if (status == 3){
+            return "Declined";
+        } else {
+            return "Ope";
+        }
+    }
+
     private void changeInvitationStatus(int eventID, String userID, int newStatus) {
         idlingResource.increment();
         Server.getService().setInvitationStatus(String.valueOf(eventID), userID, newStatus
         ).enqueue(Server.mkCallback(
                 (call, response) -> {
+                    Toast.makeText(EventDetails.this, "Response = " + response.toString(),
+                            Toast.LENGTH_LONG).show();
                     if (response.isSuccessful()) {
+                        Toast.makeText(EventDetails.this, "Status successfully changed" +
+                                " to " + statusToString(newStatus), Toast.LENGTH_LONG).show();
                         MeetingService.InvitationData body = response.body();
                         assert body != null;
                         onUpdatedInvitationStatus(body);
@@ -325,7 +339,6 @@ public class EventDetails extends AppCompatActivity {
                 intent.putExtra("event_id", eventID);
                 startActivity(intent);
 
-
                 return false;
             }
         });
@@ -343,12 +356,14 @@ public class EventDetails extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()) {
             case R.id.delete_event_menu:
+                /*
                 boolean userConfirm = openAlertDialog();
                 userConfirm = true; //TODO delete this line once openAlertDialog() is fixed
                 if (userConfirm) {
                     deleteEvent();
                 }
-                return true;
+                return true;*/
+                showDeletePrompt();
             case R.id.export_event_menu:
                 exportEvent();
                 return true;
@@ -357,15 +372,39 @@ public class EventDetails extends AppCompatActivity {
         }
     }
 
+    private void showDeletePrompt(){
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                switch(i){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        deleteEvent();
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you would like to delete this event?").setPositiveButton(
+                "Delete", dialogClickListener).setNegativeButton("Cancel", dialogClickListener)
+                .show();
+    }
+
     public void deleteEvent(){
         idlingResource.increment();
-        Call<Void> d = Server.getService().deleteEvent("/events/" + eventID + "/");
+        Call<Void> d = Server.getService().deleteEvent(eventID);
         d.enqueue(Server.mkCallback(
                 (call, response) -> {
                     if (response.isSuccessful()) {
+                        Toast.makeText(EventDetails.this, "Deletion success", Toast.LENGTH_LONG).show();
                         assert response.body() != null;
                         //Server.authenticate(response.body().key);
+                        finish();
                     } else {
+                        Toast.makeText(EventDetails.this, "Failure: " + response.toString(),
+                                Toast.LENGTH_LONG).show();
                         Server.parseUnsuccessful(response, MeetingService.RegistrationError.class,
                                 System.out::println, System.out::println);
                     }

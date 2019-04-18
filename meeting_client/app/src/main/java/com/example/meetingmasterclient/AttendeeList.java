@@ -1,5 +1,6 @@
 package com.example.meetingmasterclient;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
@@ -28,6 +29,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOError;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,59 +40,124 @@ import retrofit2.Response;
 
 
 public class AttendeeList extends AppCompatActivity {
+    private List<MeetingService.UserProfile> attendeeList;
+    private List<MeetingService.InvitationData> attendeeResponse;
+    private RecyclerView recyclerView;
+    private AttendeeAdapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
+    private String eventID;
 
     private static final String TAG = "DebugLauncherActivity";
-    private AttendeeAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attendee_list);
 
-        //TODO use this example for user search
-        RecyclerView recyclerView = findViewById(R.id.recycler_view_invited_people);
+        eventID = Integer.toString(getIntent().getIntExtra("event_id", -1));
+        Toast.makeText(AttendeeList.this, "Event id received: " + eventID, Toast.LENGTH_LONG).show();
+
+        recyclerView = findViewById(R.id.recycler_view_invited_people);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
 
         adapter = new AttendeeAdapter();
         recyclerView.setAdapter(adapter);
 
-        final List<MeetingService.UserProfile> list = new ArrayList<>(); //used for testing functionality of list
+        attendeeList = new ArrayList<>();
+        adapter.setDataSet(attendeeList);
 
-        // TODO: for testing
-        MeetingService.UserProfile test = new MeetingService.UserProfile();
-        test.setFirst_name("john");
-        test.setLast_name("meyer");
-
-        MeetingService.UserProfile test2 = new MeetingService.UserProfile();
-        test2.setFirst_name("john");
-        test2.setLast_name("bull");
-
-        list.add(test);
-        list.add(test2);
-
-        adapter.setDataSet(list);
+        submitAttendeeRequest();
 
         //TODO: Before user returns to create a meeting page, store the list of users in the database
         //exit the activity and return to Create a meeting page when the admin presses the save changes button
-        configureSaveButton();
+        //configureSaveButton();
+        Button close_button = findViewById(R.id.close_button);
+        close_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+
     }
 
-    private void configureSaveButton(){
+    /*private void configureSaveButton(){
         Button save_button = (Button)findViewById(R.id.save_button);
         save_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                List<Boolean> EditingPermit=adapter.getEditingPermit();
-                finish();//return to create a meeting
-
+                List<Boolean> EditingPermit = adapter.getEditingPermit();
+                finish();   //return to create a meeting
             }
         });
+    }*/
+
+    public void submitAttendeeRequest(){
+        Call<List<MeetingService.InvitationData>> c = Server.getService().getEventInvitations(eventID);
+        c.enqueue(Server.mkCallback(
+            (call, response) -> {
+                if (response.isSuccessful()){
+                    Toast.makeText(AttendeeList.this, "response.success = " + response.toString()
+                            + "\nPopulating list", Toast.LENGTH_LONG).show();
+                    populateAttendeeList(response);
+                } else {
+                    try {
+                        Toast.makeText(AttendeeList.this, "response.error = " +
+                                response.toString(), Toast.LENGTH_LONG).show();
+                        System.out.println("response.error = " + response.errorBody().toString());
+                    } catch (NullPointerException e){
+                        e.printStackTrace();
+                    }
+                    return;
+                }
+            },
+            (call, t) -> t.printStackTrace()
+        ));
     }
 
+    public void populateAttendeeList(Response<List<MeetingService.InvitationData>> response){
+        attendeeResponse = response.body();
 
+        if (attendeeResponse == null){
+            Toast.makeText(AttendeeList.this, "attendeeList is empty", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        Call <MeetingService.UserProfile> userProfileCall;
+        for (int i = 0; i < attendeeResponse.size(); i++){
+            int userID = Integer.parseInt(attendeeResponse.get(i).getUser_id());
+            Toast.makeText(AttendeeList.this, "searching for user: " + userID, Toast.LENGTH_LONG).show();
+            userProfileCall = Server.getService().getUserByID(userID);
+            userProfileCall.enqueue(Server.mkCallback(
+                    (call, res) -> {
+                        if (res.isSuccessful()){
+                            Toast.makeText(AttendeeList.this, res.toString(), Toast.LENGTH_LONG).show();
+                            attendeeList.add(res.body());
+                        } else {
+                            try {
+                                Toast.makeText(AttendeeList.this, "res.error = " + res.toString(), Toast.LENGTH_LONG).show();
+                                System.out.println("res.error = " + res.errorBody().toString());
+                            } catch (NullPointerException e){
+                                e.printStackTrace();
+                            }
+                            return;
+                        }
+                    },
+                    (call, t) -> t.printStackTrace()
+            ));
+        }
+
+        adapter.setDataSet(attendeeList);
+
+        for (int i = 0; i < attendeeList.size(); i++){
+            String user = attendeeList.get(i).getUsername();
+            Toast.makeText(AttendeeList.this, "User " + (i+1) + ": " + user, Toast.LENGTH_LONG).show();
+        }
+    }
 
     private class AttendeeAdapter extends RecyclerView.Adapter<AttendeeAdapter.ViewHolder> {
-
         @Nullable
         private List<MeetingService.UserProfile> dataSet;
         private List<Boolean> editingPermit = new ArrayList<Boolean>();
@@ -101,7 +169,7 @@ public class AttendeeList extends AppCompatActivity {
         @Override
         public AttendeeAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             return new AttendeeAdapter.ViewHolder(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.text_and_toggle_button, parent, false));
+                    .inflate(R.layout.text_and_view_button, parent, false));
         }
 
         @Override
@@ -124,27 +192,20 @@ public class AttendeeList extends AppCompatActivity {
             TextView personName;
 
             ViewHolder(@NonNull View view) {
+                //TODO fix this
                 super(view);
-                personName= view.findViewById(R.id.text);
-
-                ToggleButton permissions = view.findViewById(R.id.switch1);
-                editingPermit.add(false);
-                permissions.setOnClickListener(new View.OnClickListener() {
-
+                personName = view.findViewById(R.id.userSearchResultText);
+                Button viewButton = view.findViewById(R.id.viewUserSearchResultButton);
+                viewButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (permissions.getText()==permissions.getTextOn()) {
-                            editingPermit.set(getAdapterPosition(),true);
-                        } else {
-                            editingPermit.set(getAdapterPosition(),false);
-                        }
+                        Intent intent = new Intent(getBaseContext(), ProfileDetails.class);
+                        int position = getAdapterPosition();
+                        intent.putExtra("user_id", dataSet.get(position).getPk());
+                        startActivity(intent);
                     }
                 });
-
-
             }
         }
-
-
     }//AttendeeAdapter
 }
