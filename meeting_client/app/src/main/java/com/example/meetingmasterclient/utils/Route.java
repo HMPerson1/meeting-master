@@ -30,6 +30,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.LinkedList;
+import java.util.Random;
 
 import retrofit2.Call;
 
@@ -38,6 +39,7 @@ public class Route extends AsyncTask<Void, Void, JSONObject> {
     private Context context;
     private GoogleMap mMap;
     private LatLng origin;
+    // private LatLng[] origins;
     private LatLng destination;
     private int eventId;
 
@@ -53,12 +55,18 @@ public class Route extends AsyncTask<Void, Void, JSONObject> {
         super();
         this.context = context;
         this.origin = origin;
+        /*
+        origins = new LatLng[1];
+        origins[0] = origin;
+        */
         this.destination = destination;
         this.eventId = event;
     }
 
     @Override
     protected JSONObject doInBackground(Void... params) {
+        // for (int i = 0; i < origins.length; i++)
+        // TODO: Do for origins[i] rather than origin
         try {
             URL url = new URL("https://maps.googleapis.com/maps/api/directions/json?"
                     + "origin=" + origin.latitude + "," + origin.longitude
@@ -78,6 +86,7 @@ public class Route extends AsyncTask<Void, Void, JSONObject> {
 
             connection.disconnect();
 
+            // TODO: Return array of JSON objects rather than only one
             return new JSONObject(builder.toString());
         } catch(MalformedURLException ue) {
             Toast.makeText(context, "URL error", Toast.LENGTH_SHORT).show();
@@ -93,6 +102,7 @@ public class Route extends AsyncTask<Void, Void, JSONObject> {
 
     @Override
     protected void onPostExecute(JSONObject route) {
+        // TODO: Check for size of array; if there is only one, schedule alarm; if there are more, draw the routes with a for loop
         try {
             JSONObject leg = route
                     .getJSONArray("routes")
@@ -141,7 +151,7 @@ public class Route extends AsyncTask<Void, Void, JSONObject> {
 
                 for (int i = 0; i < arr.length(); i++) {
                     PolylineOptions options = new PolylineOptions();
-                    options.color(Color.BLUE);
+                    options.color(randomColor());
                     options.width(10);
                     options.addAll(PolyUtil.decode(arr.getJSONObject(i).getJSONObject("polyline").getString("points")));
                     polylines.add(mMap.addPolyline(options));
@@ -150,5 +160,10 @@ public class Route extends AsyncTask<Void, Void, JSONObject> {
         } catch(JSONException je) {
             System.err.println(route.toString());
         }
+    }
+
+    private int randomColor() {
+        Random rnd = new Random();
+        return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
     }
 }
