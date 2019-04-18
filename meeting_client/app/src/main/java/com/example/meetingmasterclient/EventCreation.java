@@ -200,9 +200,6 @@ public class EventCreation extends AppCompatActivity {
 
         postLocationandEvent();
 
-        //testing postInvites
-        MeetingService.EventsData eventsData = new MeetingService.EventsData();
-        postInvites(eventsData);
 
     }
 
@@ -218,7 +215,6 @@ public class EventCreation extends AppCompatActivity {
     }
     public void postInvites(MeetingService.EventsData event){
         int eventID = event.getPk();
-        eventID = 1;//for testing
         Map<String, ?> invitedUsers = getInvitedUsers();
         //send invites to invited users
         for (Map.Entry<String, ?> entry : invitedUsers.entrySet()) {
@@ -255,6 +251,8 @@ public class EventCreation extends AppCompatActivity {
                         Toast.makeText(EventCreation.this, "EventCreation success: " +
                                 response.toString(), Toast.LENGTH_LONG).show();
                         Log.d("EventCreation success", response.toString());
+                        MeetingService.EventsData eventsData = response.body();
+                        postInvites(eventsData); //send invites to users
 
                         if (hasFile) {
                             Upload.uploadFileToServer(getApplicationContext(), fileUri, String.valueOf(response.body().getPk()));
