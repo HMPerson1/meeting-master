@@ -70,3 +70,66 @@ class ActiveEventLeavingTests(TestCase):
         assert response.status_code == status.HTTP_200_OK
 
         assert json.loads(response.content)['current_overall_state'] == Event.OverallState.OVER.value
+
+
+class AttendeeLiveLocationsTests(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.alice = UserProfile.objects.create(django_user=auth_models.User.objects.create(
+            username='alice', first_name='Alice', last_name='Q.', email='alice@example.com'))
+        self.bob = UserProfile.objects.create(django_user=auth_models.User.objects.create(
+            username='bob', first_name='Bob', last_name='Q.', email='bob@example.com'))
+        self.charlie = UserProfile.objects.create(django_user=auth_models.User.objects.create(
+            username='charlie', first_name='Charlie', last_name='Q.', email='charlie@example.com'))
+
+        self.party_place = Location.objects.create(street_address='123 Main St.', city='Anywhere', state='IN')
+        start = datetime.datetime.now() + datetime.timedelta(minutes=15)
+        self.alice_party = Event.objects.create(
+            event_admin=self.alice,
+            event_name='Party!',
+            event_date=start.date(),
+            event_time=start.time(),
+            event_duration=datetime.time(0, 30),
+            event_location=self.party_place,
+            notes='PREPARE TO PARTY',
+        )
+        Invitation.objects.create(user_id=self.bob, event_id=self.alice_party, status=Invitation.ACCEPTED)
+        Invitation.objects.create(user_id=self.charlie, event_id=self.alice_party, status=Invitation.ACCEPTED)
+        ActiveEvent.objects.create(event=self.alice_party, user=self.bob, state=ActiveEvent.LEAVING_FROM)
+        ActiveEvent.objects.create(event=self.alice_party, user=self.charlie, state=ActiveEvent.LEAVING_FROM)
+
+        self.client = APIClient()
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + create_token(TokenModel, self.charlie.django_user, None).key)
+
+    def test_empty(self):
+        response = self.client.get('/events/{}/attendee-locations'.format(self.alice_party.id))
+        assert response.status_code == status.HTTP_200_OK
+        assert json.loads(response.content) == []
+
+    def test_all(self):
+        # alice location
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + create_token(TokenModel, self.alice.django_user, None).key)
+        response = self.client.put('/current_user/live-location', data={'lon': 33.44, 'lat': 55.66})
+        print(response)
+        assert response.status_code == status.HTTP_200_OK
+
+        # bob location
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + create_token(TokenModel, self.bob.django_user, None).key)
+        response = self.client.put('/current_user/live-location', data={'lon': 38.48, 'lat': 52.62})
+        assert response.status_code == status.HTTP_200_OK
+
+        # charlie location
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + create_token(TokenModel, self.charlie.django_user, None).key)
+        response = self.client.put('/current_user/live-location', data={'lon': 35.45, 'lat': 51.61})
+        assert response.status_code == status.HTTP_200_OK
+
+        response = self.client.get('/events/{}/attendee-locations'.format(self.alice_party.id))
+        assert response.status_code == status.HTTP_200_OK
+        assert json.loads(response.content) == [
+            {'user': self.alice.pk, 'user_full_name': 'Alice Q.', 'lon': 33.44, 'lat': 55.66},
+            {'user': self.bob.pk, 'user_full_name': 'Bob Q.', 'lon': 38.48, 'lat': 52.62},
+        ]

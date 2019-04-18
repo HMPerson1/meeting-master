@@ -18,3 +18,10 @@ class UserProfile(models.Model):
     firebase_reg_token = models.CharField(max_length=256, blank=True, default="")
     # TODO: one should be able to request a new ical_key if it gets "compromised"
     ical_key = models.CharField(max_length=24, blank=True, default=gen_ical_key, editable=False, unique=True)
+
+
+# TODO: really shouldn't be in the database but I'm out of time
+class LiveLocation(models.Model):
+    user = models.OneToOneField(UserProfile, on_delete=models.CASCADE, primary_key=True)
+    lon = models.FloatField()
+    lat = models.FloatField()
