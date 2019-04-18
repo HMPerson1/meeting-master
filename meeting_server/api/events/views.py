@@ -129,8 +129,9 @@ class EventActive(drf_generics.RetrieveUpdateDestroyAPIView):
         return ActiveEvent.objects.none()
 
     def perform_destroy(self, instance: ActiveEvent):
-        fcm.notify_arrived_home(instance.event, instance.user)
-        super().perform_destroy(instance)
+        if instance.pk:
+            fcm.notify_arrived_home(instance.event, instance.user)
+            super().perform_destroy(instance)
 
     def perform_update(self, serializer):
         serializer.save(user=self.request.user.userprofile)
