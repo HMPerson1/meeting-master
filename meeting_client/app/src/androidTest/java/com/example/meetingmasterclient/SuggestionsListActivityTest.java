@@ -2,6 +2,8 @@ package com.example.meetingmasterclient;
 
 import android.content.Intent;
 import android.content.res.Resources;
+import android.support.test.espresso.Espresso;
+import android.support.test.rule.ActivityTestRule;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +16,7 @@ import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
 
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.Espresso;
@@ -37,6 +40,7 @@ import static com.example.meetingmasterclient.server.Server.BASE_URL;
 import static java.lang.Thread.sleep;
 import static org.hamcrest.CoreMatchers.anything;
 import static org.junit.Assert.*;
+
 
 public class SuggestionsListActivityTest {
 

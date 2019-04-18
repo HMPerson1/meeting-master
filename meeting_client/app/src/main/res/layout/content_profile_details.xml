@@ -18,12 +18,12 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:context=".ProfileDetails"
-        tools:showIn="@layout/activity_profile_details"
-        android:orientation="vertical"
-        android:padding="16dp">
+        tools:showIn="@layout/activity_profile_details">
 
         <ImageView
             android:id="@+id/profile_details_picture"
@@ -41,9 +41,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="30dp"
+            android:gravity="center"
             android:text="@string/name"
-            android:textSize="20dp"
-            android:gravity="center" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/profile_details_email"
@@ -51,9 +51,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
+            android:gravity="center"
             android:text="@string/email"
-            android:textSize="20dp"
-            android:gravity="center" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/profile_details_phone"
@@ -61,9 +61,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
+            android:gravity="center"
             android:text="@string/phone_number"
-            android:textSize="20dp"
-            android:gravity="center" />
+            android:textSize="20sp" />
 
     </LinearLayout>
 

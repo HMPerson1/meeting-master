@@ -1,12 +1,12 @@
 package com.example.meetingmasterclient;
 
 import android.content.Intent;
+import android.support.test.rule.ActivityTestRule;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import androidx.test.rule.ActivityTestRule;
 
 public class LeaveButtonTest {
     @Rule

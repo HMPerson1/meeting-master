@@ -147,7 +147,7 @@ public interface MeetingService {
     @GET("/current_user/ical_url")
     Call<IcalUrlData> getIcalUrl();
 
-    @POST("/TODO/") // TODO
+    @PUT("/current_user/live-location")
     Call<Void> putCurrentLocation(@Body CurrentLocationData data);
 
     @GET("/TODO/") // TODO
@@ -409,6 +409,7 @@ public interface MeetingService {
     class EventsData {
         public int pk;
         public String event_name;
+        public int event_admin;
         public String event_date;
         public String event_time;
         public String event_duration;
@@ -716,9 +717,9 @@ public interface MeetingService {
 
     class Destination {
         String error_message;
-        String destination_addresses[];
-        String origin_addressed[];
-        Rows rows[];
+        String[] destination_addresses;
+        String[] origin_addressed;
+        Rows[] rows;
         String status;
 
         public Rows[] getRows() {
@@ -759,7 +760,7 @@ public interface MeetingService {
     }
 
     class Rows{
-        Elements elements[];
+        Elements[] elements;
 
         public Elements[] getElements() {
             return elements;

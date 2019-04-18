@@ -31,6 +31,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
@@ -74,7 +75,7 @@ public class Route extends AsyncTask<Void, Void, JSONObject[]> {
             HttpURLConnection connection;
             BufferedReader reader;
             StringBuilder builder;
-            String line = "";
+            String line;
 
             for (int i = 0; i < origins.length; i++) {
                 url = new URL("https://maps.googleapis.com/maps/api/directions/json?"
@@ -128,7 +129,7 @@ public class Route extends AsyncTask<Void, Void, JSONObject[]> {
 
                 try {
                     Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(eventDate));
+                    calendar.setTime(new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(eventDate));
 
                     calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(eventTime.substring(0, 2)));
                     calendar.set(Calendar.MINUTE, Integer.parseInt(eventTime.substring(3, 5)));

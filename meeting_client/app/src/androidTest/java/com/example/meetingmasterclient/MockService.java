@@ -2,15 +2,13 @@ package com.example.meetingmasterclient;
 
 import com.example.meetingmasterclient.server.MeetingService;
 
-import androidx.test.espresso.idling.CountingIdlingResource;
+import java.util.ArrayList;
+import java.util.List;
+
 import okhttp3.MultipartBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.mock.BehaviorDelegate;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 public class MockService implements MeetingService {
     String event_name = "Test";
