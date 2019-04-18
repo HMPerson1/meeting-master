@@ -2,7 +2,7 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import ListCreateAPIView, ListAPIView, UpdateAPIView
@@ -23,6 +23,7 @@ class InvitationUserView(ListAPIView):
     List of invitations for the current user
     """
     serializer_class = InvitationModelSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         return Invitation.objects.filter(user_id=self.request.user.userprofile)
