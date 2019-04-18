@@ -27,6 +27,7 @@ import android.widget.ViewAnimator;
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
 import com.example.meetingmasterclient.utils.FileDownload;
+import com.example.meetingmasterclient.utils.StartingSoonAlarm;
 
 import java.util.List;
 import java.util.Optional;
@@ -491,10 +492,13 @@ public class EventDetails extends AppCompatActivity {
 
     public void onAcceptInviteClicked(View _ignored) {
         changeInvitationStatus(eventID, userID, 2);
+        StartingSoonAlarm.scheduleStartingSoonAlarm(getApplicationContext(),
+                eventID, eventInfo.getEvent_date(), eventInfo.getEvent_time());
     }
 
     public void onDeclineInviteClicked(View _ignored) {
         changeInvitationStatus(eventID, userID, 3);
+        StartingSoonAlarm.cancelStartingSoonAlarm(getApplicationContext(), eventID);
     }
 
     public void onDepartClicked(View _ignored) {

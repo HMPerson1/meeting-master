@@ -194,7 +194,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             LatLng destination = new LatLng(dest.get(0).getLatitude(), dest.get(0).getLongitude());
 
-                            (new Route(getApplicationContext(), mMap, currentLocation, destination)).execute();
+                            (new Route(getApplicationContext(), mMap, new LatLng[]{currentLocation}, destination)).execute();
                         } catch(IOException e) {
                             System.err.println("IO ERROR MAPS");
                         }
