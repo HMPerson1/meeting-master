@@ -62,8 +62,12 @@ class Notifier extends ContextWrapper {
                     break;
                 }
                 case "arrived_home": {
+                    String eventId = Objects.requireNonNull(data.get("event_id"), "data.event_id == null");
                     String userFullName = Objects.requireNonNull(data.get("user_full_name"), "data.user_full_name == null");
                     channelId = Notifications.CHANNEL_ARRIVED_HOME_ID;
+                    if (!shouldShowEditNotification(eventId)) {
+                        return;
+                    }
                     contentTitle = getString(R.string.notification_arrived_home_title);
                     contentText = getString(R.string.notification_arrived_home_body, userFullName);
                     break;
