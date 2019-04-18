@@ -11,6 +11,11 @@ import retrofit2.Call;
 import retrofit2.mock.BehaviorDelegate;
 
 public class MockService implements MeetingService {
+    String event_name = "Test";
+    String event_date = "2019-04-19";
+    String event_time = "10:00";
+    String event_duration = "02:00";
+
     private final BehaviorDelegate<MeetingService> delegate;
 
     public MockService(BehaviorDelegate<MeetingService> delegate) {
@@ -69,7 +74,23 @@ public class MockService implements MeetingService {
 
     @Override
     public Call<LocationData> getLocationDetails(String id) {
-        return null;
+        LocationData response;
+        if (id.equals("1")){
+            response = new LocationData("abc","easy","state");
+            response.setPk(Integer.valueOf(id));
+            response.setNumber_of_uses(1);
+        }else if (id.equals("3")){
+            response = new LocationData("test3","testCity3","state");
+            response.setPk(Integer.valueOf(id));
+            response.setNumber_of_uses(1);
+        }else{
+            response = new LocationData("add","city","state");
+            response.setPk(Integer.valueOf(id));
+            response.setNumber_of_uses(1);
+        }
+
+
+        return delegate.returningResponse(response).getLocationDetails(id);
     }
 
     @Override
@@ -81,10 +102,10 @@ public class MockService implements MeetingService {
     public Call<EventsData> getEventfromId(int id) {
         EventsData response = new EventsData();
         response.pk = id;
-        response.event_name = "Test";
-        response.event_date = "2019-04-19";
-        response.event_time = "10:00";
-        response.event_duration = "02:00";
+        response.event_name = event_name;
+        response.event_date = event_date;
+        response.event_time = event_time;
+        response.event_duration = event_duration;
         response.event_location = new LocationData(
                 "Lawson Computer Science Building", "West Lafayette", "Indiana");
         response.notes = "";
@@ -96,6 +117,7 @@ public class MockService implements MeetingService {
 
     @Override
     public Call<EventsData> updateEvent(EventCreationData data, String id) {
+        event_name =data.getEvent_name();
         return null;
     }
 
@@ -180,7 +202,17 @@ public class MockService implements MeetingService {
 
     @Override
     public Call<List<LocationSuggestionsData>> getSuggestedLocations(String event_id) {
-        return null;
+        List<LocationSuggestionsData> response=new ArrayList<>();
+        if (event_id.equals("1")){
+            LocationSuggestionsData location = new LocationSuggestionsData(Integer.valueOf(event_id),1);
+            response.add(location);
+        }else if (event_id.equals("3")){
+            LocationSuggestionsData location = new LocationSuggestionsData(Integer.valueOf(event_id),3);
+            response.add(location);
+        }
+
+
+        return delegate.returningResponse(response).getSuggestedLocations(event_id);
     }
 
     @Override
