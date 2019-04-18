@@ -1,6 +1,10 @@
 package com.example.meetingmasterclient;
 
 import android.content.Context;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.uiautomator.By;
+import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.Until;
 
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.utils.LeaveNowAlarm;
@@ -8,10 +12,7 @@ import com.example.meetingmasterclient.utils.Notifications;
 
 import org.junit.Test;
 
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.uiautomator.By;
-import androidx.test.uiautomator.UiDevice;
-import androidx.test.uiautomator.Until;
+import java.util.Calendar;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -35,7 +36,11 @@ public class AlarmNotificationTest {
         assertTrue(uiDevice.wait(Until.hasObject(By.text(appContext.getString(R.string.app_name))), TIMEOUT));
         assertTrue(uiDevice.wait(Until.hasObject(By.text(event.event_name)), TIMEOUT));
         // check notification content
-        assertNotNull(uiDevice.findObject(By.textContains(appContext.getString(R.string.notification_leave_now_body))));
+        Calendar cal = Calendar.getInstance();
+        String content = "You should leave now ("
+                + cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE)
+                + ") to arrive on time";
+        assertNotNull(uiDevice.findObject(By.textContains(content)));
     }
 
     @Test
@@ -54,6 +59,10 @@ public class AlarmNotificationTest {
         assertTrue(uiDevice.wait(Until.hasObject(By.text(appContext.getString(R.string.app_name))), TIMEOUT));
         assertTrue(uiDevice.wait(Until.hasObject(By.text(event.event_name)), TIMEOUT));
         // check notification content
-        assertNotNull(uiDevice.findObject(By.textContains(appContext.getString(R.string.notification_leave_now_body))));
+        Calendar cal = Calendar.getInstance();
+        String content = "You should leave now ("
+                + cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE)
+                + ") to arrive on time";
+        assertNotNull(uiDevice.findObject(By.textContains(content)));
     }
 }

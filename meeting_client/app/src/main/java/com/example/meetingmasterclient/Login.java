@@ -1,9 +1,8 @@
 package com.example.meetingmasterclient;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -11,26 +10,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpResponse;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
-
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import retrofit2.Call;
+
+import static com.example.meetingmasterclient.utils.PreferanceKeys.PREF_KEY_TOKEN;
+import static com.example.meetingmasterclient.utils.PreferanceKeys.PREF_NAME_AUTH_TOKEN;
 
 
 public class Login extends AppCompatActivity {
@@ -41,17 +29,8 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        /**Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });**/
 
         //init. user fields
         textInputEmail = findViewById(R.id.text_input_email);
@@ -73,6 +52,14 @@ public class Login extends AppCompatActivity {
                 startActivity(new Intent(Login.this, PasswordReset.class));
             }
         });
+
+        // skip if the user has already logged in
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME_AUTH_TOKEN, MODE_PRIVATE);
+        if (preferences.contains(PREF_KEY_TOKEN)) {
+            Server.authenticate(preferences.getString(PREF_KEY_TOKEN, null));
+            startActivity(new Intent(Login.this, EventListView.class));
+            finish();
+        }
     }
 
     private boolean validateEmail(){
@@ -106,6 +93,10 @@ public class Login extends AppCompatActivity {
                         assert response.body() != null;
                         Server.authenticate(response.body().key);
                         Toast.makeText(Login.this, "Login success", Toast.LENGTH_LONG).show();
+                        getSharedPreferences(PREF_NAME_AUTH_TOKEN, MODE_PRIVATE).edit()
+                                .putString(PREF_KEY_TOKEN, response.body().key).apply();
+                        startActivity(new Intent(Login.this, EventListView.class));
+                        finish();
                     } else {
                         try {
                             assert response.errorBody() != null;
@@ -119,7 +110,5 @@ public class Login extends AppCompatActivity {
                 },
                 (call, t) -> t.printStackTrace()
         ));
-        Intent debug = new Intent(Login.this, DebugLauncherActivity.class);
-        startActivity(debug);
     }
 }

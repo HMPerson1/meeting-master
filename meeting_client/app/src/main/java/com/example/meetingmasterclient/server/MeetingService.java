@@ -147,7 +147,7 @@ public interface MeetingService {
     @GET("/current_user/ical_url")
     Call<IcalUrlData> getIcalUrl();
 
-    @POST("/TODO/") // TODO
+    @PUT("/current_user/live-location")
     Call<Void> putCurrentLocation(@Body CurrentLocationData data);
 
     @GET("/TODO/") // TODO
@@ -167,6 +167,9 @@ public interface MeetingService {
 
     @DELETE("/events/current-user-active-event")
     Call<Void> deleteUserStatus();
+
+    @GET
+    Call<Destination> getDestination(@Url String url);
 
     /* ******************** *
      * Dumb data containers *
@@ -406,6 +409,7 @@ public interface MeetingService {
     class EventsData {
         public int pk;
         public String event_name;
+        public int event_admin;
         public String event_date;
         public String event_time;
         public String event_duration;
@@ -702,5 +706,58 @@ public interface MeetingService {
                     '}';
         }
     }
+
+    class Destination {
+        String error_message;
+        String[] destination_addresses;
+        String[] origin_addressed;
+        Rows[] rows;
+        String status;
+
+        public Rows[] getRows() {
+            return rows;
+        }
+
+        public String getError_message() {
+            return error_message;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+    }
+
+    class Distance{
+        String text;
+        float value;
+    }
+
+    class Duration{
+        String text;
+        float value;
+
+        public String getText() {
+            return text;
+        }
+    }
+
+    class Elements{
+        Distance distance;
+        Duration duration;
+        String status;
+
+        public Duration getDuration() {
+            return duration;
+        }
+    }
+
+    class Rows{
+        Elements[] elements;
+
+        public Elements[] getElements() {
+            return elements;
+        }
+    }
+
 }
 

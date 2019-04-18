@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -42,7 +45,7 @@ import retrofit2.Call;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    private GoogleMap mMap;
+    public GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private LatLng currentLocation;
     private static final int LOCATION_PERMISSION = 10;
@@ -60,6 +63,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         drawerLayout = findViewById(R.id.drawer_layout);
 
         getLocationPermission();
+
     }
 
     @Override
@@ -194,7 +198,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             LatLng destination = new LatLng(dest.get(0).getLatitude(), dest.get(0).getLongitude());
 
-                            (new Route(getApplicationContext(), mMap, currentLocation, destination)).execute();
+
+                            (new Route(this, new LatLng[]{currentLocation}, destination)).execute();
+
                         } catch(IOException e) {
                             System.err.println("IO ERROR MAPS");
                         }
@@ -202,6 +208,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     (call, t) -> t.printStackTrace()
             ));
         }
+    }
+
+
+
+    public void onRoutesCompleted(JSONObject[] routes) {
+        // For Ariya: Do the ETA thing here
+
     }
 
     class Locate extends TimerTask {
