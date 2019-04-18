@@ -5,24 +5,30 @@
 
     <item
         android:id="@+id/today"
-        android:title="Today's Events" />
+        android:title="@string/todays_events" />
 
     <item
         android:id="@+id/this_week"
-        android:title="This Week's Events" />
+        android:title="@string/this_weeks_events" />
 
     <item
         android:id="@+id/this_month"
-        android:title="This Month's Events" />
+        android:title="@string/this_months_events" />
 
     <item
         android:id="@+id/show_declined_events"
-        android:title="Show Declined Events"
+        android:title="@string/show_declined_events"
         android:checkable="true"
         android:checked="false"
         app:actionViewClass="android.widget.CheckBox" />
-    <!--<item
+    <item
+        android:id="@+id/view_invitations"
+        android:title="@string/view_invitations" />
+    <item
+        android:id="@+id/edit_profile"
+        android:title="@string/edit_profile" />
+    <item
         android:id="@+id/item_sync_calendar"
         android:title="@string/sync_calendar"
-        app:showAsAction="never" />-->
+        app:showAsAction="never" />
 </menu>

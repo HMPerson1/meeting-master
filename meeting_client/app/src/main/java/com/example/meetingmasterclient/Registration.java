@@ -4,27 +4,26 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
+
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
 import com.example.meetingmasterclient.utils.LocalPicture;
 import com.example.meetingmasterclient.utils.Upload;
-import java.io.FileDescriptor;
-import java.io.IOException;
+
 import retrofit2.Call;
+
+import static com.example.meetingmasterclient.utils.PreferanceKeys.PREF_KEY_TOKEN;
+import static com.example.meetingmasterclient.utils.PreferanceKeys.PREF_NAME_AUTH_TOKEN;
 
 public class Registration extends AppCompatActivity {
     private static final int READ_REQUEST_CODE = 42;
@@ -43,10 +42,10 @@ public class Registration extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
-
-        /**Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-         setSupportActionBar(toolbar);
-
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        /*
          FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
          fab.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View view) {
@@ -240,6 +239,10 @@ public class Registration extends AppCompatActivity {
                             Upload.uploadPictureToServer(getApplicationContext(), profilePictureUri);
                         }
                         Toast.makeText(Registration.this, "Registration Success", Toast.LENGTH_LONG).show();
+                        getSharedPreferences(PREF_NAME_AUTH_TOKEN, MODE_PRIVATE).edit()
+                                .putString(PREF_KEY_TOKEN, response.body().key).apply();
+                        startActivity(new Intent(Registration.this, EventListView.class));
+                        finish();
                     } else {
                         String error = null;
                         Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, registrationError -> {

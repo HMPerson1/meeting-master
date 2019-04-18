@@ -2,6 +2,8 @@ package com.example.meetingmasterclient;
 
 import android.content.Intent;
 import android.content.res.Resources;
+import android.support.test.espresso.Espresso;
+import android.support.test.rule.ActivityTestRule;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -12,18 +14,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import androidx.test.espresso.DataInteraction;
-import androidx.test.espresso.Espresso;
-import androidx.test.rule.ActivityTestRule;
-
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
-import static org.hamcrest.CoreMatchers.anything;
-import static org.junit.Assert.*;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 public class SuggestionsListActivityTest {
 

@@ -708,9 +708,9 @@ public interface MeetingService {
 
     class Destination {
         String error_message;
-        String destination_addresses[];
-        String origin_addressed[];
-        Rows rows[];
+        String[] destination_addresses;
+        String[] origin_addressed;
+        Rows[] rows;
         String status;
 
         public Rows[] getRows() {
@@ -751,7 +751,7 @@ public interface MeetingService {
     }
 
     class Rows{
-        Elements elements[];
+        Elements[] elements;
 
         public Elements[] getElements() {
             return elements;

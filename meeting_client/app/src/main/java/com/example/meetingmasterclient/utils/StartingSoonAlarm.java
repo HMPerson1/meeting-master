@@ -26,6 +26,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 
 import retrofit2.Call;
 
@@ -97,7 +98,7 @@ public class StartingSoonAlarm extends BroadcastReceiver {
     public static void scheduleStartingSoonAlarm(Context context, int eventId, String eventDate, String eventTime) {
         try {
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(eventDate));
+            calendar.setTime(new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(eventDate));
 
             calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(eventTime.substring(0, 2)));
             calendar.set(Calendar.MINUTE, Integer.parseInt(eventTime.substring(3, 5)));

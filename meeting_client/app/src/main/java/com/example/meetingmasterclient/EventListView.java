@@ -3,11 +3,11 @@ package com.example.meetingmasterclient;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 
@@ -35,6 +36,9 @@ public class EventListView extends AppCompatActivity {
         setContentView(R.layout.activity_event_list_view);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(view -> startActivity(new Intent(this, EventCreation.class)));
 
         eventData = findViewById(R.id.event_data);
         declined = false;
@@ -72,15 +76,22 @@ public class EventListView extends AppCompatActivity {
                 declinedCheckbox.setChecked(declined);
                 getInvitationByUser();
                 break;
-            /*case R.id.item_sync_calendar:
-                doSyncCalendar();*/
+            case R.id.item_sync_calendar:
+                doSyncCalendar();
+                break;
+            case R.id.view_invitations:
+                startActivity(new Intent(this, InvitationListActivity.class));
+                break;
+            case R.id.edit_profile:
+                startActivity(new Intent(this, ProfileEdition.class));
+                break;
             default:
                 break;
         }
 
         return true;
     }
-    /*
+
     private void doSyncCalendar() {
         Server.getService().getIcalUrl().enqueue(Server.mkCallback((call, response) -> {
             if (response.isSuccessful()) {
@@ -94,7 +105,7 @@ public class EventListView extends AppCompatActivity {
             }
         }, (call, t) -> t.printStackTrace()));
     }
-    */
+
     private void getInvitationByUser() {
         Call<List<MeetingService.InvitationData>> c = Server.getService().getUsersInvitations();
         c.enqueue(Server.mkCallback(
@@ -134,7 +145,7 @@ public class EventListView extends AppCompatActivity {
 
                             try {
                                 Calendar eventCal = Calendar.getInstance();
-                                eventCal.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(event.event_date));
+                                eventCal.setTime(new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(event.event_date));
                                 eventCal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(event.event_time.substring(0, 2)));
                                 eventCal.set(Calendar.MINUTE, Integer.parseInt(event.event_time.substring(3, 5)));
                                 Date eventDate = eventCal.getTime();

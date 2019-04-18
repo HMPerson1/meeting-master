@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.meetingmasterclient">
-
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -14,12 +13,9 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-
-
     <uses-feature
         android:glEsVersion="0x00020000"
-        android:required="true"/>
-
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -43,23 +39,24 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
         <service
             android:name=".LocationUpdateService"
-            android:exported="false"
-            android:description="@string/desc_service_location_update"/>
+            android:description="@string/desc_service_location_update"
+            android:exported="false" />
+
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
 
         <activity
             android:name=".MapsActivity"
-            android:label="@string/title_activity_maps"/>
-
+            android:label="@string/title_activity_maps"
+            android:parentActivityName=".EventDetails"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".SuggestionsListActivity"
             android:label="@string/title_activity_suggestions_list"
@@ -75,10 +72,13 @@
         </activity>
         <activity
             android:name=".Registration"
-            android:label="@string/title_activity_registration" />
+            android:label="@string/title_activity_registration"
+            android:parentActivityName=".Login"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Login"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -87,48 +87,57 @@
         </activity>
         <activity
             android:name=".EventCreation"
-            android:label="@string/title_activity_event_creation" />
+            android:label="@string/title_activity_event_creation"
+            android:parentActivityName=".EventListView"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".EventDetails"
-            android:label="@string/title_activity_event_details" />
+            android:label="@string/title_activity_event_details"
+            android:parentActivityName=".EventListView"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".AddUserstoMeeting"
             android:label="@string/title_activity_add_users_to_meeting" />
         <activity
             android:name=".AttendeeList"
-            android:label="@string/title_activity_attendee_list" />
+            android:label="@string/title_activity_attendee_list"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".InvitationListActivity"
             android:label="@string/title_activity_invitation_list"
+            android:parentActivityName=".EventListView"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".EventListView"
-            android:label="My Events"
+            android:label="@string/title_activity_event_list_view"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".EventEdition"
-            android:label="Event Edition"
+            android:label="@string/title_activity_event_edition"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".UserSearch"
-            android:label="User Search"
+            android:label="@string/title_activity_user_search"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ProfileEdition"
-            android:label="My Profile" />
+            android:label="@string/title_activity_profile_edition"
+            android:parentActivityName=".EventListView"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".PasswordReset"
-            android:label="Password Reset"
+            android:label="@string/title_activity_password_reset"
+            android:parentActivityName=".Login"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".PasswordReset2"
-            android:label="Password Reset2"
+            android:label="@string/title_activity_password_reset_2"
+            android:parentActivityName=".PasswordReset"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ProfileDetails"
             android:label="@string/title_activity_profile_details"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".LocationSuggestion"
             android:label="@string/title_activity_location_suggestion"
