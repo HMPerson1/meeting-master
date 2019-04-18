@@ -12,6 +12,8 @@ import com.example.meetingmasterclient.R;
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
 
+import java.util.Calendar;
+
 import retrofit2.Call;
 
 public class LeaveNowAlarm extends BroadcastReceiver {
@@ -19,19 +21,11 @@ public class LeaveNowAlarm extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         int eventId = intent.getIntExtra("event_id", 0);
         if (eventId != 0) {
-            Call<MeetingService.EventsData> c = Server.getService().getEvents("/events/" + intent.getIntExtra("event_id", 0));
+            Call<MeetingService.EventsData> c = Server.getService().getEventfromId(eventId);
             c.enqueue(Server.mkCallback(
                     (call, response) -> {
                         MeetingService.EventsData event = response.body();
                         setNotification(context, event);
-
-                        Call<MeetingService.ActiveEventsData> ca = Server.getService().putUserStatus(
-                                new MeetingService.ActiveEventsData(event.getPk(), 1)
-                        );
-                        ca.enqueue(Server.mkCallback(
-                                (call2, response2) -> {},
-                                (call2, t) -> t.printStackTrace()
-                        ));
                     },
                     (call, t) -> t.printStackTrace()
             ));
@@ -43,7 +37,10 @@ public class LeaveNowAlarm extends BroadcastReceiver {
         notifier.putExtra("event_id", event.getPk());
         PendingIntent pending = PendingIntent.getActivity(context, 0, notifier, 0);
 
-        String content = context.getString(R.string.notification_leave_now_body);
+        Calendar currentTime = Calendar.getInstance();
+        String content = "You should leave now ("
+                + currentTime.get(Calendar.HOUR_OF_DAY) + ":" + currentTime.get(Calendar.MINUTE)
+                + ") to arrive on time";
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, Notifications.CHANNEL_LEAVE_NOW)
                 .setSmallIcon(R.drawable.ic_notification)
