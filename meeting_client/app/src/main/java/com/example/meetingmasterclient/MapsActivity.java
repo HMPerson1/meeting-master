@@ -38,6 +38,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -210,7 +211,66 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    private void getLocations() {
+        Server.getService().getCurrentLocations().enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        getRoutes(response.body());
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Could not get users' locations", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
+    }
 
+    private void getRoutes(List<MeetingService.CurrentLocationData> origins) {
+        int event_id = getIntent().getIntExtra("event_id", 0);
+        if (event_id == 0) {
+            return;
+        }
+
+        Server.getService().getEventfromId(event_id).enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        MeetingService.LocationData location = response.body().event_location;
+
+                        Geocoder geocoder = new Geocoder(getApplicationContext());
+
+                        try {
+                            Address dest = ((ArrayList<Address>)geocoder
+                                    .getFromLocationName(
+                                            location.getStreet_address()
+                                                    + ", "
+                                                    + location.getCity() + ", "
+                                                    + location.getState(),1)).get(0);
+
+                            LatLng destination = new LatLng(dest.getLatitude(), dest.getLongitude());
+
+                            (new Route(this, locationToLatLng(origins), destination)).execute();
+
+                        } catch(IOException e) {
+                            System.err.println("IO ERROR MAPS");
+                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Could not get event location", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
+    }
+
+    public static LatLng[] locationToLatLng(List<MeetingService.CurrentLocationData> locations) {
+        LatLng[] arr = new LatLng[locations.size()];
+        MeetingService.CurrentLocationData current;
+
+        for (int i = 0; i < locations.size(); i++) {
+            current = locations.get(i);
+            arr[i] = new LatLng(current.lat, current.lon);
+        }
+
+        return arr;
+    }
 
     public void onRoutesCompleted(JSONObject[] routes) {
         // For Ariya: Do the ETA thing here
@@ -221,6 +281,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         public void run() {
             getCurrentLocation();
+            //getLocations();
         }
     }
 

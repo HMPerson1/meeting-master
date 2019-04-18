@@ -661,8 +661,8 @@ public interface MeetingService {
     }
 
     class CurrentLocationData {
-        double lat;
-        double lon;
+        public double lat;
+        public double lon;
 
         public CurrentLocationData(double lat, double lon) {
             this.lat = lat;
