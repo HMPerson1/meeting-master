@@ -44,13 +44,7 @@ public class AddUserstoMeeting extends AppCompatActivity {
 
 
         final List<String> list = new ArrayList<>(); //used for testing functionality of list
-
-        for (int i = 0; i < 20; i++) {
-
-            list.add("Person" + i);
-
-        }
-
+        
 
         //Scrollable listview of invited people
 
