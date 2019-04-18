@@ -440,10 +440,15 @@ public class EventDetails extends AppCompatActivity {
 
     private void updateUiStatusContainer() {
         if (eventInfo == null) return;
-        // TODO: if (eventInfo.event_admin == userID) userInvitationStatus = UserInvitationStatus.ACCEPTED;
+        UserInvitationStatus effectiveUserInvitationStatus = userInvitationStatus;
+        boolean userIsAdmin = false;
+        if (eventInfo.event_admin == Integer.parseInt(userID)) {
+            effectiveUserInvitationStatus = UserInvitationStatus.ACCEPTED;
+            userIsAdmin = true;
+        }
         int statusContainerVisibility;
         int statusContainerChildIdx;
-        switch (userInvitationStatus) {
+        switch (effectiveUserInvitationStatus) {
             case NONE:
                 statusContainerVisibility = View.GONE;
                 statusContainerChildIdx = 0;
@@ -460,8 +465,13 @@ public class EventDetails extends AppCompatActivity {
             default:
                 switch (eventInfo.current_overall_state) {
                     case 0: // NOT_STARTED
-                        statusContainerVisibility = View.VISIBLE;
-                        statusContainerChildIdx = 1;
+                        if (userIsAdmin) {
+                            statusContainerVisibility = View.GONE;
+                            statusContainerChildIdx = 0;
+                        } else {
+                            statusContainerVisibility = View.VISIBLE;
+                            statusContainerChildIdx = 1;
+                        }
                         break;
                     case 1: // STARTING
                         switch (userEventState) {
