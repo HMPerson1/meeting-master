@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,6 +63,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         drawerLayout = findViewById(R.id.drawer_layout);
 
         getLocationPermission();
+
     }
 
     @Override
@@ -196,7 +198,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             LatLng destination = new LatLng(dest.get(0).getLatitude(), dest.get(0).getLongitude());
 
+
                             (new Route(this, new LatLng[]{currentLocation}, destination)).execute();
+
                         } catch(IOException e) {
                             System.err.println("IO ERROR MAPS");
                         }
@@ -206,8 +210,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+
+
     public void onRoutesCompleted(JSONObject[] routes) {
         // For Ariya: Do the ETA thing here
+
     }
 
     class Locate extends TimerTask {

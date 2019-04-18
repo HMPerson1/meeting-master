@@ -146,6 +146,11 @@ public class MockService implements MeetingService {
     }
 
     @Override
+    public Call<List<InvitationData>> getEventInvitations(String event_id) {
+        return null;
+    }
+
+    @Override
     public Call<EventsData> getEvents(String url) {
         return null;
     }
@@ -156,7 +161,7 @@ public class MockService implements MeetingService {
     }
 
     @Override
-    public Call<Void> deleteEvent(String url) {
+    public Call<Void> deleteEvent(int id) {
         return null;
     }
 
@@ -198,6 +203,16 @@ public class MockService implements MeetingService {
 
     @Override
     public Call<Void> deleteUserStatus() {
+        return null;
+    }
+
+    @Override
+    public Call<Destination> getDestination(String url) {
+        return null;
+    }
+
+    @Override
+    public Call<UserProfile> getUserByID(int id){
         return null;
     }
 }
