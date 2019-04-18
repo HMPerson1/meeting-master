@@ -1,6 +1,10 @@
 package com.example.meetingmasterclient;
 
 import android.content.Context;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.uiautomator.By;
+import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.Until;
 
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.utils.LeaveNowAlarm;
@@ -9,11 +13,6 @@ import com.example.meetingmasterclient.utils.Notifications;
 import org.junit.Test;
 
 import java.util.Calendar;
-
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.uiautomator.By;
-import androidx.test.uiautomator.UiDevice;
-import androidx.test.uiautomator.Until;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

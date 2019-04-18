@@ -28,8 +28,8 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="TextView"
-            android:textSize="20dp" />
+            android:textSize="20sp"
+            tools:text="TextView" />
 
         <TextView
             android:id="@+id/event_date"
@@ -38,8 +38,8 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="TextView"
-            android:textSize="20dp" />
+            android:textSize="20sp"
+            tools:text="TextView" />
 
         <TextView
             android:id="@+id/event_place"
@@ -48,7 +48,7 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="TextView"
-            android:textSize="20dp" />
+            android:textSize="20sp"
+            tools:text="TextView" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

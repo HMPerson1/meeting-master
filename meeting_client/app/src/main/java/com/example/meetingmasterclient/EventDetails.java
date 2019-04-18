@@ -14,6 +14,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
 import android.transition.TransitionManager;
 import android.view.Gravity;
@@ -61,6 +62,9 @@ public class EventDetails extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //testing changing text fields
         final TextInputEditText nameInput = (TextInputEditText) findViewById(R.id.meeting_name);
@@ -320,7 +324,7 @@ public class EventDetails extends AppCompatActivity {
 
                 SharedPreferences sharedPref = getSharedPreferences(PREFS_NAME,Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
-                String NotificationStatusKey= String.valueOf(eventID) +"checkStatus";
+                String NotificationStatusKey= eventID +"checkStatus";
                 editor.putBoolean(NotificationStatusKey, menuItem.isChecked());
                 editor.commit();
                 /* true = notifications on, false= notifications off

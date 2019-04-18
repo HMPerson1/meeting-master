@@ -1,9 +1,9 @@
 package com.example.meetingmasterclient;
 
-import android.content.Intent;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -19,6 +19,9 @@ public class PasswordReset2 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_reset2);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         configureConfirmButton();
     }//OnCreate
 
@@ -47,6 +50,7 @@ public class PasswordReset2 extends AppCompatActivity {
                             if (response.isSuccessful()) {
                                 assert response.body() != null;
                                 Toast.makeText(PasswordReset2.this, "Password has been Reset" , Toast.LENGTH_LONG).show();
+                                finish();
                             } else {
                                 Server.parseUnsuccessful(response, MeetingService.RegistrationError.class, System.out::println, System.out::println);
 
@@ -54,8 +58,6 @@ public class PasswordReset2 extends AppCompatActivity {
                         },
                         (call, t) -> t.printStackTrace()
                 ));
-                //finish();//return to previous page
-
             }
         });
     }
