@@ -5,7 +5,7 @@ from rest_framework import viewsets, permissions, generics as drf_generics
 from rest_framework.filters import SearchFilter
 
 from api.users import serializers
-from api.users.models import UserProfile
+from api.users.models import UserProfile, LiveLocation
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -48,3 +48,18 @@ class UserIcalUrlView(drf_generics.RetrieveAPIView):
 
     def get_queryset(self):
         return UserProfile.objects.none()
+
+
+class SetLiveLocation(drf_generics.UpdateAPIView):
+    serializer_class = serializers.LiveLocationPutSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_object(self):
+        userprofile = self.request.user.userprofile
+        if hasattr(userprofile, 'livelocation'):
+            return userprofile.livelocation
+        else:
+            return LiveLocation(user=userprofile)
+
+    def get_queryset(self):
+        return LiveLocation.objects.none()
