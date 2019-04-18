@@ -87,7 +87,6 @@ public class EventDetails extends AppCompatActivity {
             finish();  //did not pass event_id
         }
 
-        idlingResource.increment();
         Call<MeetingService.EventsData> call = Server.getService().getEventfromId(eventID);
         call.enqueue(new Callback<MeetingService.EventsData>() {
             @Override
@@ -141,7 +140,6 @@ public class EventDetails extends AppCompatActivity {
             @Override
             public void onFailure(Call<MeetingService.EventsData> call, Throwable t) {//error from server
                 Toast.makeText(EventDetails.this,t.getMessage() , Toast.LENGTH_LONG).show();
-                idlingResource.decrement();
             }
 
         });
@@ -399,7 +397,6 @@ public class EventDetails extends AppCompatActivity {
     }
 
     public void deleteEvent(){
-        idlingResource.increment();
         Call<Void> d = Server.getService().deleteEvent(eventID);
         d.enqueue(Server.mkCallback(
                 (call, response) -> {
