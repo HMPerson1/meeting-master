@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import com.example.meetingmasterclient.MapsActivity;
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
 import com.google.android.gms.maps.GoogleMap;
@@ -30,64 +31,73 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Random;
 
 import retrofit2.Call;
 
-public class Route extends AsyncTask<Void, Void, JSONObject> {
+public class Route extends AsyncTask<Void, Void, JSONObject[]> {
     public static LinkedList<Polyline> polylines = new LinkedList<>();
     private Context context;
-    private GoogleMap mMap;
-    private LatLng origin;
-    // private LatLng[] origins;
+    private MapsActivity mapActivity;
+    private LatLng[] origins;
     private LatLng destination;
     private int eventId;
+    private String eventDate;
+    private String eventTime;
 
-    public Route(Context context, GoogleMap mMap, LatLng origin, LatLng destination) {
+    public Route(MapsActivity mapActivity, LatLng[] origins, LatLng destination) {
         super();
-        this.context = context;
-        this.mMap = mMap;
-        this.origin = origin;
+        this.mapActivity = mapActivity;
+        this.context = mapActivity.getApplicationContext();
+        this.origins = origins;
         this.destination = destination;
     }
 
-    public Route(Context context, LatLng origin, LatLng destination, int event) {
+    public Route(Context context, LatLng origin, LatLng destination, int eventId, String eventDate, String eventTime) {
         super();
         this.context = context;
-        this.origin = origin;
-        /*
         origins = new LatLng[1];
         origins[0] = origin;
-        */
         this.destination = destination;
-        this.eventId = event;
+        this.eventId = eventId;
+        this.eventDate = eventDate;
+        this.eventTime = eventTime;
     }
 
     @Override
-    protected JSONObject doInBackground(Void... params) {
-        // for (int i = 0; i < origins.length; i++)
-        // TODO: Do for origins[i] rather than origin
+    protected JSONObject[] doInBackground(Void... params) {
         try {
-            URL url = new URL("https://maps.googleapis.com/maps/api/directions/json?"
-                    + "origin=" + origin.latitude + "," + origin.longitude
-                    + "&destination=" + destination.latitude + "," + destination.longitude
-                    + "&key=AIzaSyDXRxY5Bs0akDeBWYsBRGi8zVExod0HY2w");
+            JSONObject[] routes = new JSONObject[origins.length];
 
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.connect();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder builder = new StringBuilder();
+            URL url;
+            HttpURLConnection connection;
+            BufferedReader reader;
+            StringBuilder builder;
             String line = "";
-            while ((line = reader.readLine()) != null) {
-                builder.append(line);
+
+            for (int i = 0; i < origins.length; i++) {
+                url = new URL("https://maps.googleapis.com/maps/api/directions/json?"
+                        + "origin=" + origins[i].latitude + "," + origins[i].longitude
+                        + "&destination=" + destination.latitude + "," + destination.longitude
+                        + "&key=AIzaSyDXRxY5Bs0akDeBWYsBRGi8zVExod0HY2w");
+
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+
+                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                builder = new StringBuilder();
+                while ((line = reader.readLine()) != null) {
+                    builder.append(line);
+                }
+                reader.close();
+
+                connection.disconnect();
+
+                routes[i] = new JSONObject(builder.toString());
             }
-            reader.close();
 
-            connection.disconnect();
-
-            // TODO: Return array of JSON objects rather than only one
-            return new JSONObject(builder.toString());
+            return routes;
         } catch(MalformedURLException ue) {
             Toast.makeText(context, "URL error", Toast.LENGTH_SHORT).show();
             return null;
@@ -101,64 +111,74 @@ public class Route extends AsyncTask<Void, Void, JSONObject> {
     }
 
     @Override
-    protected void onPostExecute(JSONObject route) {
-        // TODO: Check for size of array; if there is only one, schedule alarm; if there are more, draw the routes with a for loop
+    protected void onPostExecute(JSONObject[] routes) {
+        if (routes == null) {
+            return;
+        }
+
         try {
-            JSONObject leg = route
-                    .getJSONArray("routes")
-                    .getJSONObject(0)
-                    .getJSONArray("legs")
-                    .getJSONObject(0);
+            if (eventDate != null && eventTime != null) {
+                int duration = routes[0]
+                        .getJSONArray("routes")
+                        .getJSONObject(0)
+                        .getJSONArray("legs")
+                        .getJSONObject(0)
+                        .getJSONObject("duration")
+                        .getInt("value");
 
-            // The map is null if the alarm is being scheduled
-            if (mMap == null) {
-                int duration = leg.getJSONObject("duration").getInt("value");
+                try {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(eventDate));
 
-                Call<MeetingService.EventsData> c = Server.getService().getEvents("/events/" + eventId);
-                c.enqueue(Server.mkCallback(
-                        (call, response) -> {
-                            MeetingService.EventsData event = response.body();
+                    calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(eventTime.substring(0, 2)));
+                    calendar.set(Calendar.MINUTE, Integer.parseInt(eventTime.substring(3, 5)));
+                    calendar.add(Calendar.SECOND, (-1) * duration);
 
-                            try {
-                                Calendar calendar = Calendar.getInstance();
-                                calendar.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(event.event_date));
-
-                                String eventTime = event.event_time;
-                                calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(eventTime.substring(0, 2)));
-                                calendar.set(Calendar.MINUTE, Integer.parseInt(eventTime.substring(3, 5)));
-                                calendar.add(Calendar.SECOND, (-1) * duration);
-
-                                Intent activate = new Intent(context, LeaveNowAlarm.class);
-                                activate.putExtra("event_id", event.getPk());
-                                PendingIntent pActivate = PendingIntent.getBroadcast(context, 0, activate, 0);
-                                AlarmManager alarms = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-                                alarms.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pActivate);
-                            } catch(ParseException e) {
-                                e.printStackTrace();
-                            }
-                        },
-                        (call, t) -> t.printStackTrace()
-                ));
+                    Intent activate = new Intent(context, LeaveNowAlarm.class);
+                    activate.putExtra("event_id", eventId);
+                    PendingIntent pActivate = PendingIntent.getBroadcast(context, 0, activate, 0);
+                    AlarmManager alarms = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+                    alarms.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pActivate);
+                } catch(ParseException e) {
+                    e.printStackTrace();
+                }
             } else {
+                int i;
+
                 if (!polylines.isEmpty()) {
-                    for (int i = 0; i < polylines.size(); i++) {
+                    for (i = 0; i < polylines.size(); i++) {
                         Polyline pol = polylines.remove();
                         pol.remove();
                     }
                 }
 
-                JSONArray arr = leg.getJSONArray("steps");
+                int color;
+                for (i = 0; i < routes.length; i++) {
+                    color = randomColor();
 
-                for (int i = 0; i < arr.length(); i++) {
-                    PolylineOptions options = new PolylineOptions();
-                    options.color(randomColor());
-                    options.width(10);
-                    options.addAll(PolyUtil.decode(arr.getJSONObject(i).getJSONObject("polyline").getString("points")));
-                    polylines.add(mMap.addPolyline(options));
+                    JSONArray arr = routes[i]
+                            .getJSONArray("routes")
+                            .getJSONObject(0)
+                            .getJSONArray("legs")
+                            .getJSONObject(0)
+                            .getJSONArray("steps");
+
+                    for (int j = 0; j < arr.length(); j++) {
+                        PolylineOptions options = new PolylineOptions();
+                        options.color(color);
+                        options.width(10);
+                        options.addAll(PolyUtil.decode(
+                                arr.getJSONObject(j)
+                                        .getJSONObject("polyline")
+                                        .getString("points")));
+                        polylines.add(mapActivity.mMap.addPolyline(options));
+                    }
                 }
+
+                mapActivity.onRoutesCompleted(routes);
             }
         } catch(JSONException je) {
-            System.err.println(route.toString());
+            System.err.println("JSON Error 2");
         }
     }
 

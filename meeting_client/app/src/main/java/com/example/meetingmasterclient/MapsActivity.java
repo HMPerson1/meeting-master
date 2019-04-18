@@ -34,6 +34,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -43,7 +45,7 @@ import retrofit2.Call;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    private GoogleMap mMap;
+    public GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private LatLng currentLocation;
     private static final int LOCATION_PERMISSION = 10;
@@ -62,10 +64,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         getLocationPermission();
 
-        //for testing
-        String latlngOrigin = "40.6655101,-73.89188969999998";
-        String latlngDest = "40.6655101,-73.89188969999998";
-        getETA(latlngOrigin,latlngDest);
     }
 
     @Override
@@ -200,10 +198,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             LatLng destination = new LatLng(dest.get(0).getLatitude(), dest.get(0).getLongitude());
 
-                            (new Route(getApplicationContext(), mMap, currentLocation, destination)).execute();
 
-                            //get current user eta
-
+                            (new Route(this, new LatLng[]{currentLocation}, destination)).execute();
 
                         } catch(IOException e) {
                             System.err.println("IO ERROR MAPS");
@@ -214,19 +210,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public void getETA(String latlngOrigin, String latlngDestination){
-        String url ="https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+latlngOrigin+"&destinations="+latlngDestination+"&key=AIzaSyCfkDMHp8uy1KYtRvWL3iGzLG4mzcERBWc";
 
-        Call<MeetingService.Destination> c = Server.getService().getDestination(url);
-        c.enqueue(Server.mkCallback(
-                (call, response) -> {
-                    MeetingService.Destination destination = response.body();
-                   String duration = destination.getRows()[0].getElements()[0].getDuration().getText();
 
-                    Log.d("eta", duration);
-                },
-                (call, t) -> t.printStackTrace()
-        ));
+    public void onRoutesCompleted(JSONObject[] routes) {
+        // For Ariya: Do the ETA thing here
+
     }
 
     class Locate extends TimerTask {
