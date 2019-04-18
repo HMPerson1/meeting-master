@@ -6,7 +6,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.uiautomator.UiDevice;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -30,16 +32,28 @@ public class EventEditionTest {
     }
 
     @Test
-    public void EventEditionFirstTest() {
+    public void eventEditionFirstTest() { //check current info data populates fields
         activityRule.launchActivity(createEventEditionIntent(1));
+
+        UiDevice device = UiDevice.getInstance(
+                InstrumentationRegistry.getInstrumentation());
+
+
+        device.waitForWindowUpdate(null,5000);
 
 
 
     }
 
     @Test
-    public void attendeeListSecondTest() {
+    public void eventEditionSecondTest() { //check event name is changed
         activityRule.launchActivity(createEventEditionIntent(3));
+
+        UiDevice device = UiDevice.getInstance(
+                InstrumentationRegistry.getInstrumentation());
+
+
+        device.waitForWindowUpdate(null,5000);
 
 
     }

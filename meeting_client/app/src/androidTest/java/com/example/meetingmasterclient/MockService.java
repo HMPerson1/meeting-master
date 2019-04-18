@@ -13,6 +13,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MockService implements MeetingService {
+    String event_name = "Test";
+    String event_date = "2019-04-19";
+    String event_time = "10:00";
+    String event_duration = "02:00";
+
     private final BehaviorDelegate<MeetingService> delegate;
 
     public MockService(BehaviorDelegate<MeetingService> delegate) {
@@ -99,10 +104,10 @@ public class MockService implements MeetingService {
     public Call<EventsData> getEventfromId(int id) {
         EventsData response = new EventsData();
         response.pk = id;
-        response.event_name = "Test";
-        response.event_date = "2019-04-19";
-        response.event_time = "10:00";
-        response.event_duration = "02:00";
+        response.event_name = event_name;
+        response.event_date = event_date;
+        response.event_time = event_time;
+        response.event_duration = event_duration;
         response.event_location = new LocationData(
                 "Lawson Computer Science Building", "West Lafayette", "Indiana");
         response.notes = "";
@@ -114,6 +119,7 @@ public class MockService implements MeetingService {
 
     @Override
     public Call<EventsData> updateEvent(EventCreationData data, String id) {
+        event_name =data.getEvent_name();
         return null;
     }
 

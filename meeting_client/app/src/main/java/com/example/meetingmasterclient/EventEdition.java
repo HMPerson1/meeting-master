@@ -241,7 +241,7 @@ public class EventEdition extends AppCompatActivity {
 
                 Intent intent = new Intent();
                 intent.putExtra("event_id", eventID);
-
+                setResult(Activity.RESULT_OK,intent);
                 finish();
         }
         });
