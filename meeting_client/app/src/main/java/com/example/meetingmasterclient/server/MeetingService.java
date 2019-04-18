@@ -168,6 +168,9 @@ public interface MeetingService {
     @DELETE("/events/current-user-active-event")
     Call<Void> deleteUserStatus();
 
+    @GET
+    Call<Destination> getDestination(@Url String url);
+
     /* ******************** *
      * Dumb data containers *
      * ******************** */
@@ -702,5 +705,58 @@ public interface MeetingService {
                     '}';
         }
     }
+
+    class Destination {
+        String error_message;
+        String destination_addresses[];
+        String origin_addressed[];
+        Rows rows[];
+        String status;
+
+        public Rows[] getRows() {
+            return rows;
+        }
+
+        public String getError_message() {
+            return error_message;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+    }
+
+    class Distance{
+        String text;
+        float value;
+    }
+
+    class Duration{
+        String text;
+        float value;
+
+        public String getText() {
+            return text;
+        }
+    }
+
+    class Elements{
+        Distance distance;
+        Duration duration;
+        String status;
+
+        public Duration getDuration() {
+            return duration;
+        }
+    }
+
+    class Rows{
+        Elements elements[];
+
+        public Elements[] getElements() {
+            return elements;
+        }
+    }
+
 }
 

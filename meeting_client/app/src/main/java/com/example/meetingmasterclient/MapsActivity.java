@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,6 +61,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         drawerLayout = findViewById(R.id.drawer_layout);
 
         getLocationPermission();
+
+        //for testing
+        String latlngOrigin = "40.6655101,-73.89188969999998";
+        String latlngDest = "40.6655101,-73.89188969999998";
+        getETA(latlngOrigin,latlngDest);
     }
 
     @Override
@@ -195,6 +201,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             LatLng destination = new LatLng(dest.get(0).getLatitude(), dest.get(0).getLongitude());
 
                             (new Route(getApplicationContext(), mMap, currentLocation, destination)).execute();
+
+                            //get current user eta
+
+
                         } catch(IOException e) {
                             System.err.println("IO ERROR MAPS");
                         }
@@ -202,6 +212,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     (call, t) -> t.printStackTrace()
             ));
         }
+    }
+
+    public void getETA(String latlngOrigin, String latlngDestination){
+        String url ="https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="+latlngOrigin+"&destinations="+latlngDestination+"&key=AIzaSyCfkDMHp8uy1KYtRvWL3iGzLG4mzcERBWc";
+
+        Call<MeetingService.Destination> c = Server.getService().getDestination(url);
+        c.enqueue(Server.mkCallback(
+                (call, response) -> {
+                    MeetingService.Destination destination = response.body();
+                   String duration = destination.getRows()[0].getElements()[0].getDuration().getText();
+
+                    Log.d("eta", duration);
+                },
+                (call, t) -> t.printStackTrace()
+        ));
     }
 
     class Locate extends TimerTask {
