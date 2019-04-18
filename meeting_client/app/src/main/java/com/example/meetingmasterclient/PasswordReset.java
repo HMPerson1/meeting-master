@@ -3,26 +3,14 @@ package com.example.meetingmasterclient;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
-
-import org.json.JSONObject;
 
 import retrofit2.Call;
 
@@ -35,8 +23,7 @@ public class PasswordReset extends AppCompatActivity {
         setContentView(R.layout.activity_password_reset);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        Volley.newRequestQueue(this);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //send server email
         //server sends email to user

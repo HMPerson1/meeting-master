@@ -2,6 +2,11 @@ package com.example.meetingmasterclient;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.uiautomator.By;
+import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject2;
+import android.support.test.uiautomator.Until;
 
 import com.example.meetingmasterclient.utils.Notifications;
 
@@ -9,12 +14,6 @@ import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.uiautomator.By;
-import androidx.test.uiautomator.UiDevice;
-import androidx.test.uiautomator.UiObject2;
-import androidx.test.uiautomator.Until;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;

@@ -63,6 +63,7 @@ def notify_arrived_home(event: Event, obj_user: UserProfile, dry_run=False):
             continue
         data = {
             'kind': 'arrived_home',
+            'event_id': str(event.pk),
             'user_full_name': obj_user.django_user.get_full_name()
         }
         _do_message(data, user, dry_run)
