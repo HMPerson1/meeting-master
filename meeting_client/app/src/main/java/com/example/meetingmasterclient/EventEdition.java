@@ -1,5 +1,6 @@
 package com.example.meetingmasterclient;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -76,6 +77,13 @@ public class EventEdition extends AppCompatActivity {
             finish();  //did not pass event_id
         }
 
+        autoPopulateFieldsWithEventandLocationData();
+
+
+
+    }//on create
+
+    private void autoPopulateFieldsWithEventandLocationData(){
         //TODO: get event info from backend
         Call<MeetingService.EventsData> call = Server.getService().getEventfromId(String.valueOf(eventID));
         call.enqueue(new Callback<MeetingService.EventsData>() {
@@ -126,8 +134,7 @@ public class EventEdition extends AppCompatActivity {
             }
 
         });
-
-    }//on create
+    }
 
     private void configureSuggestedLocationsButton(){
         Button suggestedButton = (Button) findViewById(R.id.suggested_locations_button);
@@ -136,7 +143,7 @@ public class EventEdition extends AppCompatActivity {
             public void onClick(View view) {
                 Intent suggested = new Intent(getApplicationContext(), SuggestionsListActivity.class);
                 suggested.putExtra("event_id", eventID);
-                startActivity(suggested);
+                startActivityForResult(suggested, 1);
             }
         });
     }
@@ -163,9 +170,8 @@ public class EventEdition extends AppCompatActivity {
 
                 putLocationandEvent();
 
-                Intent intent = new Intent(getApplicationContext(), EventDetails.class);
+                Intent intent = new Intent();
                 intent.putExtra("event_id", eventID);
-                startActivity(intent);
 
                 finish();
         }
@@ -288,6 +294,23 @@ public class EventEdition extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+
+                if (resultCode == Activity.RESULT_OK) {
+                    Log.d("location", String.valueOf(locationID));
+                    eventID = data.getIntExtra("event_id",-1);
+                    locationID = data.getIntExtra("location_id",-1);
+                    Log.d("location2", String.valueOf(locationID));
+                    autoPopulateFieldsWithEventandLocationData();
+                }
+
+
+
     }
 
 }
