@@ -150,8 +150,8 @@ public interface MeetingService {
     @PUT("/current_user/live-location")
     Call<Void> putCurrentLocation(@Body CurrentLocationData data);
 
-    @GET("/TODO/") // TODO
-    Call<List<CurrentLocationData>> getCurrentLocations();
+    @GET("/events/{event_id}/attendee-locations") // TODO
+    Call<List<AttendeeLocationData>> getCurrentLocations(@Path("event_id") String event_id);
 
     @GET("/suggestions/event-suggestions/{event_id}")
     Call <List<LocationSuggestionsData>> getSuggestedLocations(@Path("event_id")  String event_id);
@@ -668,6 +668,20 @@ public interface MeetingService {
         public CurrentLocationData(double lat, double lon) {
             this.lat = lat;
             this.lon = lon;
+        }
+    }
+
+    class AttendeeLocationData {
+        public String user;
+        public String user_full_name;
+        public double lon;
+        public double lat;
+
+        public AttendeeLocationData(String user, String user_full_name, double lon, double lat) {
+            this.user = user;
+            this.user_full_name = user_full_name;
+            this.lon = lon;
+            this.lat = lat;
         }
     }
 
