@@ -100,3 +100,4 @@ class InvitationStatusChangeView(APIView):
         # eid = self.kwargs.get('event_id')
         # resp = super().put(*args, **kwargs)
         # return resp
+

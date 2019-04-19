@@ -25,6 +25,7 @@ class EventModelSerializer(serializers.ModelSerializer):
         fields = (
             "pk",
             "event_name",
+
             "event_date",
             "event_time",
             "event_duration",
