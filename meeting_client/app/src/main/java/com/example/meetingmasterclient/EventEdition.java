@@ -104,8 +104,8 @@ public class EventEdition extends AppCompatActivity {
                             response.code(), Toast.LENGTH_LONG).show();
                     return;
                 }
-                Toast.makeText(EventEdition.this,"response" , Toast.LENGTH_LONG).show();
-                Toast.makeText(EventEdition.this,response.toString() , Toast.LENGTH_LONG).show();
+            //    Toast.makeText(EventEdition.this,"response" , Toast.LENGTH_LONG).show();
+            //    Toast.makeText(EventEdition.this,response.toString() , Toast.LENGTH_LONG).show();
 
 
                 MeetingService.EventsData eventInfo = response.body();//store response
@@ -323,7 +323,7 @@ public class EventEdition extends AppCompatActivity {
                     return;
                 }
 
-                Toast.makeText(EventEdition.this,response.toString() , Toast.LENGTH_LONG).show();
+             //   Toast.makeText(EventEdition.this,response.toString() , Toast.LENGTH_LONG).show();
                 MeetingService.LocationData locationInfo =response.body();
                 putEvent(response.body());
 
