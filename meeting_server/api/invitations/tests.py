@@ -97,3 +97,4 @@ class CurrentUserInvitationsTest(TestCase):
         assert json.loads(response.content) == \
                [{'user_id': self.alice.pk, 'event_id': self.bob_party.pk, 'status': Invitation.ACCEPTED,
                  'edit_permission': False}]
+
