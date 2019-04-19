@@ -67,7 +67,7 @@ public class SuggestionsListActivityTest {
     }
 
     @Test
-    public void attendeeListSecondTest() {
+    public void suggestionsListSecondTest() {
         activityRule.launchActivity(createSuggestionsListIntent(3));
         UiDevice device = UiDevice.getInstance(
                 InstrumentationRegistry.getInstrumentation());

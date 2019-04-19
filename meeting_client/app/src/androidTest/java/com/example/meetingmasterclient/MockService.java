@@ -17,6 +17,8 @@ public class MockService implements MeetingService {
     String event_date = "2019-04-19";
     String event_time = "10:00";
     String event_duration = "02:00";
+    int state=2;
+
 
     private final BehaviorDelegate<MeetingService> delegate;
 
@@ -274,18 +276,24 @@ public class MockService implements MeetingService {
 
     @Override
     public Call<ActiveEventsData> getUserStatus() {
-        ActiveEventsData response = new ActiveEventsData(1, 2);
+        ActiveEventsData response = new ActiveEventsData(event_id, state);
         return delegate.returningResponse(response).getUserStatus();
     }
 
     @Override
     public Call<ActiveEventsData> putUserStatus(ActiveEventsData data) {
-        return null;
+        state=3;
+
+        ActiveEventsData activeEvent =new ActiveEventsData(event_id,state);
+        return delegate.returningResponse(activeEvent).getUserStatus();
+
     }
 
     @Override
     public Call<Void> deleteUserStatus() {
-        return null;
+
+        state=0;
+        return delegate.returningResponse(null).deleteUserStatus();
     }
 
     @Override
