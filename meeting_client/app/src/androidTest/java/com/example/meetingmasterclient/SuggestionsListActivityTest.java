@@ -114,6 +114,7 @@ public class SuggestionsListActivityTest {
                     }
 
                     description.appendText("with id: " + idDescription);
+
                 }
 
                 public boolean matchesSafely(View view) {
