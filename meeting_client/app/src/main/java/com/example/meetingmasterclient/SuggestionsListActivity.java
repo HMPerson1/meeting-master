@@ -86,6 +86,7 @@ public class SuggestionsListActivity extends AppCompatActivity {
 
                 //add user to list if successful
                 List<MeetingService.LocationSuggestionsData> locations = response.body();//store response
+                Log.d("add", String.valueOf(locations.get(0).getLocation_id()));
 
                 getLocationInfo(locations);
 
@@ -135,6 +136,7 @@ public class SuggestionsListActivity extends AppCompatActivity {
                     }
 
                     MeetingService.LocationData locationInfo = response.body();//store response
+
 
                     try {
                         JSONObject jo = new JSONObject();

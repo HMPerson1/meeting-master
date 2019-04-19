@@ -627,6 +627,14 @@ public interface MeetingService {
             this.state = state;
         }
 
+        public void setPk(int pk) {
+            this.pk = pk;
+        }
+
+        public void setNumber_of_uses(int number_of_uses) {
+            this.number_of_uses = number_of_uses;
+        }
+
         public int getPk() {
             return pk;
         }

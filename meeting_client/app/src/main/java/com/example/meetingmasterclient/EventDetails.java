@@ -1,6 +1,7 @@
 package com.example.meetingmasterclient;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -66,121 +68,12 @@ public class EventDetails extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //testing changing text fields
-        final TextInputEditText nameInput = (TextInputEditText) findViewById(R.id.meeting_name);
-        final TextInputEditText textInputDate = findViewById(R.id.date);
-        final TextInputEditText textInputTime = findViewById(R.id.time);
-        final TextInputEditText textDuration = findViewById(R.id.duration);
-        final TextInputEditText textInputNotes = findViewById(R.id.notes);
-        final TextInputEditText textInputStreetAddr = findViewById(R.id.street);
-        final TextInputEditText textInputCity = findViewById(R.id.city);
-        final TextInputEditText textInputState = findViewById(R.id.state);
-        final TextInputEditText textInputRoomNo = findViewById(R.id.room_num);
-
-        //MeetingService.EventData eventData = new MeetingService.EventData();
         //get the current intent
         Intent intent = getIntent();
         eventID = intent.getIntExtra("event_id", -1);
         userID = intent.getStringExtra("user_id");
 
-        userID="1";
-
-        viewAttachmentButton = (Button) findViewById(R.id.add_attachments);
-
-        if (eventID<0){
-            finish();  //did not pass event_id
-        }
-
-        Call<MeetingService.EventsData> call = Server.getService().getEventfromId(eventID);
-        call.enqueue(new Callback<MeetingService.EventsData>() {
-            @Override
-            public void onResponse(Call<MeetingService.EventsData> call, Response<MeetingService.EventsData>response) {
-                if(!response.isSuccessful()){ //404 error?
-                    Toast.makeText(EventDetails.this, "Oops, Something is wrong: " +
-                            response.code(), Toast.LENGTH_LONG).show();
-                    return;
-                }
-                Toast.makeText(EventDetails.this,response.toString() , Toast.LENGTH_LONG).show();
-
-                eventInfo = response.body();//store response
-
-                //display the event details to the user
-                nameInput.setText(eventInfo.getEvent_name());
-                textInputDate.setText(textInputDate.getText()+ "    "+eventInfo.getEvent_date());
-                textInputTime.setText(textInputTime.getText()+"    "+eventInfo.getEvent_time());
-                textDuration.setText(textDuration.getText()+"    "+eventInfo.getEvent_duration());
-                textInputNotes.setText(textInputNotes.getText()+"    "+eventInfo.getNotes());
-
-                //get location details from server
-
-                MeetingService.LocationData locationInfo= eventInfo.getEvent_location();
-
-
-                textInputStreetAddr.setText(textInputStreetAddr.getText()+ "    "+locationInfo.getStreet_address());
-                textInputCity.setText(textInputCity.getText()+ "    "+locationInfo.getCity());
-                textInputState.setText(textInputState.getText()+ "    "+locationInfo.getState());
-
-                //textInputRoomNo.setText(locationInfo.);
-
-                viewAttachmentButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                                == PackageManager.PERMISSION_GRANTED) {
-                            getFileFromServer(
-                                    eventInfo.getFile_attachment(),
-                                    eventInfo.getEvent_name());
-                        } else {
-                            ActivityCompat.requestPermissions(EventDetails.this,
-                                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                    FILE_PERMISSION);
-                        }
-                    }
-                });
-
-                mapButton = (Button) findViewById(R.id.map_button);
-                mapButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent map = new Intent(getApplicationContext(), MapsActivity.class);
-                        map.putExtra("event_id", eventInfo.getPk());
-                        startActivity(map);
-                    }
-                });
-
-                updateUiStatusContainer();
-            }
-
-            @Override
-            public void onFailure(Call<MeetingService.EventsData> call, Throwable t) {//error from server
-                Toast.makeText(EventDetails.this,t.getMessage() , Toast.LENGTH_LONG).show();
-            }
-
-        });
-
-        suggestLocationButton = (Button) findViewById(R.id.suggest_location_button);
-        suggestLocationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent suggest = new Intent(getApplicationContext(), LocationSuggestion.class);
-                suggest.putExtra("event_id", eventID);
-                startActivity(suggest);
-            }
-        });
-
-        attendeeListButton = (Button) findViewById(R.id.view_attendees_button);
-        attendeeListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(EventDetails.this, "Passing event_id " + eventID, Toast.LENGTH_LONG).show();
-                Intent attendees = new Intent(EventDetails.this, AttendeeList.class);
-                attendees.putExtra("event_id", eventID);
-                startActivity(attendees);
-            }
-        });
-
-        contentView = findViewById(R.id.content_event_details);
-        statusContainer = findViewById(R.id.active_status_container);
+        startEventDetails();
     }
 
     @Override
@@ -346,7 +239,7 @@ public class EventDetails extends AppCompatActivity {
 
                 Intent intent = new Intent(getApplicationContext(), EventEdition.class);
                 intent.putExtra("event_id", eventID);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
 
                 return false;
             }
@@ -661,5 +554,127 @@ public class EventDetails extends AppCompatActivity {
 
     enum UserInvitationStatus {
         NONE, PENDING, ACCEPTED, DECLINED
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        Log.d("result", String.valueOf(requestCode));
+        if (resultCode == Activity.RESULT_OK) {
+            eventID = resultData.getIntExtra("event_id",-1);
+            startEventDetails();
+        }
+    }
+
+    public void startEventDetails(){
+        final TextInputEditText nameInput = (TextInputEditText) findViewById(R.id.meeting_name);
+        final TextInputEditText textInputDate = findViewById(R.id.date);
+        final TextInputEditText textInputTime = findViewById(R.id.time);
+        final TextInputEditText textDuration = findViewById(R.id.duration);
+        final TextInputEditText textInputNotes = findViewById(R.id.notes);
+        final TextInputEditText textInputStreetAddr = findViewById(R.id.street);
+        final TextInputEditText textInputCity = findViewById(R.id.city);
+        final TextInputEditText textInputState = findViewById(R.id.state);
+        final TextInputEditText textInputRoomNo = findViewById(R.id.room_num);
+
+        //MeetingService.EventData eventData = new MeetingService.EventData();
+
+
+        userID="1";
+
+        viewAttachmentButton = (Button) findViewById(R.id.add_attachments);
+
+        if (eventID<0){
+            finish();  //did not pass event_id
+        }
+
+        Call<MeetingService.EventsData> call = Server.getService().getEventfromId(eventID);
+        call.enqueue(new Callback<MeetingService.EventsData>() {
+            @Override
+            public void onResponse(Call<MeetingService.EventsData> call, Response<MeetingService.EventsData>response) {
+                if(!response.isSuccessful()){ //404 error?
+                    Toast.makeText(EventDetails.this, "Oops, Something is wrong: " +
+                            response.code(), Toast.LENGTH_LONG).show();
+                    return;
+                }
+                Toast.makeText(EventDetails.this,response.toString() , Toast.LENGTH_LONG).show();
+
+                eventInfo = response.body();//store response
+
+                //display the event details to the user
+                nameInput.setText(eventInfo.getEvent_name());
+                textInputDate.setText(textInputDate.getText()+ "    "+eventInfo.getEvent_date());
+                textInputTime.setText(textInputTime.getText()+"    "+eventInfo.getEvent_time());
+                textDuration.setText(textDuration.getText()+"    "+eventInfo.getEvent_duration());
+                textInputNotes.setText(textInputNotes.getText()+"    "+eventInfo.getNotes());
+
+                //get location details from server
+
+                MeetingService.LocationData locationInfo= eventInfo.getEvent_location();
+
+
+                textInputStreetAddr.setText(textInputStreetAddr.getText()+ "    "+locationInfo.getStreet_address());
+                textInputCity.setText(textInputCity.getText()+ "    "+locationInfo.getCity());
+                textInputState.setText(textInputState.getText()+ "    "+locationInfo.getState());
+
+                //textInputRoomNo.setText(locationInfo.);
+
+                viewAttachmentButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                == PackageManager.PERMISSION_GRANTED) {
+                            getFileFromServer(
+                                    eventInfo.getFile_attachment(),
+                                    eventInfo.getEvent_name());
+                        } else {
+                            ActivityCompat.requestPermissions(EventDetails.this,
+                                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                    FILE_PERMISSION);
+                        }
+                    }
+                });
+                
+                mapButton = (Button) findViewById(R.id.map_button);
+                mapButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent map = new Intent(getApplicationContext(), MapsActivity.class);
+                        startActivity(map);
+                    }
+                });
+
+                updateUiStatusContainer();
+            }
+
+            @Override
+            public void onFailure(Call<MeetingService.EventsData> call, Throwable t) {//error from server
+                Toast.makeText(EventDetails.this,t.getMessage() , Toast.LENGTH_LONG).show();
+            }
+
+        });
+
+        suggestLocationButton = (Button) findViewById(R.id.suggest_location_button);
+        suggestLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent suggest = new Intent(getApplicationContext(), LocationSuggestion.class);
+                suggest.putExtra("event_id", eventID);
+                startActivity(suggest);
+            }
+        });
+
+        attendeeListButton = (Button) findViewById(R.id.view_attendees_button);
+        attendeeListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(EventDetails.this, "Passing event_id " + eventID, Toast.LENGTH_LONG).show();
+                Intent attendees = new Intent(EventDetails.this, AttendeeList.class);
+                attendees.putExtra("event_id", eventID);
+                startActivity(attendees);
+            }
+        });
+
+        contentView = findViewById(R.id.content_event_details);
+        statusContainer = findViewById(R.id.active_status_container);
     }
 }
