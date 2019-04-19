@@ -188,7 +188,6 @@ public class AttendeeList extends AppCompatActivity {
             TextView personName;
 
             ViewHolder(@NonNull View view) {
-                //TODO fix this
                 super(view);
                 personName = view.findViewById(R.id.userSearchResultText);
                 Button viewButton = view.findViewById(R.id.viewUserSearchResultButton);
