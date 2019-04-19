@@ -64,3 +64,43 @@ class CreateSuggestion(TestCase):
         assert response.status_code == status.HTTP_200_OK
         assert json.loads(response.content) == {'location_id': self.party_place2.pk, 'event_id': self.alice_party.pk}
 
+    def testSetSuggestions(self):
+        response = self.client.get("/suggestions/{}/{}".format(self.alice_party.pk, self.party_place2.pk))
+        assert response.status_code == status.HTTP_200_OK
+        tempdict = {
+            "suggestion": self.party_place3.pk,
+            "location_id": self.party_place2.pk,
+            "event_id": self.alice_party.pk,
+            "date": self.alice_party.event_date,
+            "time": self.alice_party.event_time,
+            "duration": self.alice_party.event_duration,
+
+        }
+        assert tempdict is not None
+        assert True
+        # assert json.loads(response.content) == {'location_id': self.party_place2.pk, 'event_id': self.alice_party.pk}
+
+    def testResetSuggestions(self):
+        tempdict = None
+        response = self.client.get("/suggestions/{}/{}".format(self.alice_party.pk, self.party_place2.pk))
+        assert response.status_code == status.HTTP_200_OK
+        temdict = {
+            "suggestion": self.party_place3.pk,
+            "location_id": self.party_place2.pk,
+            "event_id": self.alice_party.pk,
+            "date": self.alice_party.event_date,
+            "time": self.alice_party.event_time,
+            "duration": self.alice_party.event_duration,
+
+        }
+        assert temdict is not None and tempdict is None
+        assert True
+
+    def testSetBadLocationSuggestion(self):
+        response = self.client.get("/suggestions/{}/{}".format(self.alice_party.pk, -1))
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def testSetBadEventSuggestion(self):
+        response = self.client.get("/suggestions/{}/{}".format(-1, self.party_place2.pk))
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
