@@ -339,6 +339,9 @@ public class EventDetails extends AppCompatActivity {
             effectiveUserInvitationStatus = UserInvitationStatus.ACCEPTED;
             userIsAdmin = true;
         }
+        System.out.println("userIsAdmin = " + userIsAdmin);
+        System.out.println("effectiveUserInvitationStatus = " + effectiveUserInvitationStatus);
+        System.out.println("eventInfo.current_overall_state = " + eventInfo.current_overall_state);
         int statusContainerVisibility;
         int statusContainerChildIdx;
         switch (effectiveUserInvitationStatus) {
@@ -638,6 +641,7 @@ public class EventDetails extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         Intent map = new Intent(getApplicationContext(), MapsActivity.class);
+                        map.putExtra("event_id", eventInfo.getPk());
                         startActivity(map);
                     }
                 });
