@@ -2,7 +2,6 @@ from django.http import Http404
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from api.users.models import UserProfile
-from api.users.serializers import UserMapSerializer
 from api.events.models import Event
 # from api.users.serializers import UserDetailsSerializer
 from django.core.exceptions import ObjectDoesNotExist
@@ -50,18 +49,3 @@ class InvitationStatusUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Invitation
         fields = ('event_id', 'user_id', 'status')
-
-
-class InvitationAttendeeMapSerializer(serializers.ModelSerializer):
-    event_id = serializers.PrimaryKeyRelatedField(many=False, queryset=Event.objects.all())
-    user_id = serializers.PrimaryKeyRelatedField(many=False, queryset=UserProfile.objects.all())
-
-    class Meta:
-        model = Invitation
-        fields = ('event_id', 'user_id')
-
-    def to_representation(self, instance):
-        response = super().to_representation(instance)
-        response['user_id'] = UserMapSerializer(instance.user_id).data
-        # response['event_admin'] = UserProfileSerializer(instance.event_admin).data
-        return response

@@ -137,9 +137,3 @@ class LiveLocationPutSerializer(serializers.ModelSerializer):
 
 def subset_dict(bigdict, keys):
     return {k: bigdict[k] for k in bigdict.keys() & keys}
-
-
-class UserMapSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserProfile
-        fields = ("latitude", "longitude")

@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.generics import ListCreateAPIView, ListAPIView, UpdateAPIView
 from rest_framework.parsers import FormParser
 from api.invitations.models import Invitation
-from api.invitations.serializers import InvitationModelSerializer, InvitationAttendeeMapSerializer
+from api.invitations.serializers import InvitationModelSerializer, InvitationStatusUpdateSerializer
 
 
 # Creates a new Invitation
@@ -101,8 +101,3 @@ class InvitationStatusChangeView(APIView):
         # resp = super().put(*args, **kwargs)
         # return resp
 
-class InvitationMapView(ListAPIView):
-    serializer_class = InvitationAttendeeMapSerializer
-
-    def get_queryset(self):
-        return Invitation.objects.filter(event_id=self.kwargs['event_id'])
