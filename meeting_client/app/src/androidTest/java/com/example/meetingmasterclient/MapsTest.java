@@ -4,85 +4,112 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
+import android.support.test.espresso.intent.Intents;
+import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.rule.ActivityTestRule;
+import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject;
+import android.support.test.uiautomator.UiObject2;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
-import com.example.meetingmasterclient.server.MeetingService;
+import com.example.meetingmasterclient.utils.Route;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.mock.BehaviorDelegate;
-import retrofit2.mock.MockRetrofit;
-
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.intent.Intents.intended;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static com.example.meetingmasterclient.server.Server.BASE_URL;
-import static java.lang.Thread.sleep;
-import static org.hamcrest.CoreMatchers.anything;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
-
-public class SuggestionsListActivityTest {
+public class MapsTest {
+    private static final int TIMEOUT = 5000;
 
     @Rule
-    public ActivityTestRule<SuggestionsListActivity> activityRule = new ActivityTestRule<>(SuggestionsListActivity.class, false, false);
+    public IntentsTestRule<EventDetails> detailsRule
+            = new IntentsTestRule<>(EventDetails.class, false, false);
+
+    @Rule
+    public ActivityTestRule<MapsActivity> activityRule
+            = new ActivityTestRule<>(MapsActivity.class, false, false);
+
+    private Intent createEventDetailsIntent(int id) {
+        Intent intent = new Intent();
+        intent.putExtra("event_id", id);
+        return intent;
+    }
 
     @Before
     public void setUp() {
         MockServerUtils.setUpMockService();
     }
 
-    private Intent createSuggestionsListIntent(int id) {
-        Intent intent = new Intent();
-        intent.putExtra("event_id", id);
-        return intent;
+    @Test
+    public void startsMapActivity() throws InterruptedException {
+        detailsRule.launchActivity(createEventDetailsIntent(1));
+        Thread.sleep(5000);
+        Espresso.onView(withId(R.id.map_button)).perform(scrollTo()).perform(click());
+        intended(hasComponent(MapsActivity.class.getName()));
     }
 
     @Test
-    public void suggestionsListFirstTest() {
-        activityRule.launchActivity(createSuggestionsListIntent(1));
+    public void mapLoads() throws InterruptedException {
+        activityRule.launchActivity(createEventDetailsIntent(1));
+        Thread.sleep(5000);
+        assertTrue(true);
+    }
 
-        UiDevice device = UiDevice.getInstance(
-                InstrumentationRegistry.getInstrumentation());
-
-
-        device.waitForWindowUpdate(null,5000);
-
-        onView(withRecyclerView(R.id.suggestions_recycler_view)
-                .atPositionOnView(0, R.id.address))
-                .check(matches(withText("abc")));
+    @Test
+    public void etaTestCurrent1() throws InterruptedException {
+        activityRule.launchActivity(createEventDetailsIntent(1));
+        Thread.sleep(10000);
+        onView(withRecyclerView(R.id.eta_list)
+                .atPositionOnView(0, R.id.eta_item_name))
+                .check(matches(withText("You")));
 
     }
 
     @Test
-    public void suggestionsListSecondTest() {
-        activityRule.launchActivity(createSuggestionsListIntent(3));
-        UiDevice device = UiDevice.getInstance(
-                InstrumentationRegistry.getInstrumentation());
-
-
-            device.waitForWindowUpdate(null,5000);
-
-
-
-        onView(withRecyclerView(R.id.suggestions_recycler_view)
-                .atPositionOnView(0, R.id.city_info))
-                .check(matches(withText("testCity3")));
-
+    public void etaTestCurrent2() throws InterruptedException {
+        activityRule.launchActivity(createEventDetailsIntent(1));
+        Thread.sleep(10000);
+        assertTrue(onView(withRecyclerView(R.id.eta_list)
+                .atPositionOnView(0, R.id.eta_item_time))!=null);
 
     }
+
+    @Test
+    public void etaTest1() throws InterruptedException {
+        activityRule.launchActivity(createEventDetailsIntent(1));
+        Thread.sleep(10000);
+        assertTrue(onView(withRecyclerView(R.id.eta_list)
+                .atPositionOnView(1, R.id.eta_item_name))!=null);
+
+    }
+
+    @Test
+    public void etaTest2() throws InterruptedException {
+
+        activityRule.launchActivity(createEventDetailsIntent(1));
+        Thread.sleep(10000);
+        assertTrue(onView(withRecyclerView(R.id.eta_list)
+                .atPositionOnView(1, R.id.eta_item_time))!=null);
+
+    }
+
+
 
     class RecyclerViewMatcher {
         private final int recyclerViewId;
@@ -144,8 +171,7 @@ public class SuggestionsListActivityTest {
         }
     }
 
-    public SuggestionsListActivityTest.RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
-        return new SuggestionsListActivityTest.RecyclerViewMatcher(recyclerViewId);
+    public MapsTest.RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
+        return new MapsTest.RecyclerViewMatcher(recyclerViewId);
     }
-
 }
