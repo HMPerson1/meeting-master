@@ -3,7 +3,9 @@ package com.example.meetingmasterclient;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.Until;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -22,6 +24,7 @@ import android.support.test.rule.ActivityTestRule;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.action.ViewActions.typeText;
@@ -30,9 +33,11 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 
+import static java.lang.Thread.sleep;
 import static org.junit.Assert.*;
 
 public class EventEditionTest {
+    private static final int TIMEOUT = 1000;
 
     @Rule
     public ActivityTestRule<EventEdition> activityRule = new ActivityTestRule<>(EventEdition.class, false, false);
@@ -49,7 +54,7 @@ public class EventEditionTest {
     }
 
     @Test
-    public void eventEditionFirstTest() { //check current info data populates fields
+    public void eventEditionFirstTest() throws InterruptedException { //check current info data populates fields
         activityRule.launchActivity(createEventEditionIntent(1));
 
         UiDevice device = UiDevice.getInstance(
@@ -58,12 +63,15 @@ public class EventEditionTest {
 
         device.waitForWindowUpdate(null,5000);
 
-        onView(withId(R.id.suggested_locations_button)).perform(scrollTo()).perform(click());
-        /*onView(withRecyclerView(R.id.suggestions_recycler_view)
-                .atPositionOnView(0, R.id.city_info))
-                .perform(click());*/
+        onView(withId(R.id.suggested_locations_button)).perform(scrollTo()).perform(scrollTo()).perform(click());
 
         device.waitForWindowUpdate(null,5000);
+
+        onView(withRecyclerView(R.id.suggestions_recycler_view)
+                .atPositionOnView(0, R.id.tableLayout))
+                .perform(click());
+
+        sleep(10000);
 
         onView(withId(R.id.text_input_street_address)).perform(scrollTo()).check(matches(withText("abc")));
         onView(withId(R.id.text_input_city)).perform(scrollTo()).check(matches(withText("easy")));
@@ -76,21 +84,18 @@ public class EventEditionTest {
     @Test
     public void eventEditionSecondTest() { //check event name is changed
         activityRule.launchActivity(createEventEditionIntent(1));
-
+        UiDevice device = UiDevice.getInstance(
+                InstrumentationRegistry.getInstrumentation());
+        device.waitForWindowUpdate(null,5000);
+        onView(withId(R.id.text_input_event_name)).perform(scrollTo()).perform(clearText());
         onView(withId(R.id.text_input_event_name)).perform(scrollTo()).perform(typeText("newName"));
 
         onView(withId(R.id.save_meeting_button)).perform(scrollTo()).perform(click());
 
-        UiDevice device = UiDevice.getInstance(
-                InstrumentationRegistry.getInstrumentation());
-
-        device.waitForWindowUpdate(null,5000);
-
-        onView(withId(R.id.meeting_name)).perform(scrollTo()).check(matches(withText("newName"))); //name
 
 
     }
-/*
+
     class RecyclerViewMatcher {
         private final int recyclerViewId;
 
@@ -154,7 +159,7 @@ public class EventEditionTest {
         return new EventEditionTest.RecyclerViewMatcher(recyclerViewId);
     }
 
-*/
+
 
 }
 
