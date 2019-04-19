@@ -74,8 +74,7 @@ public class ProfileEdition extends AppCompatActivity {
                     Log.d("Current user error", response.toString());
                     return;
                 } else {
-                    Toast.makeText(ProfileEdition.this, "Current user success",
-                            Toast.LENGTH_LONG).show();
+                    //Toast.makeText(ProfileEdition.this, "Current user success", Toast.LENGTH_LONG).show();
                     Log.d("Current user success", response.toString());
                 }
 
@@ -138,7 +137,7 @@ public class ProfileEdition extends AppCompatActivity {
 
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
-                    Toast.makeText(ProfileEdition.this, response.toString(), Toast.LENGTH_LONG).show();
+                //    Toast.makeText(ProfileEdition.this, response.toString(), Toast.LENGTH_LONG).show();
                     Log.d("Profile edition response", response.toString());
                     if (response.isSuccessful()){
                         assert response.body() != null;

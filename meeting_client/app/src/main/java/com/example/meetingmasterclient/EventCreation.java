@@ -246,14 +246,16 @@ public class EventCreation extends AppCompatActivity {
 
         Call<MeetingService.EventsData> c = Server.getService().createEvent(new MeetingService
                 .EventCreationData(event_name, event_date, event_time, event_duration, locationID, notes)); //TODO FILE NAME RIGHT HERE));
-        Toast.makeText(EventCreation.this, "call: " + c.toString(), Toast.LENGTH_LONG).show();
+        //Toast.makeText(EventCreation.this, "call: " + c.toString(), Toast.LENGTH_LONG).show();
 
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
                     if (response.isSuccessful()) {
                         assert response.body() != null;
-                        Toast.makeText(EventCreation.this, "EventCreation success: " +
-                                response.toString(), Toast.LENGTH_LONG).show();
+                        //Toast.makeText(EventCreation.this, "EventCreation success: " +
+                                //response.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(EventCreation.this, "Event has been created",
+                                Toast.LENGTH_LONG).show();
                         Log.d("EventCreation success", response.toString());
                         MeetingService.EventsData eventsData = response.body();
                         postInvites(eventsData); //send invites to users
@@ -262,6 +264,7 @@ public class EventCreation extends AppCompatActivity {
                             Upload.uploadFileToServer(getApplicationContext(), fileUri, String.valueOf(response.body().getPk()));
                         }
 
+                        finish();
                         //Server.authenticate(response.body().key); TODO check this
                     } else {
                         Toast.makeText(EventCreation.this, "EventCreation unsuccessful: " + response.toString(),
@@ -290,8 +293,8 @@ public class EventCreation extends AppCompatActivity {
                     Log.d("LocationCreation error", response.toString());
                     return;
                 } else {
-                    Toast.makeText(EventCreation.this, "LocationCreation success: " + response.toString(),
-                            Toast.LENGTH_LONG).show();
+                    //Toast.makeText(EventCreation.this, "LocationCreation success: " + response.toString(),
+                    //        Toast.LENGTH_LONG).show();
                     Log.i("LocationCreation success", response.toString());
                 }
                 MeetingService.LocationData locationInfo = response.body();

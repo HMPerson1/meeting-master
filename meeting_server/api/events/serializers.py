@@ -82,8 +82,9 @@ class EventCreateSerializer(serializers.ModelSerializer):
         event_date = validated_data.pop('event_date')
         # Todo: Check date, check location, and admin_id
         # event_admin=event_admin,
+        event_admin = self.context['request'].user.userprofile
         event = Event.objects.create(
-            event_admin=self.context['request'].user.userprofile,
+            event_admin=event_admin,
             event_name=validated_data.pop('event_name'),
             event_date=event_date,
             event_time=validated_data.pop('event_time'),
@@ -92,6 +93,8 @@ class EventCreateSerializer(serializers.ModelSerializer):
             file_attachment=None,
             notes=validated_data.pop('notes', None)
         )
+        from api.invitations.models import Invitation
+        Invitation.objects.create(event_id=event, user_id=event_admin, status=Invitation.ACCEPTED)
         return event
 
 

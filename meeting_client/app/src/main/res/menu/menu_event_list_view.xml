@@ -28,7 +28,13 @@
         android:id="@+id/edit_profile"
         android:title="@string/edit_profile" />
     <item
+        android:id="@+id/user_search"
+        android:title="@string/title_activity_user_search" />
+    <item
         android:id="@+id/item_sync_calendar"
         android:title="@string/sync_calendar"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/debug_menu"
+        android:title="@string/title_activity_debug_launcher" />
 </menu>

@@ -3,6 +3,7 @@ package com.example.meetingmasterclient;
 import com.example.meetingmasterclient.server.MeetingService;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import okhttp3.MultipartBody;
@@ -11,6 +12,7 @@ import retrofit2.Call;
 import retrofit2.mock.BehaviorDelegate;
 
 public class MockService implements MeetingService {
+    int event_id;
     String event_name = "Test";
     String event_date = "2019-04-19";
     String event_time = "10:00";
@@ -95,12 +97,14 @@ public class MockService implements MeetingService {
 
     @Override
     public Call<LocationData> newLocation(LocationData data) {
-        return null;
+        data.setPk(1);
+        return delegate.returningResponse(data).newLocation(data);
     }
 
     @Override
     public Call<EventsData> getEventfromId(int id) {
         EventsData response = new EventsData();
+        event_id = id;
         response.pk = id;
         response.event_name = event_name;
         response.event_date = event_date;
@@ -110,13 +114,19 @@ public class MockService implements MeetingService {
                 "Lawson Computer Science Building", "West Lafayette", "Indiana");
         response.notes = "";
         response.file_attachment = null;
-        response.current_overall_state = 2;
+
+        if (id == 1) {
+            response.current_overall_state = 2;
+        } else {
+            response.current_overall_state = 0;
+        }
 
         return delegate.returningResponse(response).getEventfromId(id);
     }
 
     @Override
     public Call<EventsData> updateEvent(EventCreationData data, String id) {
+        //EventsData event
         event_name =data.getEvent_name();
         return null;
     }
@@ -147,6 +157,9 @@ public class MockService implements MeetingService {
         response.add(
                 new InvitationData(user_id, 1, 2, false)
         );
+        response.add(
+                new InvitationData(user_id, 2, 2, false)
+        );
         return delegate.returningResponse(response).getUserInvitations(user_id);
     }
 
@@ -162,7 +175,14 @@ public class MockService implements MeetingService {
 
     @Override
     public Call<List<InvitationData>> getUsersInvitations() {
-        return null;
+        List<InvitationData> response = new LinkedList<>();
+        if (event_id != 0) {
+            response.add(new InvitationData("1", event_id, 2, false));
+        } else {
+            response.add(new InvitationData("1", 1, 2, false));
+        }
+
+        return delegate.returningResponse(response).getUsersInvitations();
     }
 
     @Override
@@ -196,9 +216,40 @@ public class MockService implements MeetingService {
     }
 
     @Override
-    public Call<List<CurrentLocationData>> getCurrentLocations() {
-        return null;
+    public Call<List<AttendeeLocationData>> getCurrentLocations(String event_id) {
+        List<AttendeeLocationData> response = new LinkedList<>();
+        if (event_id.equals("1")) {
+            response.add(
+                    new AttendeeLocationData("1", "Daniel Sanchez", -86.9105, 40.4263)
+            );
+            response.add(
+                    new AttendeeLocationData("2", "Aaron Lynn", -86.919635, 40.432126)
+            );
+        } else if (event_id.equals("2")) {
+            response.add(
+                    new AttendeeLocationData("3", "Ariya Lau", -86.911371, 40.422599)
+            );
+            response.add(
+                    new AttendeeLocationData("4", "Michael Zhang", -86.924942, 40.425822)
+            );
+        } else if (event_id.equals("3")) {
+            response.add(
+                    new AttendeeLocationData("5", "E.J. Wennerberg", -86.915727, 40.426176)
+            );
+            response.add(
+                    new AttendeeLocationData("1", "Daniel Sanchez", -86.9105, 40.4263)
+            );
+        } else {
+            response.add(
+                    new AttendeeLocationData("2", "Aaron Lynn", -86.919635, 40.432126)
+            );
+            response.add(
+                    new AttendeeLocationData("5", "E.J. Wennerberg", -86.915727, 40.426176)
+            );
+        }
+        return delegate.returningResponse(response).getCurrentLocations(event_id);
     }
+
 
     @Override
     public Call<List<LocationSuggestionsData>> getSuggestedLocations(String event_id) {
@@ -217,7 +268,8 @@ public class MockService implements MeetingService {
 
     @Override
     public Call<LocationSuggestionsData> makeSuggestion(LocationSuggestionsData data) {
-        return null;
+        LocationSuggestionsData response = new LocationSuggestionsData(2, 1);
+        return delegate.returningResponse(response).makeSuggestion(data);
     }
 
     @Override

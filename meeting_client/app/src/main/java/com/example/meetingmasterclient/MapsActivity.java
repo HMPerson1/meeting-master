@@ -30,6 +30,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -38,18 +39,24 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import retrofit2.Call;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-
+    private int eventID;
     public GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private LatLng currentLocation;
     private static final int LOCATION_PERMISSION = 10;
     private DrawerLayout drawerLayout;
+    private List<MeetingService.AttendeeLocationData> locationData = new LinkedList<>();
+    private LinkedList<Marker> markers = new LinkedList<>();
+    ArrayList<String[]> userETAs=new ArrayList<>();
+    EtaAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,9 +67,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         EtaAdapter adapter1 = new EtaAdapter();
         etaRecyclerView.setAdapter(adapter1);
 
-        drawerLayout = findViewById(R.id.drawer_layout);
+        eventID = getIntent().getIntExtra("event_id", 0);
+        if (eventID != 0) {
+            drawerLayout = findViewById(R.id.drawer_layout);
 
-        getLocationPermission();
+            getLocationPermission();
+        }
+
+        adapter = new EtaAdapter();
+        etaRecyclerView.setAdapter(adapter);
 
     }
 
@@ -133,12 +146,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         updateLocationUI();
         Timer timer = new Timer();
-        timer.schedule(new Locate(), 0, 5000);
+        timer.schedule(new Locate(), 0, 15000);
         //getCurrentLocation();
 
         // Mock user location
         LatLng pmu = new LatLng(40.4263, -86.9105);
-        mMap.addMarker(new MarkerOptions().position(pmu).title("Daniel is here"));
     }
 
     private void updateLocationUI() {
@@ -167,7 +179,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Location current = (Location)task.getResult();
                         currentLocation = new LatLng(current.getLatitude(), current.getLongitude());
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15f));
-                        getRoute();
+                        getLocations();
                     } else {
                         Toast.makeText(getApplicationContext(), "ERROR", Toast.LENGTH_SHORT).show();
                     }
@@ -178,42 +190,105 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void getRoute() {
-        Geocoder geocoder = new Geocoder(getApplicationContext());
-        int eventId = getIntent().getIntExtra("event_id", 0);
-        if (eventId != 0) {
-            Call<MeetingService.EventsData> c = Server.getService().getEvents("/events/" + eventId);
-            c.enqueue(Server.mkCallback(
-                    (call, response) -> {
-                        MeetingService.EventsData event = response.body();
-                        MeetingService.LocationData location = event.event_location;
+    private void getLocations() {
+        Server.getService().getCurrentLocations(String.valueOf(eventID)).enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        locationData.clear();
+                        locationData.add(new MeetingService.AttendeeLocationData("", "You", currentLocation.latitude, currentLocation.longitude));
+                        List<MeetingService.AttendeeLocationData> locations = response.body();
+                        for (int i = 0; i < locations.size(); i++) {
+                            locationData.add(locations.get(i));
+                        }
+
+                        getRoutes(locations);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Could not get users' locations", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
+    }
+
+    private void getRoutes(List<MeetingService.AttendeeLocationData> origins) {
+        Server.getService().getEventfromId(eventID).enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        MeetingService.LocationData location = response.body().event_location;
+
+                        Geocoder geocoder = new Geocoder(getApplicationContext());
 
                         try {
-                            ArrayList<Address> dest = (ArrayList<Address>)geocoder
+                            Address dest = ((ArrayList<Address>)geocoder
                                     .getFromLocationName(
                                             location.getStreet_address()
                                                     + ", "
                                                     + location.getCity() + ", "
-                                                    + location.getState(),1);
+                                                    + location.getState(),1)).get(0);
 
-                            LatLng destination = new LatLng(dest.get(0).getLatitude(), dest.get(0).getLongitude());
+                            LatLng destination = new LatLng(dest.getLatitude(), dest.getLongitude());
 
-
-                            (new Route(this, new LatLng[]{currentLocation}, destination)).execute();
+                            (new Route(this, locationToLatLng(origins), destination)).execute();
 
                         } catch(IOException e) {
                             System.err.println("IO ERROR MAPS");
                         }
-                    },
-                    (call, t) -> t.printStackTrace()
-            ));
-        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Could not get event location", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
     }
 
+    public LatLng[] locationToLatLng(List<MeetingService.AttendeeLocationData> locations) {
+        LatLng[] arr = new LatLng[locations.size() + 1];
+        arr[0] = currentLocation;
+        MeetingService.AttendeeLocationData current;
 
+        for (int i = 0; i < locations.size(); i++) {
+            current = locations.get(i);
+            arr[i + 1] = new LatLng(current.lat, current.lon);
+        }
+
+        return arr;
+    }
 
     public void onRoutesCompleted(JSONObject[] routes) {
-        // For Ariya: Do the ETA thing here
+        while (!markers.isEmpty()) {
+            Marker m = markers.remove();
+            m.remove();
+        }
+
+        userETAs.clear();
+
+        for (int i = 0; i < routes.length; i++) {
+            MeetingService.AttendeeLocationData current = locationData.get(i);
+            markers.add(mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(current.lat, current.lon))
+                    .title(current.user_full_name)));
+            String userEta []= new String[2];
+            userEta[0] =current.user_full_name;
+            try{
+
+                userEta[1]=routes[i].getJSONArray("routes")
+                        .getJSONObject(0)
+                        .getJSONArray("legs")
+                        .getJSONObject(0)
+                        .getJSONObject("duration")
+                        .getString("text");
+
+                userETAs.add(userEta);
+                adapter.setDataSet(userETAs);
+
+
+            }catch (Exception e){}
+
+
+
+        }
+
+
 
     }
 
@@ -228,7 +303,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // TODO: real data
         // from routes[0].legs[0].duration.text
-        String[][] data = {{"John Doe", "1 min"}, {"Jane Doe", "2 min"}};
+        //String[][] data = {{"John Doe", "1 min"}, {"Jane Doe", "2 min"}};
+        ArrayList<String[]> data;
+
+        void setDataSet(ArrayList<String[]> dataSet) {
+            this.data = dataSet;
+            notifyDataSetChanged();
+        }
 
         @NonNull
         @Override
@@ -241,13 +322,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         @Override
         public void onBindViewHolder(@NonNull EtaViewHolder etaViewHolder, int position) {
-            etaViewHolder.nameView.setText(data[position][0]);
-            etaViewHolder.timeView.setText(data[position][1]);
+            etaViewHolder.nameView.setText(data.get(position)[0]);
+            etaViewHolder.timeView.setText(data.get(position)[1]);
         }
 
         @Override
         public int getItemCount() {
-            return data.length;
+            return data != null ? data.size() : 0;
         }
 
         class EtaViewHolder extends RecyclerView.ViewHolder {

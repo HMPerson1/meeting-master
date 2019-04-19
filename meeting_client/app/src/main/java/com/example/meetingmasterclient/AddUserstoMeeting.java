@@ -40,16 +40,11 @@ public class AddUserstoMeeting extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_usersto_meeting);
 
-        //TODO: get information(list) of invited people from database
-
-
         final List<String> list = new ArrayList<>(); //used for testing functionality of list
-
 
         //Scrollable listview of invited people
 
         final ListView listViewInvitedPeople = (ListView) findViewById(R.id.list_view_invited_people);
-
 
         final ArrayAdapter adapter = new ArrayAdapter<>(AddUserstoMeeting.this, android.R.layout.simple_list_item_multiple_choice, list);
 
@@ -59,10 +54,7 @@ public class AddUserstoMeeting extends AppCompatActivity {
 
         // listViewInvitedPeople.setItemChecked(1, true);
 
-
-
         listViewInvitedPeople.setAdapter(adapter);
-
 
         //if User clicks the remove button, remove all checked items in listview
         Button remove_button = (Button)findViewById(R.id.removebutton);
@@ -82,11 +74,8 @@ public class AddUserstoMeeting extends AppCompatActivity {
                         editor.commit();
                         list.remove(i);
                     }
-
                 }
-
                 adapter.notifyDataSetChanged();
-
             }
         });
 
@@ -98,13 +87,6 @@ public class AddUserstoMeeting extends AppCompatActivity {
             public void onClick(View v) {
                 String Email = String.valueOf(Email_Input.getText()); //get Email from input
 
-                //TODO
-                //check if user is in database
-                //if user not in database indicate to user that the email is invalid
-                //if user is in database, add user to the list of invited people
-
-
-
                 Call<List<MeetingService.UserProfile>> call = Server.getService().users(Email_Input.getText().toString());
                 call.enqueue(new Callback<List<MeetingService.UserProfile>>() {
                     @Override
@@ -113,58 +95,42 @@ public class AddUserstoMeeting extends AppCompatActivity {
                             Toast.makeText(AddUserstoMeeting.this, "Oops, Something is wrong: "+response.code() , Toast.LENGTH_LONG).show();
                             return;
                         }
-                        Toast.makeText(AddUserstoMeeting.this,"response" , Toast.LENGTH_LONG).show();
-                        Toast.makeText(AddUserstoMeeting.this,response.toString() , Toast.LENGTH_LONG).show();
+                    //    Toast.makeText(AddUserstoMeeting.this,"response" , Toast.LENGTH_LONG).show();
+                    //    Toast.makeText(AddUserstoMeeting.this,response.toString() , Toast.LENGTH_LONG).show();
 
                         //add user to list if successful
-                        List<MeetingService.UserProfile> userProfs =response.body();//store response
+                        List<MeetingService.UserProfile> userProfs = response.body();//store response
                         for (MeetingService.UserProfile userProf : userProfs){
 
                             //check if user already listed, if user is already listed notify user
                             if(list.contains(userProf.username)){
                                 Toast.makeText(AddUserstoMeeting.this,"User Already added to List" , Toast.LENGTH_LONG).show();
-                                continue;
+                            } else {
+                                Toast.makeText(AddUserstoMeeting.this, "User added to List", Toast.LENGTH_LONG).show();
                             }
                             addInvitedUser(userProf.username, String.valueOf(userProf.getPk()));//store in shared preferences4
                             list.add(userProf.username);
                             adapter.notifyDataSetChanged();
 
                         }//end for
-
-
-
-
-
-
                     }
-
-
-
-
-
                     @Override
                     public void onFailure(Call<List<MeetingService.UserProfile>> call, Throwable t) {//error from server
-
                         Toast.makeText(AddUserstoMeeting.this,t.getMessage() , Toast.LENGTH_LONG).show();
-
                     }
                 });
-
             }
         });
-
-        //TODO: Before user returns to create a meeting page, store the list of users in the database
         //exit the activity and return to Create a meeting page when the admin presses the save changes button
         configureSaveButton();
     }
+
     public void addInvitedUser(String key, String value) {
         SharedPreferences sharedPref = getSharedPreferences("invited_users_IDs",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(key, value);
         editor.commit();
-
     }
-
 
     private void configureSaveButton(){
         Button save_button = (Button)findViewById(R.id.save_button);
@@ -172,11 +138,7 @@ public class AddUserstoMeeting extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();//return to create a meeting
-
             }
         });
     }
-
-
-
 }

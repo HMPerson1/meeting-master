@@ -85,6 +85,12 @@ public class EventListView extends AppCompatActivity {
             case R.id.edit_profile:
                 startActivity(new Intent(this, ProfileEdition.class));
                 break;
+            case R.id.user_search:
+                startActivity(new Intent(this, UserSearch.class));
+                break;
+            case R.id.debug_menu:
+                startActivity(new Intent(this, DebugLauncherActivity.class));
+                break;
             default:
                 break;
         }
