@@ -342,6 +342,7 @@ public class EventDetails extends AppCompatActivity {
         System.out.println("userIsAdmin = " + userIsAdmin);
         System.out.println("effectiveUserInvitationStatus = " + effectiveUserInvitationStatus);
         System.out.println("eventInfo.current_overall_state = " + eventInfo.current_overall_state);
+        System.out.println("userEventState = " + userEventState);
         int statusContainerVisibility;
         int statusContainerChildIdx;
         switch (effectiveUserInvitationStatus) {
@@ -508,7 +509,7 @@ public class EventDetails extends AppCompatActivity {
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             // TODO
-            //LocationUpdateService.start(getApplicationContext(), eventID);
+            LocationUpdateService.start(getApplicationContext(), eventID);
             System.out.println("Permitted");
         } else {
             ActivityCompat.requestPermissions(this,
@@ -523,7 +524,7 @@ public class EventDetails extends AppCompatActivity {
             case LOCATION_PERMISSION:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     try {
-                        //LocationUpdateService.start(getApplicationContext(), eventID);
+                        LocationUpdateService.start(getApplicationContext(), eventID);
                         System.out.println("Permitted");
                     } catch (SecurityException e) {
                         e.printStackTrace();
