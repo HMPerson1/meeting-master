@@ -177,11 +177,10 @@ public class EventDetails extends AppCompatActivity {
         Server.getService().setInvitationStatus(String.valueOf(eventID), userID, newStatus
         ).enqueue(Server.mkCallback(
                 (call, response) -> {
-                    Toast.makeText(EventDetails.this, "Response = " + response.toString(),
-                            Toast.LENGTH_LONG).show();
+                    //Toast.makeText(EventDetails.this, "Response = " + response.toString(), Toast.LENGTH_LONG).show();
                     if (response.isSuccessful()) {
-                        Toast.makeText(EventDetails.this, "Status successfully changed" +
-                                " to " + statusToString(newStatus), Toast.LENGTH_LONG).show();
+                        //Toast.makeText(EventDetails.this, "Status successfully changed" +
+                               // " to " + statusToString(newStatus), Toast.LENGTH_LONG).show();
                         MeetingService.InvitationData body = response.body();
                         assert body != null;
                         onUpdatedInvitationStatus(body);
@@ -596,7 +595,7 @@ public class EventDetails extends AppCompatActivity {
                             response.code(), Toast.LENGTH_LONG).show();
                     return;
                 }
-                Toast.makeText(EventDetails.this,response.toString() , Toast.LENGTH_LONG).show();
+                //Toast.makeText(EventDetails.this,response.toString() , Toast.LENGTH_LONG).show();
 
                 eventInfo = response.body();//store response
 
@@ -667,7 +666,7 @@ public class EventDetails extends AppCompatActivity {
         attendeeListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(EventDetails.this, "Passing event_id " + eventID, Toast.LENGTH_LONG).show();
+                //Toast.makeText(EventDetails.this, "Passing event_id " + eventID, Toast.LENGTH_LONG).show();
                 Intent attendees = new Intent(EventDetails.this, AttendeeList.class);
                 attendees.putExtra("event_id", eventID);
                 startActivity(attendees);

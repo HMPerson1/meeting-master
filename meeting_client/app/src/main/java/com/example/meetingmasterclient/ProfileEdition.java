@@ -138,7 +138,7 @@ public class ProfileEdition extends AppCompatActivity {
 
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
-                    Toast.makeText(ProfileEdition.this, response.toString(), Toast.LENGTH_LONG).show();
+                //    Toast.makeText(ProfileEdition.this, response.toString(), Toast.LENGTH_LONG).show();
                     Log.d("Profile edition response", response.toString());
                     if (response.isSuccessful()){
                         assert response.body() != null;
