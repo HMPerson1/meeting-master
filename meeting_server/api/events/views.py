@@ -1,31 +1,32 @@
-from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import exceptions
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import generics as drf_generics
+from rest_framework import status
+from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from api import fcm
 from api.events.renderers import IcalRenderer
+from api.events.serializers import AttendeeLiveLocationsSerializer
+from api.users.models import LiveLocation
 from .models import Event, ActiveEvent
 from .serializers import EventModelSerializer, EventCreateSerializer, EventListQuerySerializer, EventIcalSerializer, \
     EventFileSerializer, ActiveEventSerializer
-from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser, JSONParser
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
 
 
 class MethodSerializerView(object):
-
     method_serializer_classes = None
 
     def get_serializer_class(self):
         assert self.method_serializer_classes is not None, (
-            'Expected view %s should contain method_serializer_classes '
-            'to get right serializer class.' %
-            (self.__class__.__name__, )
+                'Expected view %s should contain method_serializer_classes '
+                'to get right serializer class.' %
+                (self.__class__.__name__,)
         )
         for methods, serializer_cls in self.method_serializer_classes.items():
             if self.request.method in methods:
@@ -39,7 +40,6 @@ class EventCreateView(drf_generics.CreateAPIView):
 
 
 class EventListView(drf_generics.ListAPIView):
-
     serializer_class = EventModelSerializer
     queryset = Event.objects.all()
 
@@ -67,12 +67,10 @@ class EventListView(drf_generics.ListAPIView):
 class EventDetailView(MethodSerializerView, drf_generics.RetrieveUpdateDestroyAPIView):
     queryset = Event.objects.all()
 
-    queryset = Event.objects.all()
-    
     method_serializer_classes = {
-        ('GET', ): EventModelSerializer,
-        ('PUT', ): EventCreateSerializer,
-        ('DELETE', ): None
+        ('GET',): EventModelSerializer,
+        ('PUT',): EventCreateSerializer,
+        ('DELETE',): None
     }
 
     http_method_names = ['get', 'put', 'delete']
@@ -136,6 +134,17 @@ class EventActive(drf_generics.RetrieveUpdateDestroyAPIView):
 
     def perform_update(self, serializer):
         serializer.save(user=self.request.user.userprofile)
+
+
+class AttendeeLiveLocationsView(drf_generics.ListAPIView):
+    serializer_class = AttendeeLiveLocationsSerializer
+    pagination_class = None
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return LiveLocation.objects \
+            .filter(user__in=Event.objects.get(id=self.kwargs['event_id']).attendees()) \
+            .exclude(user=self.request.user.userprofile)
 
 
 class IcalView(drf_generics.ListAPIView):

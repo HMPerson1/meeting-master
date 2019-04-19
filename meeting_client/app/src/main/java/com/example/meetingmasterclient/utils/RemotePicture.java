@@ -3,6 +3,7 @@ package com.example.meetingmasterclient.utils;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -35,7 +36,8 @@ public class RemotePicture extends AsyncTask<String, Void, Drawable> {
         if (result != null) {
             ((ImageView)activity.findViewById(R.id.profile_details_picture)).setImageDrawable(result);
         } else {
-            Toast.makeText(activity.getApplicationContext(), "The picture cannot be shown", Toast.LENGTH_SHORT).show();
+            Log.d("Picture", "The picture cannot be shown");
+            //Toast.makeText(activity.getApplicationContext(), "The picture cannot be shown", Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -7,4 +7,5 @@ urlpatterns = [
     path("profile_picture", views.ProfilePictureView.as_view()),
     path("share_location", views.UserMapView.as_view()),
     path("ical_url", views.UserIcalUrlView.as_view()),
+    path("live-location", views.SetLiveLocation.as_view())
 ]

@@ -29,6 +29,9 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import static com.example.meetingmasterclient.utils.PreferanceKeys.PREF_KEY_TOKEN;
+import static com.example.meetingmasterclient.utils.PreferanceKeys.PREF_NAME_AUTH_TOKEN;
+
 public class DebugLauncherActivity extends AppCompatActivity {
 
     private static final String TAG = "DebugLauncherActivity";
@@ -120,6 +123,9 @@ public class DebugLauncherActivity extends AppCompatActivity {
                 return true;
             case R.id.locserv_stop:
                 stopService(new Intent(this, LocationUpdateService.class));
+                return true;
+            case R.id.logout:
+                getSharedPreferences(PREF_NAME_AUTH_TOKEN, MODE_PRIVATE).edit().remove(PREF_KEY_TOKEN).apply();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

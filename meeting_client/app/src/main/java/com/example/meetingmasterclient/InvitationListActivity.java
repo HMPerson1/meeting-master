@@ -53,6 +53,7 @@ public class InvitationListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_invitation_list);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         RecyclerView recyclerView = findViewById(R.id.invites_recycler_view);
         recyclerView.setHasFixedSize(true);

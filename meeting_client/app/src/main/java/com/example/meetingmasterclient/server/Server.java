@@ -22,7 +22,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class Server {
     private static final String TAG = "Server";
 
-    private static final String BASE_URL = "http://10.0.2.2:8000";
+    public static final String BASE_URL = "http://10.186.157.2:8000";
 
     private static Server instance;
     private @NonNull
@@ -63,6 +63,11 @@ public class Server {
 
     public static MeetingService getService() {
         return getInstance().service;
+    }
+
+    // NOTE: Only for testing, do not touch otherwise
+    public static void setMockService(MeetingService service) {
+        getInstance().service = service;
     }
 
     public static void authenticate(String authToken) {

@@ -10,7 +10,7 @@ from rest_framework.fields import empty, get_attribute
 from rest_framework.reverse import reverse
 
 from api import settings
-from api.users.models import UserProfile
+from api.users.models import UserProfile, LiveLocation
 
 
 # i have no idea what i'm doing but it seems to work
@@ -45,13 +45,6 @@ class UserProfileSerializer(UserDetailsSerializer):
         if isinstance(instance, UserProfile):
             instance = instance.django_user
         return super().to_representation(instance)
-
-
-class SuperUserSerializer(UserDetailsSerializer):
-    class Meta:
-        model = auth_models.User
-        fields = ('pk', 'username')
-        read_only_fields = ('pk',)
 
 
 class RegisterSerializer(serializers.Serializer):
@@ -134,6 +127,12 @@ class UserIcalUrlSerializer(serializers.Serializer):
         i = namedtuple('n', 'ical_url')(
             ical_url=reverse('api-event-ical', request=self.context['request'], kwargs={'ical_key': instance.ical_key}))
         return super(UserIcalUrlSerializer, self).to_representation(i)
+
+
+class LiveLocationPutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LiveLocation
+        fields = ('lon', 'lat')
 
 
 def subset_dict(bigdict, keys):

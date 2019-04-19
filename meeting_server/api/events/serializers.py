@@ -12,7 +12,7 @@ from rest_framework import serializers
 from api.users.serializers import UserProfileSerializer
 from api.locations.serializers import LocationModelSerializer
 from django.forms import FileField
-from api.users.models import UserProfile
+from api.users.models import UserProfile, LiveLocation
 from api.locations.models import Location
 import api.fcm as fcm
 
@@ -147,3 +147,11 @@ class EventFileSerializer(serializers.Serializer):
     class Meta:
         model = Event
         fields = ('file_attachment',)
+
+
+class AttendeeLiveLocationsSerializer(serializers.ModelSerializer):
+    user_full_name = serializers.CharField(source='user.django_user.get_full_name')
+
+    class Meta:
+        model = LiveLocation
+        fields = ('user', 'user_full_name', 'lon', 'lat')

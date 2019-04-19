@@ -2,50 +2,86 @@ package com.example.meetingmasterclient;
 
 import android.content.Intent;
 import android.content.res.Resources;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
 import android.support.test.rule.ActivityTestRule;
+import android.support.test.uiautomator.UiDevice;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
+
+import com.example.meetingmasterclient.server.MeetingService;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.mock.BehaviorDelegate;
+import retrofit2.mock.MockRetrofit;
+
+import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.example.meetingmasterclient.server.Server.BASE_URL;
+import static java.lang.Thread.sleep;
+import static org.hamcrest.CoreMatchers.anything;
+import static org.junit.Assert.*;
 
-public class AttendeeListViewTest {
+
+public class SuggestionsListActivityTest {
+
     @Rule
-    public ActivityTestRule<AttendeeList> activityRule = new ActivityTestRule<>(AttendeeList.class, false, false);
+    public ActivityTestRule<SuggestionsListActivity> activityRule = new ActivityTestRule<>(SuggestionsListActivity.class, false, false);
 
-    private Intent createAttendeeListIntent(int id) {
+    @Before
+    public void setUp() {
+        MockServerUtils.setUpMockService();
+    }
+
+    private Intent createSuggestionsListIntent(int id) {
         Intent intent = new Intent();
-        intent.putExtra("event_id", 1);
+        intent.putExtra("event_id", id);
         return intent;
     }
 
     @Test
-    public void attendeeListFirstTest() {
-        activityRule.launchActivity(createAttendeeListIntent(1));
+    public void suggestionsListFirstTest() {
+        activityRule.launchActivity(createSuggestionsListIntent(1));
 
-        Espresso.onView(new RecyclerViewMatcher(R.id.recycler_view_invited_people).atPosition(0))
-                .check(matches(hasDescendant(withText("Kinoko Nasu"))));
+        UiDevice device = UiDevice.getInstance(
+                InstrumentationRegistry.getInstrumentation());
+
+
+        device.waitForWindowUpdate(null,5000);
+
+        onView(withRecyclerView(R.id.suggestions_recycler_view)
+                .atPositionOnView(0, R.id.address))
+                .check(matches(withText("abc")));
+
     }
 
     @Test
     public void attendeeListSecondTest() {
-        activityRule.launchActivity(createAttendeeListIntent(3));
+        activityRule.launchActivity(createSuggestionsListIntent(3));
+        UiDevice device = UiDevice.getInstance(
+                InstrumentationRegistry.getInstrumentation());
 
-        RecyclerViewMatcher rvm = new RecyclerViewMatcher(R.id.recycler_view_invited_people);
 
-        Espresso.onView(rvm.atPosition(1))
-                .check(matches(hasDescendant(withText("John Doe"))));
+            device.waitForWindowUpdate(null,5000);
 
-        Espresso.onView(rvm.atPosition(2))
-                .check(matches(hasDescendant(withText("John Dutchman"))));
+
+
+        onView(withRecyclerView(R.id.suggestions_recycler_view)
+                .atPositionOnView(0, R.id.city_info))
+                .check(matches(withText("testCity3")));
+
+
     }
 
     class RecyclerViewMatcher {
@@ -78,6 +114,7 @@ public class AttendeeListViewTest {
                     }
 
                     description.appendText("with id: " + idDescription);
+
                 }
 
                 public boolean matchesSafely(View view) {
@@ -107,7 +144,8 @@ public class AttendeeListViewTest {
         }
     }
 
-    public RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
-        return new RecyclerViewMatcher(recyclerViewId);
+    public SuggestionsListActivityTest.RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
+        return new SuggestionsListActivityTest.RecyclerViewMatcher(recyclerViewId);
     }
+
 }

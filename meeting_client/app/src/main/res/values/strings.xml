@@ -2,17 +2,23 @@
     <string name="app_name">Meeting Master</string>
 
     <!--activity titles-->
-    <string name="title_activity_password_reset">PasswordReset</string>
-    <string name="title_activity_profile_edition">ProfileEdition</string>
-    <string name="title_activity_user_search">UserSearch</string>
-    <string name="title_activity_event_edition">EventEdition</string>
-    <string name="title_activity_event_list_view">EventListView</string>
-    <string name="title_activity_registration">Registration</string>
-    <string name="title_activity_create_event">CreateEvent</string>
+    <string name="title_activity_password_reset">Password Reset</string>
+    <string name="title_activity_password_reset_2">Confirm Password Reset</string>
+    <string name="title_activity_profile_edition">Edit My Profile</string>
+    <string name="title_activity_user_search">Search Users</string>
+    <string name="title_activity_event_edition">Edit Event</string>
+    <string name="title_activity_event_list_view">My Events</string>
+    <string name="title_activity_registration">Register</string>
     <string name="title_activity_login">Login</string>
     <string name="title_activity_invitation_list">Invitations</string>
-    <string name="title_activity_event_creation">EventCreation</string>
-    <string name="title_activity_add_users_to_meeting">AddUserstoMeeting</string>
+    <string name="title_activity_event_creation">New Event</string>
+    <string name="title_activity_add_users_to_meeting">Invite Users</string>
+    <string name="title_activity_location_suggestion">Suggest a Location</string>
+    <string name="title_activity_suggestions_list">Location Suggestions</string>
+    <string name="title_activity_event_details">Event Details</string>
+    <string name="title_activity_profile_details">User Profile</string>
+    <string name="title_activity_attendee_list">Attendees</string>
+    <string name="title_activity_maps">Map</string>
 
     <!--registration/login strings-->
 
@@ -66,8 +72,8 @@
     <string name="invite_button">Invite Users</string>
     <string name="details_suggest_button">Suggest A Location</string>
     <string name="suggest_button">Suggest Location</string>
-    <string name="leave_button">Leave The Event</string>
-
+    <string name="leave_button">Leave Event</string>
+    <string name="close">Close</string>
     <string name="invite_accept">Accept</string>
     <string name="decline">Decline</string>
 
@@ -98,12 +104,9 @@
     <string name="notification_leave_now_body">You should leave now to arrive on time</string>
 
     <string name="create_event_button">Create Event</string>
-    <string name="title_activity_profile_details">ProfileDetails</string>
 
     <string name="attendees_list">Attendees List</string>
-    <string name="title_activity_attendee_list">AttendeeList</string>
     <string name="save_changes">Save Changes</string>
-    <string name="title_activity_event_details">EventDetails</string>
     <string name="edit_event">Edit Event</string>
     <string name="get_notifications">Notifications</string>
     <string name="duration">Duration</string>
@@ -112,16 +115,8 @@
     <string name="delete_event">Delete Event</string>
     <string name="export_event">Export Event</string>
     <string name="sync_calendar">Sync Calendar</string>
-    <string name="title_activity_file_upload_experiments">FileUploadExperiments</string>
-    <string name="title_activity_location_suggestion">LocationSuggestion</string>
-    <string name="title_activity_maps">Map</string>
-    <string name="title_activity_suggestions_list">SuggestionsListActivity</string>
 
     <!-- google maps -->
-
-
-
-
 
 
     <string name="desc_service_location_update">Sends your current location to other event attendees</string>
@@ -139,4 +134,17 @@
     <string name="status_text_leavingfrom">You\'re leaving this event</string>
     <string name="status_action_arrivehome">Arrive Home</string>
     <string name="status_text_over">This event is over</string>
+    <string name="show_declined_events">Show Declined Events</string>
+    <string name="this_months_events">This Month\'s Events</string>
+    <string name="this_weeks_events">This Week\'s Events</string>
+    <string name="todays_events">Today\'s Events</string>
+    <string name="view_invitations">View Invitations</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="logout">Logout</string>
+    <string name="password_reset_instructions">Please provide your email address. You will receive an email to reset your password.</string>
+    <string name="send">Send</string>
+    <string name="token">Token</string>
+    <string name="uid">UID</string>
+    <string name="confirm_new_password">Confirm New Password</string>
+    <string name="new_password">New Password</string>
 </resources>

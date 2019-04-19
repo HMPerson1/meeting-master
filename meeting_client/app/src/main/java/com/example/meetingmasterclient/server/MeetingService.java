@@ -82,6 +82,9 @@ public interface MeetingService {
     @GET
     Call<UserProfile> getUser(@Url String url);
 
+    @GET("/users/{id}")
+    Call<UserProfile> getUserByID(@Path("id") int id);
+
     @GET("/locations/{id}")
     Call<LocationData> getLocationDetails(@Path("id") String id);
 
@@ -121,6 +124,9 @@ public interface MeetingService {
     @GET("/invitations/user-invitations")
     Call<List<InvitationData>> getUsersInvitations();
 
+    @GET("/invitations/event-invitations/{event_id}")
+    Call<List<InvitationData>> getEventInvitations(@Path("event_id") String event_id);
+
     @GET
     Call<EventsData> getEvents(@Url String url);
 
@@ -131,11 +137,8 @@ public interface MeetingService {
     @PUT("/current_user/firebase_reg_token")
     Call<Void> putFirebaseRegToken(@Body FirebaseRegTokenData data);
 
-    /**
-     * TODO someone check this, not sure if correct
-     */
-    @DELETE("/events/{id}/")
-    Call<Void> deleteEvent(@Url String url);
+    @DELETE("/events/{id}")
+    Call<Void> deleteEvent(@Path("id") int eventID);
 
     /**
      * needs authentication <br>
@@ -144,11 +147,11 @@ public interface MeetingService {
     @GET("/current_user/ical_url")
     Call<IcalUrlData> getIcalUrl();
 
-    @POST("/TODO/") // TODO
+    @PUT("/current_user/live-location")
     Call<Void> putCurrentLocation(@Body CurrentLocationData data);
 
-    @GET("/TODO/") // TODO
-    Call<List<CurrentLocationData>> getCurrentLocations();
+    @GET("/events/{event_id}/attendee-locations") // TODO
+    Call<List<AttendeeLocationData>> getCurrentLocations(@Path("event_id") String event_id);
 
     @GET("/suggestions/event-suggestions/{event_id}")
     Call <List<LocationSuggestionsData>> getSuggestedLocations(@Path("event_id")  String event_id);
@@ -164,6 +167,9 @@ public interface MeetingService {
 
     @DELETE("/events/current-user-active-event")
     Call<Void> deleteUserStatus();
+
+    @GET
+    Call<Destination> getDestination(@Url String url);
 
     /* ******************** *
      * Dumb data containers *
@@ -403,6 +409,7 @@ public interface MeetingService {
     class EventsData {
         public int pk;
         public String event_name;
+        public int event_admin;
         public String event_date;
         public String event_time;
         public String event_duration;
@@ -593,6 +600,17 @@ public interface MeetingService {
         public int getStatus() {
             return status;
         }
+
+        @Override
+        @NonNull
+        public String toString(){
+            return "InvitationData{" +
+                    "user_id=" + user_id +
+                    ", event_id=" + event_id +
+                    ", status=" + status +
+                    ", edit_permission=" + edit_permission
+                    + "}";
+        }
     }
 
 
@@ -607,6 +625,14 @@ public interface MeetingService {
             this.street_address = street_address;
             this.city = city;
             this.state = state;
+        }
+
+        public void setPk(int pk) {
+            this.pk = pk;
+        }
+
+        public void setNumber_of_uses(int number_of_uses) {
+            this.number_of_uses = number_of_uses;
         }
 
         public int getPk() {
@@ -644,12 +670,26 @@ public interface MeetingService {
     }
 
     class CurrentLocationData {
-        double lat;
-        double lon;
+        public double lat;
+        public double lon;
 
         public CurrentLocationData(double lat, double lon) {
             this.lat = lat;
             this.lon = lon;
+        }
+    }
+
+    class AttendeeLocationData {
+        public String user;
+        public String user_full_name;
+        public double lon;
+        public double lat;
+
+        public AttendeeLocationData(String user, String user_full_name, double lon, double lat) {
+            this.user = user;
+            this.user_full_name = user_full_name;
+            this.lon = lon;
+            this.lat = lat;
         }
     }
 
@@ -688,5 +728,58 @@ public interface MeetingService {
                     '}';
         }
     }
+
+    class Destination {
+        String error_message;
+        String[] destination_addresses;
+        String[] origin_addressed;
+        Rows[] rows;
+        String status;
+
+        public Rows[] getRows() {
+            return rows;
+        }
+
+        public String getError_message() {
+            return error_message;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+    }
+
+    class Distance{
+        String text;
+        float value;
+    }
+
+    class Duration{
+        String text;
+        float value;
+
+        public String getText() {
+            return text;
+        }
+    }
+
+    class Elements{
+        Distance distance;
+        Duration duration;
+        String status;
+
+        public Duration getDuration() {
+            return duration;
+        }
+    }
+
+    class Rows{
+        Elements[] elements;
+
+        public Elements[] getElements() {
+            return elements;
+        }
+    }
+
 }
 

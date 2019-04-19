@@ -1,7 +1,10 @@
 package com.example.meetingmasterclient;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -12,8 +15,10 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,18 +32,17 @@ import android.widget.ViewAnimator;
 import com.example.meetingmasterclient.server.MeetingService;
 import com.example.meetingmasterclient.server.Server;
 import com.example.meetingmasterclient.utils.FileDownload;
+import com.example.meetingmasterclient.utils.StartingSoonAlarm;
 
 import java.util.List;
 import java.util.Optional;
 
-import androidx.test.espresso.idling.CountingIdlingResource;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class EventDetails extends AppCompatActivity {
-    public CountingIdlingResource idlingResource = new CountingIdlingResource("Event Details Network");
     private static final int LOCATION_PERMISSION = 90;
     private static final int FILE_PERMISSION = 20;
     public static final String PREFS_NAME = "App_Settings";
@@ -60,130 +64,21 @@ public class EventDetails extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //testing changing text fields
-        final TextInputEditText nameInput = (TextInputEditText) findViewById(R.id.meeting_name);
-        final TextInputEditText textInputDate = findViewById(R.id.date);
-        final TextInputEditText textInputTime = findViewById(R.id.time);
-        final TextInputEditText textDuration = findViewById(R.id.duration);
-        final TextInputEditText textInputNotes = findViewById(R.id.notes);
-        final TextInputEditText textInputStreetAddr = findViewById(R.id.street);
-        final TextInputEditText textInputCity = findViewById(R.id.city);
-        final TextInputEditText textInputState = findViewById(R.id.state);
-        final TextInputEditText textInputRoomNo = findViewById(R.id.room_num);
-
-        attendeeListButton = (Button) findViewById(R.id.view_attendees_button);
-        attendeeListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(EventDetails.this, AttendeeList.class));
-            }
-        });
-
-        //TODO: get info from backend
-        //MeetingService.EventData eventData = new MeetingService.EventData();
         //get the current intent
         Intent intent = getIntent();
         eventID = intent.getIntExtra("event_id", -1);
         userID = intent.getStringExtra("user_id");
 
+        startEventDetails();
+    }
 
-        userID="1";
-
-        viewAttachmentButton = (Button) findViewById(R.id.add_attachments);
-
-        if (eventID<0){
-            finish();  //did not pass event_id
-        }
-
-        //TODO: get event info from backend
-        idlingResource.increment();
-        Call<MeetingService.EventsData> call = Server.getService().getEventfromId(eventID);
-        call.enqueue(new Callback<MeetingService.EventsData>() {
-            @Override
-            public void onResponse(Call<MeetingService.EventsData> call, Response<MeetingService.EventsData>response) {
-                if(!response.isSuccessful()){ //404 error?
-                    Toast.makeText(EventDetails.this, "Oops, Something is wrong: " +
-                            response.code(), Toast.LENGTH_LONG).show();
-                    idlingResource.decrement();
-                    return;
-                }
-                Toast.makeText(EventDetails.this,"response" , Toast.LENGTH_LONG).show();
-                Toast.makeText(EventDetails.this,response.toString() , Toast.LENGTH_LONG).show();
-
-
-                eventInfo = response.body();//store response
-
-                //display the event details to the user
-                nameInput.setText(eventInfo.getEvent_name());
-                textInputDate.setText(textInputDate.getText()+ "    "+eventInfo.getEvent_date());
-                textInputTime.setText(textInputTime.getText()+"    "+eventInfo.getEvent_time());
-                textDuration.setText(textDuration.getText()+"    "+eventInfo.getEvent_duration());
-                textInputNotes.setText(textInputNotes.getText()+"    "+eventInfo.getNotes());
-
-                //get location details from server
-
-                MeetingService.LocationData locationInfo= eventInfo.getEvent_location();
-
-
-                textInputStreetAddr.setText(textInputStreetAddr.getText()+ "    "+locationInfo.getStreet_address());
-                textInputCity.setText(textInputCity.getText()+ "    "+locationInfo.getCity());
-                textInputState.setText(textInputState.getText()+ "    "+locationInfo.getState());
-
-                //textInputRoomNo.setText(locationInfo.);
-
-                viewAttachmentButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                                == PackageManager.PERMISSION_GRANTED) {
-                            getFileFromServer(
-                                    eventInfo.getFile_attachment(),
-                                    eventInfo.getEvent_name());
-                        } else {
-                            ActivityCompat.requestPermissions(EventDetails.this,
-                                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                    FILE_PERMISSION);
-                        }
-                    }
-                });
-
-                idlingResource.decrement();
-                updateUiStatusContainer();
-            }
-
-            @Override
-            public void onFailure(Call<MeetingService.EventsData> call, Throwable t) {//error from server
-
-                Toast.makeText(EventDetails.this,t.getMessage() , Toast.LENGTH_LONG).show();
-                idlingResource.decrement();
-
-            }
-
-        });
-
-        suggestLocationButton = (Button) findViewById(R.id.suggest_location_button);
-        suggestLocationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent suggest = new Intent(getApplicationContext(), LocationSuggestion.class);
-                suggest.putExtra("event_id", eventID);
-                startActivity(suggest);
-            }
-        });
-
-        mapButton = (Button) findViewById(R.id.map_button);
-        mapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent map = new Intent(getApplicationContext(), MapsActivity.class);
-                startActivity(map);
-            }
-        });
-
-        contentView = findViewById(R.id.content_event_details);
-        statusContainer = findViewById(R.id.active_status_container);
-
+    @Override
+    protected void onResume() {
+        super.onResume();
         fetchUserEventState();
     }
 
@@ -197,7 +92,9 @@ public class EventDetails extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "An error has occurred while retrieving event data", Toast.LENGTH_SHORT).show();
                     }
                 },
-                (call, t) -> t.printStackTrace()
+                (call, t) -> {
+                    t.printStackTrace();
+                }
         ));
     }
 
@@ -212,7 +109,9 @@ public class EventDetails extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "An error has occurred while retrieving status", Toast.LENGTH_SHORT).show();
                     }
                 },
-                (call, t) -> t.printStackTrace()
+                (call, t) -> {
+                    t.printStackTrace();
+                }
         ));
         Server.getService().getUsersInvitations().enqueue(Server.mkCallback(
                 (call, response) -> {
@@ -226,7 +125,9 @@ public class EventDetails extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "An error has occurred while retrieving status", Toast.LENGTH_SHORT).show();
                     }
                 },
-                (call, t) -> t.printStackTrace()
+                (call, t) -> {
+                    t.printStackTrace();
+                }
         ));
     }
 
@@ -254,27 +155,42 @@ public class EventDetails extends AppCompatActivity {
                                 .execute();
                     }
                 },
-                (call, t) -> t.printStackTrace()
+                (call, t) -> {
+                    t.printStackTrace();
+                }
         ));
     }
 
+    public String statusToString(int status){
+        if (status == 1){
+            return "Pending";
+        } else if (status == 2){
+            return "Accepted";
+        } else if (status == 3){
+            return "Declined";
+        } else {
+            return "Ope";
+        }
+    }
+
     private void changeInvitationStatus(int eventID, String userID, int newStatus) {
-        idlingResource.increment();
         Server.getService().setInvitationStatus(String.valueOf(eventID), userID, newStatus
         ).enqueue(Server.mkCallback(
                 (call, response) -> {
+                    Toast.makeText(EventDetails.this, "Response = " + response.toString(),
+                            Toast.LENGTH_LONG).show();
                     if (response.isSuccessful()) {
+                        Toast.makeText(EventDetails.this, "Status successfully changed" +
+                                " to " + statusToString(newStatus), Toast.LENGTH_LONG).show();
                         MeetingService.InvitationData body = response.body();
                         assert body != null;
                         onUpdatedInvitationStatus(body);
                     } else {
                         Toast.makeText(getApplicationContext(), "An error has occurred while updating invitation status", Toast.LENGTH_SHORT).show();
                     }
-                    idlingResource.decrement();
                 },
                 (call, t) -> {
                     t.printStackTrace();
-                    idlingResource.decrement();
                 }
         ));
     }
@@ -302,7 +218,7 @@ public class EventDetails extends AppCompatActivity {
 
                 SharedPreferences sharedPref = getSharedPreferences(PREFS_NAME,Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
-                String NotificationStatusKey= String.valueOf(eventID) +"checkStatus";
+                String NotificationStatusKey= eventID +"checkStatus";
                 editor.putBoolean(NotificationStatusKey, menuItem.isChecked());
                 editor.commit();
                 /* true = notifications on, false= notifications off
@@ -323,8 +239,7 @@ public class EventDetails extends AppCompatActivity {
 
                 Intent intent = new Intent(getApplicationContext(), EventEdition.class);
                 intent.putExtra("event_id", eventID);
-                startActivity(intent);
-
+                startActivityForResult(intent, 1);
 
                 return false;
             }
@@ -343,12 +258,14 @@ public class EventDetails extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()) {
             case R.id.delete_event_menu:
+                /*
                 boolean userConfirm = openAlertDialog();
                 userConfirm = true; //TODO delete this line once openAlertDialog() is fixed
                 if (userConfirm) {
                     deleteEvent();
                 }
-                return true;
+                return true;*/
+                showDeletePrompt();
             case R.id.export_event_menu:
                 exportEvent();
                 return true;
@@ -357,23 +274,44 @@ public class EventDetails extends AppCompatActivity {
         }
     }
 
+    private void showDeletePrompt(){
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                switch(i){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        deleteEvent();
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you would like to delete this event?").setPositiveButton(
+                "Delete", dialogClickListener).setNegativeButton("Cancel", dialogClickListener)
+                .show();
+    }
+
     public void deleteEvent(){
-        idlingResource.increment();
-        Call<Void> d = Server.getService().deleteEvent("/events/" + eventID + "/");
+        Call<Void> d = Server.getService().deleteEvent(eventID);
         d.enqueue(Server.mkCallback(
                 (call, response) -> {
                     if (response.isSuccessful()) {
+                        Toast.makeText(EventDetails.this, "Deletion success", Toast.LENGTH_LONG).show();
                         assert response.body() != null;
                         //Server.authenticate(response.body().key);
+                        finish();
                     } else {
+                        Toast.makeText(EventDetails.this, "Failure: " + response.toString(),
+                                Toast.LENGTH_LONG).show();
                         Server.parseUnsuccessful(response, MeetingService.RegistrationError.class,
                                 System.out::println, System.out::println);
                     }
-                    idlingResource.decrement();
                 },
                 (call, t) -> {
                     t.printStackTrace();
-                    idlingResource.decrement();
                 }
         ));
     }
@@ -396,10 +334,15 @@ public class EventDetails extends AppCompatActivity {
 
     private void updateUiStatusContainer() {
         if (eventInfo == null) return;
-        // TODO: if (eventInfo.event_admin == userID) userInvitationStatus = UserInvitationStatus.ACCEPTED;
+        UserInvitationStatus effectiveUserInvitationStatus = userInvitationStatus;
+        boolean userIsAdmin = false;
+        if (eventInfo.event_admin == Integer.parseInt(userID)) {
+            effectiveUserInvitationStatus = UserInvitationStatus.ACCEPTED;
+            userIsAdmin = true;
+        }
         int statusContainerVisibility;
         int statusContainerChildIdx;
-        switch (userInvitationStatus) {
+        switch (effectiveUserInvitationStatus) {
             case NONE:
                 statusContainerVisibility = View.GONE;
                 statusContainerChildIdx = 0;
@@ -416,8 +359,13 @@ public class EventDetails extends AppCompatActivity {
             default:
                 switch (eventInfo.current_overall_state) {
                     case 0: // NOT_STARTED
-                        statusContainerVisibility = View.VISIBLE;
-                        statusContainerChildIdx = 1;
+                        if (userIsAdmin) {
+                            statusContainerVisibility = View.GONE;
+                            statusContainerChildIdx = 0;
+                        } else {
+                            statusContainerVisibility = View.VISIBLE;
+                            statusContainerChildIdx = 1;
+                        }
                         break;
                     case 1: // STARTING
                         switch (userEventState) {
@@ -491,10 +439,13 @@ public class EventDetails extends AppCompatActivity {
 
     public void onAcceptInviteClicked(View _ignored) {
         changeInvitationStatus(eventID, userID, 2);
+        StartingSoonAlarm.scheduleStartingSoonAlarm(getApplicationContext(),
+                eventID, eventInfo.getEvent_date(), eventInfo.getEvent_time());
     }
 
     public void onDeclineInviteClicked(View _ignored) {
         changeInvitationStatus(eventID, userID, 3);
+        StartingSoonAlarm.cancelStartingSoonAlarm(getApplicationContext(), eventID);
     }
 
     public void onDepartClicked(View _ignored) {
@@ -525,7 +476,9 @@ public class EventDetails extends AppCompatActivity {
                 } else {
                     Toast.makeText(getApplicationContext(), "Status Update Error", Toast.LENGTH_SHORT).show();
                 }
-            }, (call, t) -> t.printStackTrace()));
+            }, (call, t) -> {
+                t.printStackTrace();
+            }));
         } else {
             Server.getService().putUserStatus(
                     new MeetingService.ActiveEventsData(eventID, newState)
@@ -541,7 +494,9 @@ public class EventDetails extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Status Update Error", Toast.LENGTH_SHORT).show();
                         }
                     },
-                    (call, t) -> t.printStackTrace()
+                    (call, t) -> {
+                        t.printStackTrace();
+                    }
             ));
         }
     }
@@ -599,5 +554,127 @@ public class EventDetails extends AppCompatActivity {
 
     enum UserInvitationStatus {
         NONE, PENDING, ACCEPTED, DECLINED
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        Log.d("result", String.valueOf(requestCode));
+        if (resultCode == Activity.RESULT_OK) {
+            eventID = resultData.getIntExtra("event_id",-1);
+            startEventDetails();
+        }
+    }
+
+    public void startEventDetails(){
+        final TextInputEditText nameInput = (TextInputEditText) findViewById(R.id.meeting_name);
+        final TextInputEditText textInputDate = findViewById(R.id.date);
+        final TextInputEditText textInputTime = findViewById(R.id.time);
+        final TextInputEditText textDuration = findViewById(R.id.duration);
+        final TextInputEditText textInputNotes = findViewById(R.id.notes);
+        final TextInputEditText textInputStreetAddr = findViewById(R.id.street);
+        final TextInputEditText textInputCity = findViewById(R.id.city);
+        final TextInputEditText textInputState = findViewById(R.id.state);
+        final TextInputEditText textInputRoomNo = findViewById(R.id.room_num);
+
+        //MeetingService.EventData eventData = new MeetingService.EventData();
+
+
+        userID="1";
+
+        viewAttachmentButton = (Button) findViewById(R.id.add_attachments);
+
+        if (eventID<0){
+            finish();  //did not pass event_id
+        }
+
+        Call<MeetingService.EventsData> call = Server.getService().getEventfromId(eventID);
+        call.enqueue(new Callback<MeetingService.EventsData>() {
+            @Override
+            public void onResponse(Call<MeetingService.EventsData> call, Response<MeetingService.EventsData>response) {
+                if(!response.isSuccessful()){ //404 error?
+                    Toast.makeText(EventDetails.this, "Oops, Something is wrong: " +
+                            response.code(), Toast.LENGTH_LONG).show();
+                    return;
+                }
+                Toast.makeText(EventDetails.this,response.toString() , Toast.LENGTH_LONG).show();
+
+                eventInfo = response.body();//store response
+
+                //display the event details to the user
+                nameInput.setText(eventInfo.getEvent_name());
+                textInputDate.setText(textInputDate.getText()+ "    "+eventInfo.getEvent_date());
+                textInputTime.setText(textInputTime.getText()+"    "+eventInfo.getEvent_time());
+                textDuration.setText(textDuration.getText()+"    "+eventInfo.getEvent_duration());
+                textInputNotes.setText(textInputNotes.getText()+"    "+eventInfo.getNotes());
+
+                //get location details from server
+
+                MeetingService.LocationData locationInfo= eventInfo.getEvent_location();
+
+
+                textInputStreetAddr.setText(textInputStreetAddr.getText()+ "    "+locationInfo.getStreet_address());
+                textInputCity.setText(textInputCity.getText()+ "    "+locationInfo.getCity());
+                textInputState.setText(textInputState.getText()+ "    "+locationInfo.getState());
+
+                //textInputRoomNo.setText(locationInfo.);
+
+                viewAttachmentButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                == PackageManager.PERMISSION_GRANTED) {
+                            getFileFromServer(
+                                    eventInfo.getFile_attachment(),
+                                    eventInfo.getEvent_name());
+                        } else {
+                            ActivityCompat.requestPermissions(EventDetails.this,
+                                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                    FILE_PERMISSION);
+                        }
+                    }
+                });
+                
+                mapButton = (Button) findViewById(R.id.map_button);
+                mapButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent map = new Intent(getApplicationContext(), MapsActivity.class);
+                        startActivity(map);
+                    }
+                });
+
+                updateUiStatusContainer();
+            }
+
+            @Override
+            public void onFailure(Call<MeetingService.EventsData> call, Throwable t) {//error from server
+                Toast.makeText(EventDetails.this,t.getMessage() , Toast.LENGTH_LONG).show();
+            }
+
+        });
+
+        suggestLocationButton = (Button) findViewById(R.id.suggest_location_button);
+        suggestLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent suggest = new Intent(getApplicationContext(), LocationSuggestion.class);
+                suggest.putExtra("event_id", eventID);
+                startActivity(suggest);
+            }
+        });
+
+        attendeeListButton = (Button) findViewById(R.id.view_attendees_button);
+        attendeeListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(EventDetails.this, "Passing event_id " + eventID, Toast.LENGTH_LONG).show();
+                Intent attendees = new Intent(EventDetails.this, AttendeeList.class);
+                attendees.putExtra("event_id", eventID);
+                startActivity(attendees);
+            }
+        });
+
+        contentView = findViewById(R.id.content_event_details);
+        statusContainer = findViewById(R.id.active_status_container);
     }
 }

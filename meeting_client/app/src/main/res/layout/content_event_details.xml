@@ -197,13 +197,11 @@
                 android:layout_height="wrap_content"
                 android:text="@string/details_suggest_button" />
 
-
             <Button
                 android:id="@+id/map_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/map" />
-
 
             <Button
                 android:id="@+id/leave_event_button"

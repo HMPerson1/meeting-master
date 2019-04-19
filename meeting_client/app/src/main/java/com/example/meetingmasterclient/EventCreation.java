@@ -14,6 +14,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -56,6 +57,9 @@ public class EventCreation extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_creation);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         configureAddUserButton();
 
@@ -200,9 +204,6 @@ public class EventCreation extends AppCompatActivity {
 
         postLocationandEvent();
 
-        //testing postInvites
-        MeetingService.EventsData eventsData = new MeetingService.EventsData();
-        postInvites(eventsData);
 
     }
 
@@ -218,7 +219,6 @@ public class EventCreation extends AppCompatActivity {
     }
     public void postInvites(MeetingService.EventsData event){
         int eventID = event.getPk();
-        eventID = 1;//for testing
         Map<String, ?> invitedUsers = getInvitedUsers();
         //send invites to invited users
         for (Map.Entry<String, ?> entry : invitedUsers.entrySet()) {
@@ -246,20 +246,25 @@ public class EventCreation extends AppCompatActivity {
 
         Call<MeetingService.EventsData> c = Server.getService().createEvent(new MeetingService
                 .EventCreationData(event_name, event_date, event_time, event_duration, locationID, notes)); //TODO FILE NAME RIGHT HERE));
-        Toast.makeText(EventCreation.this, "call: " + c.toString(), Toast.LENGTH_LONG).show();
+        //Toast.makeText(EventCreation.this, "call: " + c.toString(), Toast.LENGTH_LONG).show();
 
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
                     if (response.isSuccessful()) {
                         assert response.body() != null;
-                        Toast.makeText(EventCreation.this, "EventCreation success: " +
-                                response.toString(), Toast.LENGTH_LONG).show();
+                        //Toast.makeText(EventCreation.this, "EventCreation success: " +
+                                //response.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(EventCreation.this, "Event has been created",
+                                Toast.LENGTH_LONG).show();
                         Log.d("EventCreation success", response.toString());
+                        MeetingService.EventsData eventsData = response.body();
+                        postInvites(eventsData); //send invites to users
 
                         if (hasFile) {
                             Upload.uploadFileToServer(getApplicationContext(), fileUri, String.valueOf(response.body().getPk()));
                         }
 
+                        finish();
                         //Server.authenticate(response.body().key); TODO check this
                     } else {
                         Toast.makeText(EventCreation.this, "EventCreation unsuccessful: " + response.toString(),
@@ -288,8 +293,8 @@ public class EventCreation extends AppCompatActivity {
                     Log.d("LocationCreation error", response.toString());
                     return;
                 } else {
-                    Toast.makeText(EventCreation.this, "LocationCreation success: " + response.toString(),
-                            Toast.LENGTH_LONG).show();
+                    //Toast.makeText(EventCreation.this, "LocationCreation success: " + response.toString(),
+                    //        Toast.LENGTH_LONG).show();
                     Log.i("LocationCreation success", response.toString());
                 }
                 MeetingService.LocationData locationInfo = response.body();

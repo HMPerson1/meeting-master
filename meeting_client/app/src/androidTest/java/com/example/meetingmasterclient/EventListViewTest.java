@@ -1,19 +1,18 @@
 package com.example.meetingmasterclient;
 
 import android.content.Intent;
+import android.support.test.espresso.DataInteraction;
+import android.support.test.espresso.Espresso;
+import android.support.test.rule.ActivityTestRule;
 
 import org.junit.Rule;
 import org.junit.Test;
 
-import androidx.test.espresso.DataInteraction;
-import androidx.test.espresso.Espresso;
-import androidx.test.rule.ActivityTestRule;
-
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.anything;
 
 public class EventListViewTest {

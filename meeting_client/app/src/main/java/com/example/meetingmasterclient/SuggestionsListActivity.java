@@ -1,5 +1,6 @@
 package com.example.meetingmasterclient;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -85,6 +86,7 @@ public class SuggestionsListActivity extends AppCompatActivity {
 
                 //add user to list if successful
                 List<MeetingService.LocationSuggestionsData> locations = response.body();//store response
+                Log.d("add", String.valueOf(locations.get(0).getLocation_id()));
 
                 getLocationInfo(locations);
 
@@ -135,6 +137,7 @@ public class SuggestionsListActivity extends AppCompatActivity {
 
                     MeetingService.LocationData locationInfo = response.body();//store response
 
+
                     try {
                         JSONObject jo = new JSONObject();
                         jo.put("address", locationInfo.getStreet_address());
@@ -172,10 +175,11 @@ public class SuggestionsListActivity extends AppCompatActivity {
 
     private void pickLocation(int locationID, int eventId) {
         //send location id to edit event activity change activity
-        Intent suggested = new Intent(getApplicationContext(), EventEdition.class);
+        Intent suggested = new Intent();
         suggested.putExtra("event_id", eventID);
         suggested.putExtra("location_id", locationID);
-        startActivity(suggested);
+        setResult(Activity.RESULT_OK,suggested);
+        finish();
 
     }
 
