@@ -136,17 +136,15 @@ class ChangeInvitationStatusTests(TestCase):
              'edit_permission': False},
         ]
 
-    def testChangeInviteStatus(self):
-        response = self.client.put("/invitations/{}/{}/{}".format(self.alice_party.pk, self.bob.pk,
-                                                                  Invitation.ACCEPTED))
+    def testAcceptInviteStatus(self):
+        response = self.client.put("/invitations/{}/{}/update_status?status=2".format(self.alice_party.pk, self.bob.pk))
         assert response.status_code == status.HTTP_200_OK
         assert json.loads(response.content) == \
-            [{'user_id': self.bob.pk, 'event_id': self.alice_party.pk, 'status': Invitation.ACCEPTED,
-              'edit_permission': False}]
+            {'user_id': self.bob.pk, 'event_id': self.alice_party.pk, 'status': Invitation.ACCEPTED,
+              'edit_permission': False}
 
-        response = self.client.put("invitations/{}/{}/{}".format(self.alice_party.pk, self.charlie.pk,
-                                                                 Invitation.DECLINED))
+        response = self.client.put("/invitations/{}/{}/update_status?status=3".format(self.alice_party.pk, self.charlie.pk))
         assert response.status_code == status.HTTP_200_OK
         assert json.loads(response.content) == \
-            [{'user_id': self.charlie.pk, 'event_id': self.alice_party.pk, 'status': Invitation.DECLINED,
-              'edit_permission': False}]
+            {'user_id': self.charlie.pk, 'event_id': self.alice_party.pk, 'status': Invitation.DECLINED,
+              'edit_permission': False}
