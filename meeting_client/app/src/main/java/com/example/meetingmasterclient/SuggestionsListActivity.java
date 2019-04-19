@@ -81,7 +81,7 @@ public class SuggestionsListActivity extends AppCompatActivity {
                     Toast.makeText(SuggestionsListActivity.this, "Oops, Something is wrong: " + response.code(), Toast.LENGTH_LONG).show();
                     return;
                 }
-                Toast.makeText(SuggestionsListActivity.this, "response"+response.body(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(SuggestionsListActivity.this, "response"+response.body(), Toast.LENGTH_LONG).show();
 
 
                 //add user to list if successful

@@ -113,8 +113,8 @@ public class AddUserstoMeeting extends AppCompatActivity {
                             Toast.makeText(AddUserstoMeeting.this, "Oops, Something is wrong: "+response.code() , Toast.LENGTH_LONG).show();
                             return;
                         }
-                        Toast.makeText(AddUserstoMeeting.this,"response" , Toast.LENGTH_LONG).show();
-                        Toast.makeText(AddUserstoMeeting.this,response.toString() , Toast.LENGTH_LONG).show();
+                    //    Toast.makeText(AddUserstoMeeting.this,"response" , Toast.LENGTH_LONG).show();
+                    //    Toast.makeText(AddUserstoMeeting.this,response.toString() , Toast.LENGTH_LONG).show();
 
                         //add user to list if successful
                         List<MeetingService.UserProfile> userProfs =response.body();//store response

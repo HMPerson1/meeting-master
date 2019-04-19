@@ -57,7 +57,7 @@ public class AttendeeList extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         eventID = Integer.toString(getIntent().getIntExtra("event_id", -1));
-        Toast.makeText(AttendeeList.this, "Event id received: " + eventID, Toast.LENGTH_LONG).show();
+        //Toast.makeText(AttendeeList.this, "Event id received: " + eventID, Toast.LENGTH_LONG).show();
 
         recyclerView = findViewById(R.id.recycler_view_invited_people);
         recyclerView.setHasFixedSize(true);
@@ -101,8 +101,7 @@ public class AttendeeList extends AppCompatActivity {
         c.enqueue(Server.mkCallback(
             (call, response) -> {
                 if (response.isSuccessful()){
-                    Toast.makeText(AttendeeList.this, "response.success = " + response.toString()
-                            + "\nPopulating list", Toast.LENGTH_LONG).show();
+                   // Toast.makeText(AttendeeList.this, "response.success = " + response.toString() + "\nPopulating list", Toast.LENGTH_LONG).show();
                     populateAttendeeList(response);
                 } else {
                     try {
@@ -130,7 +129,7 @@ public class AttendeeList extends AppCompatActivity {
         Call <MeetingService.UserProfile> userProfileCall;
         for (int i = 0; i < attendeeResponse.size(); i++){
             int userID = Integer.valueOf(attendeeResponse.get(i).getUser_id());
-            Toast.makeText(AttendeeList.this, "searching for user: " + userID, Toast.LENGTH_LONG).show();
+            //Toast.makeText(AttendeeList.this, "searching for user: " + userID, Toast.LENGTH_LONG).show();
             userProfileCall = Server.getService().getUserByID(userID);
             userProfileCall.enqueue(Server.mkCallback(
                     (call, res) -> {
@@ -146,11 +145,11 @@ public class AttendeeList extends AppCompatActivity {
         }
         Log.d("list", String.valueOf(attendeeList.size()));
 
-
-        for (int j = 0; j < attendeeList.size(); j++){
+        //For debugging
+        /*for (int j = 0; j < attendeeList.size(); j++){
             String user = attendeeList.get(j).getUsername();
             Toast.makeText(AttendeeList.this, "User " + (j+1) + ": " + user, Toast.LENGTH_LONG).show();
-        }
+        }*/
     }
 
     private class AttendeeAdapter extends RecyclerView.Adapter<AttendeeAdapter.ViewHolder> {
