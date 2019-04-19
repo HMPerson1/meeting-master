@@ -74,8 +74,7 @@ public class ProfileEdition extends AppCompatActivity {
                     Log.d("Current user error", response.toString());
                     return;
                 } else {
-                    Toast.makeText(ProfileEdition.this, "Current user success",
-                            Toast.LENGTH_LONG).show();
+                    //Toast.makeText(ProfileEdition.this, "Current user success", Toast.LENGTH_LONG).show();
                     Log.d("Current user success", response.toString());
                 }
 
