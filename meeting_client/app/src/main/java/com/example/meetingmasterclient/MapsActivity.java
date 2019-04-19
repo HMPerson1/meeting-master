@@ -55,6 +55,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private DrawerLayout drawerLayout;
     private List<MeetingService.AttendeeLocationData> locationData = new LinkedList<>();
     private LinkedList<Marker> markers = new LinkedList<>();
+    ArrayList<String[]> userETAs=new ArrayList<>();
+    EtaAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +73,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             getLocationPermission();
         }
+
+        adapter = new EtaAdapter();
+        etaRecyclerView.setAdapter(adapter);
 
     }
 
@@ -255,14 +260,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             m.remove();
         }
 
+        userETAs.clear();
+
         for (int i = 0; i < routes.length; i++) {
             MeetingService.AttendeeLocationData current = locationData.get(i);
             markers.add(mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(current.lat, current.lon))
                     .title(current.user_full_name)));
+            String userEta []= new String[2];
+            userEta[0] =current.user_full_name;
+            try{
+
+                userEta[1]=routes[i].getJSONArray("routes")
+                        .getJSONObject(0)
+                        .getJSONArray("legs")
+                        .getJSONObject(0)
+                        .getJSONObject("duration")
+                        .getString("text");
+
+                userETAs.add(userEta);
+                adapter.setDataSet(userETAs);
+
+
+            }catch (Exception e){}
+
+
+
         }
 
-        // For Ariya: Do the ETA stuff here
+
+
     }
 
     class Locate extends TimerTask {
@@ -276,7 +303,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // TODO: real data
         // from routes[0].legs[0].duration.text
-        String[][] data = {{"John Doe", "1 min"}, {"Jane Doe", "2 min"}};
+        //String[][] data = {{"John Doe", "1 min"}, {"Jane Doe", "2 min"}};
+        ArrayList<String[]> data;
+
+        void setDataSet(ArrayList<String[]> dataSet) {
+            this.data = dataSet;
+            notifyDataSetChanged();
+        }
 
         @NonNull
         @Override
@@ -289,13 +322,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         @Override
         public void onBindViewHolder(@NonNull EtaViewHolder etaViewHolder, int position) {
-            etaViewHolder.nameView.setText(data[position][0]);
-            etaViewHolder.timeView.setText(data[position][1]);
+            etaViewHolder.nameView.setText(data.get(position)[0]);
+            etaViewHolder.timeView.setText(data.get(position)[1]);
         }
 
         @Override
         public int getItemCount() {
-            return data.length;
+            return data != null ? data.size() : 0;
         }
 
         class EtaViewHolder extends RecyclerView.ViewHolder {
