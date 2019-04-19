@@ -68,7 +68,6 @@ public class AttendeeList extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         attendeeList = new ArrayList<>();
-        adapter.setDataSet(attendeeList);
 
         submitAttendeeRequest();
 
@@ -130,33 +129,27 @@ public class AttendeeList extends AppCompatActivity {
 
         Call <MeetingService.UserProfile> userProfileCall;
         for (int i = 0; i < attendeeResponse.size(); i++){
-            int userID = Integer.parseInt(attendeeResponse.get(i).getUser_id());
+            int userID = Integer.valueOf(attendeeResponse.get(i).getUser_id());
             Toast.makeText(AttendeeList.this, "searching for user: " + userID, Toast.LENGTH_LONG).show();
             userProfileCall = Server.getService().getUserByID(userID);
             userProfileCall.enqueue(Server.mkCallback(
                     (call, res) -> {
-                        if (res.isSuccessful()){
+                        if (!res.isSuccessful()){
                             Toast.makeText(AttendeeList.this, res.toString(), Toast.LENGTH_LONG).show();
-                            attendeeList.add(res.body());
-                        } else {
-                            try {
-                                Toast.makeText(AttendeeList.this, "res.error = " + res.toString(), Toast.LENGTH_LONG).show();
-                                System.out.println("res.error = " + res.errorBody().toString());
-                            } catch (NullPointerException e){
-                                e.printStackTrace();
-                            }
-                            return;
+
                         }
+                        attendeeList.add(res.body());
+                        adapter.setDataSet(attendeeList);
                     },
                     (call, t) -> t.printStackTrace()
             ));
         }
+        Log.d("list", String.valueOf(attendeeList.size()));
 
-        adapter.setDataSet(attendeeList);
 
-        for (int i = 0; i < attendeeList.size(); i++){
-            String user = attendeeList.get(i).getUsername();
-            Toast.makeText(AttendeeList.this, "User " + (i+1) + ": " + user, Toast.LENGTH_LONG).show();
+        for (int j = 0; j < attendeeList.size(); j++){
+            String user = attendeeList.get(j).getUsername();
+            Toast.makeText(AttendeeList.this, "User " + (j+1) + ": " + user, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -183,7 +176,7 @@ public class AttendeeList extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return dataSet.size();
+            return dataSet != null ? dataSet.size() : 0;
         }
 
         void setDataSet(List<MeetingService.UserProfile> dataSet) {
