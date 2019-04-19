@@ -1,0 +1,27 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+icalendar = "*"
+djangorestframework = "*"
+django-rest-swagger = "*"
+django-phonenumber-field = "*"
+phonenumberslite = "*"
+django-rest-auth = "*"
+django-allauth = "*"
+rigor = "*"
+drf-yasg = "*"
+firebase-admin = "*"
+Django = "*"
+Pillow = "*"
+netifaces = "*"
+psycopg2 = "*"
+gunicorn = "*"
+gevent = "*"
+
+[requires]
+python_version = "3.6"
