@@ -95,7 +95,8 @@ public class MockService implements MeetingService {
 
     @Override
     public Call<LocationData> newLocation(LocationData data) {
-        return null;
+        data.setPk(1);
+        return delegate.returningResponse(data).newLocation(data);
     }
 
     @Override
@@ -217,7 +218,8 @@ public class MockService implements MeetingService {
 
     @Override
     public Call<LocationSuggestionsData> makeSuggestion(LocationSuggestionsData data) {
-        return null;
+        LocationSuggestionsData response = new LocationSuggestionsData(2, 1);
+        return delegate.returningResponse(response).makeSuggestion(data);
     }
 
     @Override

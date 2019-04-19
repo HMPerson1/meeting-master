@@ -230,7 +230,7 @@ public class Registration extends AppCompatActivity {
                 .RegistrationData(username,first_name,last_name,email,password1,password2,phone_number));
         c.enqueue(Server.mkCallback(
                 (call, response) -> {
-                    Toast.makeText(Registration.this,response.toString(), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(Registration.this,response.toString(), Toast.LENGTH_LONG).show();
                     Log.d("Registration response", response.toString());
                     if (response.isSuccessful()) {
                         assert response.body() != null;
