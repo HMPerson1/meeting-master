@@ -110,7 +110,9 @@ public class LocationSuggestion extends AppCompatActivity {
             c.enqueue(Server.mkCallback(
                     (call, response) -> {
                         if (response.isSuccessful()) {
-                            Toast.makeText(getApplicationContext(), "Location suggested successfully", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Location suggested successfully",
+                                    Toast.LENGTH_SHORT).show();
+                            finish();
                         } else {
                             Toast.makeText(getApplicationContext(), "An error has occurred", Toast.LENGTH_SHORT).show();
                         }

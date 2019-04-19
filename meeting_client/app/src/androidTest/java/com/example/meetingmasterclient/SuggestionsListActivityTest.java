@@ -2,8 +2,10 @@ package com.example.meetingmasterclient;
 
 import android.content.Intent;
 import android.content.res.Resources;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
 import android.support.test.rule.ActivityTestRule;
+import android.support.test.uiautomator.UiDevice;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -18,24 +20,14 @@ import org.junit.Rule;
 import org.junit.Test;
 
 
-import androidx.test.espresso.DataInteraction;
-import androidx.test.espresso.Espresso;
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.rule.ActivityTestRule;
-import androidx.test.uiautomator.UiDevice;
-import androidx.test.uiautomator.Until;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.mock.BehaviorDelegate;
 import retrofit2.mock.MockRetrofit;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.example.meetingmasterclient.server.Server.BASE_URL;
 import static java.lang.Thread.sleep;
 import static org.hamcrest.CoreMatchers.anything;
