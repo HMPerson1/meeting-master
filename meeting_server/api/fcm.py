@@ -5,7 +5,6 @@ import firebase_admin.messaging as messaging
 from firebase_admin import credentials
 
 from api.events.models import Event
-from api.invitations.models import Invitation
 from api.users.models import UserProfile
 
 logger = logging.getLogger(__name__)
@@ -24,10 +23,14 @@ except FileNotFoundError:
 def _do_message(data: dict, user: UserProfile, dry_run: bool):
     if user.firebase_reg_token != "":
         logger.debug(f'sending fcm message to {user.django_user.username} (id {user.django_user_id}): {data}')
-        messaging.send(messaging.Message(
-            data=data,
-            token=user.firebase_reg_token
-        ), dry_run=dry_run)
+        try:
+            messaging.send(messaging.Message(
+                data=data,
+                token=user.firebase_reg_token
+            ), dry_run=dry_run)
+        except messaging.ApiCallError as error:
+            logger.warn(
+                f'failed to send fcm message to {user.django_user.username} (id {user.django_user_id}): {error}')
     else:
         logger.info(f'{user.django_user.username} (id {user.django_user_id}) has no firebase registration token')
 
