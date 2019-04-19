@@ -94,10 +94,14 @@ public class UserSearch extends AppCompatActivity {
         Call<List<MeetingService.UserProfile>> c = Server.getService().users(inputSearch);
         c.enqueue(Server.mkCallback(
             (call, response) -> {
-                Toast.makeText(UserSearch.this, response.toString(), Toast.LENGTH_LONG).show();
+               // Toast.makeText(UserSearch.this, response.toString(), Toast.LENGTH_LONG).show();
                 if (response.isSuccessful()) {
-                    assert response.body() != null;
-                    printAndPopulateResults(response);
+                    if (response.body().isEmpty()) {
+                        Toast.makeText(UserSearch.this, "No results", Toast.LENGTH_LONG).show();
+                    } else {
+                        //assert response.body() != null;
+                        printAndPopulateResults(response);
+                    }
                 } else {
                     try {
                         System.out.println("response.error = " + response.errorBody().string());

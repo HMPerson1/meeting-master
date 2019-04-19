@@ -126,6 +126,7 @@ public class MockService implements MeetingService {
 
     @Override
     public Call<EventsData> updateEvent(EventCreationData data, String id) {
+        //EventsData event
         event_name =data.getEvent_name();
         return null;
     }
@@ -248,6 +249,7 @@ public class MockService implements MeetingService {
         }
         return delegate.returningResponse(response).getCurrentLocations(event_id);
     }
+
 
     @Override
     public Call<List<LocationSuggestionsData>> getSuggestedLocations(String event_id) {
