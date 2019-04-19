@@ -633,6 +633,15 @@ public class EventDetails extends AppCompatActivity {
                         }
                     }
                 });
+                
+                mapButton = (Button) findViewById(R.id.map_button);
+                mapButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent map = new Intent(getApplicationContext(), MapsActivity.class);
+                        startActivity(map);
+                    }
+                });
 
                 updateUiStatusContainer();
             }
@@ -651,15 +660,6 @@ public class EventDetails extends AppCompatActivity {
                 Intent suggest = new Intent(getApplicationContext(), LocationSuggestion.class);
                 suggest.putExtra("event_id", eventID);
                 startActivity(suggest);
-            }
-        });
-
-        mapButton = (Button) findViewById(R.id.map_button);
-        mapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent map = new Intent(getApplicationContext(), MapsActivity.class);
-                startActivity(map);
             }
         });
 
