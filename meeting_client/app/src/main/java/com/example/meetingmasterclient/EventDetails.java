@@ -47,6 +47,7 @@ public class EventDetails extends AppCompatActivity {
     private static final int FILE_PERMISSION = 20;
     public static final String PREFS_NAME = "App_Settings";
     private int eventID;
+    @Nullable
     private String userID;
     private Button attendeeListButton;
     private Button suggestLocationButton;
@@ -71,7 +72,20 @@ public class EventDetails extends AppCompatActivity {
         //get the current intent
         Intent intent = getIntent();
         eventID = intent.getIntExtra("event_id", -1);
-        userID = intent.getStringExtra("user_id");
+
+        // get the current user's id
+        Server.getService().getCurrentUser().enqueue(Server.mkCallback(
+                (call, response) -> {
+                    if (response.isSuccessful()) {
+                        MeetingService.UserProfile body = response.body();
+                        assert body != null;
+                        userID = String.valueOf(body.pk);
+                    } else {
+                        Toast.makeText(this, "Could not get user_id", Toast.LENGTH_LONG).show();
+                    }
+                },
+                (call, t) -> t.printStackTrace()
+        ));
 
         startEventDetails();
     }
@@ -173,7 +187,7 @@ public class EventDetails extends AppCompatActivity {
         }
     }
 
-    private void changeInvitationStatus(int eventID, String userID, int newStatus) {
+    private void changeInvitationStatus(int newStatus) {
         Server.getService().setInvitationStatus(String.valueOf(eventID), userID, newStatus
         ).enqueue(Server.mkCallback(
                 (call, response) -> {
@@ -335,7 +349,7 @@ public class EventDetails extends AppCompatActivity {
         if (eventInfo == null) return;
         UserInvitationStatus effectiveUserInvitationStatus = userInvitationStatus;
         boolean userIsAdmin = false;
-        if (eventInfo.event_admin == Integer.parseInt(userID)) {
+        if (userID != null && eventInfo.event_admin == Integer.parseInt(userID)) {
             effectiveUserInvitationStatus = UserInvitationStatus.ACCEPTED;
             userIsAdmin = true;
         }
@@ -441,13 +455,13 @@ public class EventDetails extends AppCompatActivity {
     }
 
     public void onAcceptInviteClicked(View _ignored) {
-        changeInvitationStatus(eventID, userID, 2);
+        changeInvitationStatus(2);
         StartingSoonAlarm.scheduleStartingSoonAlarm(getApplicationContext(),
                 eventID, eventInfo.getEvent_date(), eventInfo.getEvent_time());
     }
 
     public void onDeclineInviteClicked(View _ignored) {
-        changeInvitationStatus(eventID, userID, 3);
+        changeInvitationStatus(3);
         StartingSoonAlarm.cancelStartingSoonAlarm(getApplicationContext(), eventID);
     }
 
@@ -581,8 +595,6 @@ public class EventDetails extends AppCompatActivity {
 
         //MeetingService.EventData eventData = new MeetingService.EventData();
 
-
-        userID="1";
 
         viewAttachmentButton = (Button) findViewById(R.id.add_attachments);
 
