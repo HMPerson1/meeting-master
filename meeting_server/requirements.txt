@@ -10,3 +10,4 @@ Pillow
 rigor
 drf-yasg
 firebase-admin
+packaging
